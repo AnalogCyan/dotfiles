@@ -52,7 +52,7 @@ These are the various aliases I have set in powershell.
 Config for [Windows Terminal](https://devblogs.microsoft.com/commandline/introducing-windows-terminal/).
 
 ### profile.ps1
-Config
+Profile config for powershell.
 
 ### .gitconfig
 Just my personal git configuration.
