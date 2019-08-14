@@ -9,12 +9,19 @@ To install, run `./install.sh` and follow the prompts.
 These are the various aliases I have set in [fish](https://fishshell.com/).
 
 `alias .. cd ..` 
+
 `alias bsh bash` 
+
 `alias cd.. cd ..` 
+
 `alias clera clear` 
+
 `alias generate-password bash -c  "< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c\${1:-32};echo;"` 
+
 `alias lh ls -d .*` 
+
 `alias mkdir mkdir -pv` 
+
 `alias vi vim` 
 
 ### lxterminal.conf
@@ -32,9 +39,13 @@ To install, run `.\install.ps1` (requires admin).
 These are the various aliases I have set in powershell.
 
 `alias adbIP` Connect adb over IP in one command. 
+
 `alias compile` Attempt to compile the specified source for both Windows and Linux (currently C++ only).  
+
 `alias fish` Run commands in the fish shell. 
+
 `alias home` Map ~ to the user's home directory, like in Linux.  
+
 `alias vim` Map both vi and vim to vim in WSL. 
 
 ### profiles.json
