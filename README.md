@@ -8,6 +8,8 @@ To install, run `./install.sh` and follow the prompts.
 ### functions
 These are the various aliases I have set in [fish](https://fishshell.com/).
 
+`function fish_greeting` Change the fish greeting to display neofetch.
+
 `alias .. cd ..` 
 
 `alias bsh bash` 
