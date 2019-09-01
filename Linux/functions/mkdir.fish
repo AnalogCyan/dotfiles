@@ -1,4 +1,4 @@
-# Defined in - @ line 0
+# Defined in - @ line 1
 function mkdir --description 'alias mkdir mkdir -pv'
-	mkdir -pv  $argv;
+	command mkdir -pv  $argv;
 end
