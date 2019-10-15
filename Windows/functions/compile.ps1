@@ -25,7 +25,7 @@ if ($lang -eq 'C++') {
   g++.exe $file
   wsl.exe g++ $file
 }
-elseif ($lang -eq 'Test') {
+elseif ($lang -eq 'test') {
   Write-Output "Hello, World!"
   Exit
 }

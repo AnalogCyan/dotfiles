@@ -10,25 +10,32 @@ These are the various aliases I have set in [fish](https://fishshell.com/).
 
 `function fish_greeting` Change the fish greeting to display neofetch.
 
-`alias .. cd ..` 
+`alias ..` & `alias cd..` Alternate command for cd ...
 
-`alias bsh bash` 
+`alias bsh` Alternate command to run bash.
 
-`alias cd.. cd ..` 
+`alias clera` Fix common miss-type of clear.
 
-`alias clera clear` 
+`alias !!` & `alias fuck` Run as root, previous command if no arg.
 
-`alias generate-password bash -c  "< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c\${1:-32};echo;"` 
+`alias generate-password` Generate a random password.
 
-`alias lh ls -d .*` 
+`alias lh` List hidden files in a shorter command.
 
-`alias mkdir mkdir -pv` 
+`alias mkdir` Have mkdir always run with -pv.
 
-`alias vi vim` 
+`alias neoclear` Single command for clearing the screen and showing neofetch.
+
+`sudo !!` & `sudo!!` Run previous command as root.
+
+`alias vi` Ensure vi always opens vim.
 
 ### lxterminal.conf
 Config for the terminal emulator I use, [LXTerminal](https://github.com/lxde/lxterminal).
 Uses [Tomorrow Night Bright](https://github.com/ChrisKempson/Tomorrow-Theme) theme with some tweaks.
+
+### conky
+My current [conky](https://github.com/brndnmtthws/conky) configs.
 
 ### .gitconfig
 Just my personal git configuration.
@@ -42,7 +49,9 @@ These are the various aliases I have set in powershell.
 
 `alias adbIP` Connect adb over IP in one command. 
 
-`alias compile` Attempt to compile the specified source for both Windows and Linux (currently C++ only).  
+`alias cd` Make cd behave as it does in Linux.
+
+`alias compile` Compile the specified source for both Windows and Linux (currently C++ only).  
 
 `alias fish` Run commands in the fish shell. 
 
@@ -62,6 +71,5 @@ Just my personal git configuration.
 
 ## TODO
 
- - Add user options for what to install to the Windows installer like the Linux installer has.
- - Add some of the useful Linux aliases to Windows as well.
-
+✔ Add user options for what to install to the Windows installer like the Linux installer has.
+- Add some of the useful Linux aliases to Windows as well.
