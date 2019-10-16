@@ -3,6 +3,9 @@
 printf 'Install fish functions? (y/N) : '
 read -r ffunc
 
+printf 'Install neofetch config? (y/N) : '
+read -r nconf
+
 printf 'Install lxterm config? (y/N) : '
 read -r lxconf
 
@@ -17,6 +20,12 @@ if [ "$ffunc" = "y" ] || [ "$ffunc" = "Y" ]; then
   echo "Copying fish functions into ~/.config/fish/functions/..."
   mkdir -pv ~/.config/fish/functions/
   cp ./functions/*.fish ~/.config/fish/functions/
+fi
+
+if [ "$nconf" = "y" ] || [ "$nconf" = "Y" ]; then
+  echo "Copying neofetch config into ~/.config/neofetch/..."
+  mkdir -pv ~/.config/neofetch/
+  cp ./neofetch/config.conf ~/.config/neofetch/config.conf
 fi
 
 if [ "$lxconf" = "y" ] || [ "$lxconf" = "Y" ]; then
