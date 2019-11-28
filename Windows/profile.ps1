@@ -14,3 +14,4 @@ $host.UI.RawUI.BackgroundColor = "Black"
 Set-ItemProperty -Path HKCU:\console -Name WindowAlpha -Value 240
 Set-Location
 Clear-Host
+wsl -- fortune -n 50 -s
