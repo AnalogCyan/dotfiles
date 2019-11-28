@@ -1,3 +1,3 @@
 function fish_greeting
-  neofetch
+  clear; and fortune -n 50 -s
 end
