@@ -1,55 +1,75 @@
-
 // To view the default settings, hold "alt" while clicking on the "Settings" button.
 // For documentation on these settings, see: https://aka.ms/terminal-documentation
 
 {
-    "$schema": "https://aka.ms/terminal-profiles-schema",
+  "$schema": "https://aka.ms/terminal-profiles-schema",
 
-    "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+  "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
 
-    "profiles":
-    [
-        {
-            // Windows Powershell
-            "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
-            "name": "PowerShell",
-            "commandline": "powershell.exe",
-            "hidden": false
-        },
-        {
-            // CMD
-            "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
-            "name": "cmd",
-            "commandline": "cmd.exe",
-            "hidden": true
-        },
-        {
-			// Ubuntu Linux
-            "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
-            "hidden": false,
-            "name": "Ubuntu",
-            "source": "Windows.Terminal.Wsl"
-        },
-        {
-			// Kali Linux
-            "guid": "{46ca431a-3a87-5fb3-83cd-11ececc031d2}",
-            "hidden": false,
-            "name": "Kali",
-            "source": "Windows.Terminal.Wsl"
-        },
-        {
-			// Azure Cloud Shell
-            "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
-            "hidden": true,
-            "name": "Azure Cloud Shell",
-            "source": "Windows.Terminal.Azure"
-        }
-    ],
+  "profiles": [{
+      // Windows Powershell
+      "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+      "name": "PowerShell",
+      "tabTitle": "PowerShell",
+      "suppressApplicationTitle": true,
+      "commandline": "powershell.exe",
+      "hidden": false,
+      "useAcrylic": true
+    },
+    {
+      // CMD
+      "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+      "name": "Command Prompt",
+      "tabTitle": "Command Prompt",
+      "suppressApplicationTitle": true,
+      "commandline": "cmd.exe",
+      "hidden": true,
+      "useAcrylic": true
+    },
+    {
+      // Ubuntu Linux
+      "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
+      "hidden": false,
+      "name": "Ubuntu",
+      "tabTitle": "Ubuntu",
+      "suppressApplicationTitle": true,
+      "source": "Windows.Terminal.Wsl",
+      "useAcrylic": true
+    },
+    {
+      // Kali Linux
+      "guid": "{46ca431a-3a87-5fb3-83cd-11ececc031d2}",
+      "hidden": false,
+      "name": "Kali",
+      "tabTitle": "Kali",
+      "suppressApplicationTitle": true,
+      "source": "Windows.Terminal.Wsl",
+      "useAcrylic": true
+    },
+    {
+      // Azure Cloud Shell
+      "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
+      "hidden": true,
+      "name": "Azure Cloud Shell",
+      "tabTitle": "Azure Cloud Shell",
+      "suppressApplicationTitle": true,
+      "source": "Windows.Terminal.Azure",
+      "useAcrylic": true
+    }
+  ],
 
-    // Add custom color schemes to this array
-    "schemes": [],
+  // Add custom color schemes to this array
+  "schemes": [],
 
-    // Add any keybinding overrides to this array.
-    // To unbind a default keybinding, set the command to "unbound"
-    "keybindings": []
+  // Add any keybinding overrides to this array.
+  // To unbind a default keybinding, set the command to "unbound"
+  "keybindings": [{
+      "command": "copy",
+      "keys": ["ctrl+shift+c"]
+    },
+    {
+      "command": "paste",
+      "keys": ["ctrl+shift+v"]
+    }
+  ]
 }
