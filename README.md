@@ -8,7 +8,7 @@ To install, run `./install.sh` and follow the prompts.
 ### functions
 These are the various aliases I have set in [fish](https://fishshell.com/).
 
-`function fish_greeting` Change the fish greeting to display neofetch.
+`function fish_greeting` Change the fish greeting to display a fortune.
 
 `alias ..` & `alias cd..` Alternate command for cd ...
 
@@ -31,7 +31,7 @@ These are the various aliases I have set in [fish](https://fishshell.com/).
 `alias vi` Ensure vi always opens vim.
 
 ### lxterminal.conf
-Config for the terminal emulator I use, [LXTerminal](https://github.com/lxde/lxterminal).
+Config for a terminal emulator I use, [LXTerminal](https://github.com/lxde/lxterminal).
 Uses [Tomorrow Night Bright](https://github.com/ChrisKempson/Tomorrow-Theme) theme with some tweaks.
 
 ### conky
