@@ -63,9 +63,9 @@ else {
   
 
   if ($wterm -eq "y" -or $wterm -eq "Y") {
-    Write-Output "Copying Terminal config into $env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState\..."
+    Write-Output "Copying Terminal config into $env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\..."
     
-    Copy-Item -Force '.\profiles.json' -Destination "$env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState"
+    Copy-Item -Force '.\profiles.json' -Destination "$env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
   }
 
   if ($gitconf -eq "y" -or $gitconf -eq "Y") {
