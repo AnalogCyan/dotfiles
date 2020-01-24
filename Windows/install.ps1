@@ -31,11 +31,12 @@ function alertUser {
 $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Pass current script to admin console if current console not elevated
-If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {   
-  #Start-Process -WindowStyle hidden powershell -Verb runAs -ArgumentList $curDir\setup.ps1
-  #alertUser
-  Write-Error -Message "Installer must be run as admin." -Category AuthenticationError
-}
+#If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] #"Administrator")) {   
+#  #Start-Process -WindowStyle hidden powershell -Verb runAs -ArgumentList $curDir\setup.ps1
+#  #alertUser
+#  Write-Error -Message "Installer must be run as admin." -Category AuthenticationError
+#}
+If ("0" -eq "1") { }
 # Otherwise, continue as-is
 else {
   # Copy files into appropriate windows directory
@@ -44,15 +45,22 @@ else {
   $ahk = Read-Host -Prompt 'Install ahk scripts? (y/N)'
   $wterm = Read-Host -Prompt 'Install Terminal config? (y/N)'
   $gitconf = Read-Host -Prompt 'Install git config? (y/N)'
+  $mcsym = Read-Host -Prompt 'Create .minecraft -> OneDrive symbolic link? (y/N)'
   
   Set-Location $curDir
 
   if ($pfunc -eq "y" -or $pfunc -eq "Y") {
-    Write-Output "Copying pwsh profile & functions into $env:windir\system32\WindowsPowerShell\v1.0\..."
+    $CurrentUserAllHosts_Path = Split-Path "$PROFILE.CurrentUserAllHosts"
+    Write-Output "Copying pwsh profile & functions into $CurrentUserAllHosts_Path\..."
+    Copy-Item -Force ".\profile.ps1" -Destination (New-Item -Path "$CurrentUserAllHosts_Path\" -ItemType "file" -name "Profile.ps1" -Force)
+    Copy-Item -Force .\functions -Destination $CurrentUserAllHosts_Path\ -Recurse
 
-    Copy-Item -Force ".\profile.ps1" -Destination "$env:windir\system32\WindowsPowerShell\v1.0\"
-
-    Copy-Item -Force .\functions -Destination $env:windir\system32\WindowsPowerShell\v1.0\ -Recurse
+    if (Get-Command pwsh.exe -errorAction SilentlyContinue) {
+      $CurrentUserAllHosts_Path = pwsh.exe -NoProfile -Command Split-Path "`$PROFILE.CurrentUserAllHosts"
+      Write-Output "Copying pwsh profile & functions into $CurrentUserAllHosts_Path\..."
+      Copy-Item -Force ".\profile.ps1" -Destination (New-Item -Path "$CurrentUserAllHosts_Path\" -ItemType "file" -name "Profile.ps1" -Force)
+      Copy-Item -Force .\functions -Destination $CurrentUserAllHosts_Path\ -Recurse
+    }
   }
 
   if ($ahk -eq "y" -or $ahk -eq "Y") {
@@ -72,5 +80,11 @@ else {
     Write-Output "Copying git config into $env:HOMEPATH\..."
     
     Copy-Item -Force '.\.gitconfig' -Destination "$env:HOMEPATH"
+  }
+
+  if ($mcsym -eq "y" -or $mcsym -eq "Y") {
+    Write-Output "Creating link from $env:APPDATA\.minecraft\ to $env:HOMEPATH\OneDrive\Games\Minecraft\Install\..."
+    
+    cmd /c "mklink /J %appdata%\.minecraft %homepath%\OneDrive\Games\Minecraft\Install"
   }
 }

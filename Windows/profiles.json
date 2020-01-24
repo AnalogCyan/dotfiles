@@ -7,14 +7,26 @@
   "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
 
   "profiles": [{
-      // Windows Powershell
+      // Windows PowerShell
       "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
       "name": "PowerShell",
       "tabTitle": "PowerShell",
       "suppressApplicationTitle": true,
       "commandline": "powershell.exe",
       "hidden": false,
-      "useAcrylic": true
+      "useAcrylic": true,
+      "acrylicOpacity": 0.75
+    },
+    {
+      // PowerShell Core
+      "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+      "hidden": false,
+      "name": "PowerShell Core",
+      "source": "Windows.Terminal.PowershellCore",
+      "tabTitle": "PowerShell Core",
+      "suppressApplicationTitle": true,
+      "useAcrylic": true,
+      "acrylicOpacity": 0.75
     },
     {
       // CMD
@@ -24,7 +36,8 @@
       "suppressApplicationTitle": true,
       "commandline": "cmd.exe",
       "hidden": true,
-      "useAcrylic": true
+      "useAcrylic": true,
+      "acrylicOpacity": 0.75
     },
     {
       // Ubuntu Linux
@@ -34,7 +47,8 @@
       "tabTitle": "Ubuntu",
       "suppressApplicationTitle": true,
       "source": "Windows.Terminal.Wsl",
-      "useAcrylic": true
+      "useAcrylic": true,
+      "acrylicOpacity": 0.75
     },
     {
       // Kali Linux
@@ -44,7 +58,8 @@
       "tabTitle": "Kali",
       "suppressApplicationTitle": true,
       "source": "Windows.Terminal.Wsl",
-      "useAcrylic": true
+      "useAcrylic": true,
+      "acrylicOpacity": 0.75
     },
     {
       // Azure Cloud Shell
@@ -54,7 +69,14 @@
       "tabTitle": "Azure Cloud Shell",
       "suppressApplicationTitle": true,
       "source": "Windows.Terminal.Azure",
-      "useAcrylic": true
+      "useAcrylic": true,
+      "acrylicOpacity": 0.75
+    },
+    {
+      "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+      "hidden": false,
+      "name": "PowerShell Core",
+      "source": "Windows.Terminal.PowershellCore"
     }
   ],
 
