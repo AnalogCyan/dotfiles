@@ -1,16 +1,18 @@
-
 # dotfiles
-My generic dotfiles I use in Linux and Windows.
+
+My personal dotfiles I use in Linux and Windows.
 
 ## Linux
+
 To install, run `./install.sh` and follow the prompts.
 
 ### functions
+
 These are the various aliases I have set in [fish](https://fishshell.com/).
 
 `function fish_greeting` Change the fish greeting to display a fortune.
 
-`alias ..` & `alias cd..` Alternate command for cd ...
+`alias ..` & `alias cd..` Alternate commands for cd ...
 
 `alias bsh` Alternate command to run bash.
 
@@ -24,27 +26,29 @@ These are the various aliases I have set in [fish](https://fishshell.com/).
 
 `alias mkdir` Have mkdir always run with -pv.
 
-`alias neoclear` Single command for clearing the screen and showing neofetch.
-
 `sudo !!` & `sudo!!` Run previous command as root.
 
 `alias vi` Ensure vi always opens vim.
 
 ### lxterminal.conf
+
 Config for a terminal emulator I use, [LXTerminal](https://github.com/lxde/lxterminal).
 Uses [Tomorrow Night Bright](https://github.com/ChrisKempson/Tomorrow-Theme) theme with some tweaks.
 
 ### conky
+
 My current [conky](https://github.com/brndnmtthws/conky) configs.
 
 ### .gitconfig
+
 Just my personal git configuration.
 
-
 ## Windows
-To install, run `.\install.ps1` (requires admin).
+
+To install, run `.\install.ps1` and follow the prompts.
 
 ### functions
+
 These are the various aliases I have set in powershell.
 
 `alias adbIP` Connect adb over IP in one command. 
@@ -59,17 +63,18 @@ These are the various aliases I have set in powershell.
 
 `alias vim` Map both vi and vim to vim in WSL. 
 
+### ahk
+
+My current [AutoHotkey](https://www.autohotkey.com) scripts.
+
 ### profiles.json
+
 Config for [Windows Terminal](https://devblogs.microsoft.com/commandline/introducing-windows-terminal/).
 
 ### profile.ps1
+
 Profile config for powershell.
 
 ### .gitconfig
+
 Just my personal git configuration.
-
-
-## TODO
-
-✔ Add user options for what to install to the Windows installer like the Linux installer has.
-- Add some of the useful Linux aliases to Windows as well.

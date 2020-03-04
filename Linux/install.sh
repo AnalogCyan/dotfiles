@@ -1,5 +1,10 @@
 #!/bin/bash
 
+printf ''
+sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
+sudo apt install gcc g++ git vim fish
+chsh -s /usr/bin/fish
+
 printf 'Install fish functions? (y/N) : '
 read -r ffunc
 

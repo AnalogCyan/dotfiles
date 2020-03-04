@@ -1,33 +1,15 @@
-# This script attempts to compile programs for both Windows and Linux systems.
 param( $x )
 
-function languageDetect {
-  if ($x -match '.cpp') {
-    return "C++"
-  }
-  elseif ($x -match '.test') {
-    return "Test"
-  }
-  else {
-    Write-Error -Message "Unsupported Language" -Category InvalidArgument
-    Exit
-  }
+if (Get-Command g++.exe -errorAction SilentlyContinue) {
+  g++ -std=c++11 $x.Replace("\", "/")
+}
+else {
+  Write-Warning -Message "Could not compile for Windows, g++.exe not found!"
 }
 
-function pathNormalize {
-  return $x.Replace("\", "/")  
+if (Get-Command wsl.exe -errorAction SilentlyContinue) {
+  wsl.exe -- g++ -std=c++11 $x.Replace("\", "/")
 }
-
-$lang = languageDetect
-$file = pathNormalize
-
-if ($lang -eq 'C++') {
-  g++.exe $file
-  wsl.exe g++ $file
+else {
+  Write-Warning -Message "Could not compile for Linux, wsl.exe not found!"
 }
-elseif ($lang -eq 'test') {
-  Write-Output "Hello, World!"
-  Exit
-}
-
-Write-Output "Processed $lang file $file for Windows (.exe) and Linux (.out)."
