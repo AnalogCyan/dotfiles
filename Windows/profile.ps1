@@ -11,16 +11,38 @@ Function Prompt {
     # » does not display properly on older version of PowerShell
     if ($PSVersionTable.PSVersion.Minor -eq 1) {
       $promptIcon = ">"
+
+      "$(Write-Host `n$(Split-Path (Get-Item -Path ".\").FullName -Leaf) -NoNewline -ForegroundColor $color) $($promptIcon * ($nestedPromptLevel + 1)) ";
     }
     else {
       $promptIcon = "»"
+
+      function gitSetup {
+        Import-Module posh-git
+        $GitPromptSettings.DefaultPromptPath = ''
+        $GitPromptSettings.DefaultPromptSuffix = ''
+        $GitPromptSettings.EnableFileStatus = $false
+      }
+      gitSetup
+      if (-not (Get-Module -Name "posh-git")) {
+        PowerShellGet\Install-Module posh-git -Scope CurrentUser -AllowPrerelease -Force
+        gitSetup
+      }
+
+      $prompt = $(Write-Host `n$(Split-Path (Get-Item -Path ".\").FullName -Leaf) -NoNewline -ForegroundColor $color)
+      $prompt += & $GitPromptScriptBlock
+      $prompt += Write-Prompt " $($promptIcon * ($nestedPromptLevel + 1)) "
+      if ($prompt) { "$prompt" } else { " " }
     }
   }
 
-  # Modified to replicate the edan fish_prompt.fish
-  "$(Write-Host `n$(Split-Path (Get-Item -Path ".\").FullName -Leaf) -NoNewline -ForegroundColor $color) $($promptIcon * ($nestedPromptLevel + 1)) ";
-
   # $($executionContext.SessionState.Path.CurrentLocation)
+}
+
+# Chocolatey profile
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
 }
 
 $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
