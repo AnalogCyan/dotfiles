@@ -1,5 +1,10 @@
 param( $x )
 
+if (-Not $x) {
+  Write-Warning -Message "No input given, assuming ./*.cpp was intended..."
+  $x = "./*.cpp"
+}
+
 if (Get-Command g++.exe -errorAction SilentlyContinue) {
   g++ -std=c++11 $x.Replace("\", "/")
 }
