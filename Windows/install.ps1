@@ -31,7 +31,7 @@ if ($d) {
     Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
   }
   Write-Output "Installing tools and dependencies..."
-  choco install microsoft-edge powertoys microsoft-windows-terminal powershell-core firacode-ttf mingw git vscode androidstudio vim hwmonitor -y
+  choco install microsoft-edge powertoys microsoft-windows-terminal powershell-core firacode-ttf mingw git vscode androidstudio vim hwmonitor grep gawk -y
   if ($p) {
     Write-Warning "A new version of PowerShell was installed, profiles & functions must now be updated."
     pwshProfile
@@ -75,7 +75,7 @@ $ahk = Read-Host -Prompt 'Install ahk scripts? (y/N)'
 $wterm = Read-Host -Prompt 'Install Terminal config? (y/N)'
 $gitconf = Read-Host -Prompt 'Install git config? (y/N)'
 $mcsym = Read-Host -Prompt 'Create .minecraft -> OneDrive symbolic link? (y/N)'
-  
+
 Set-Location $curDir
 
 if ($pfunc -eq "y" -or $pfunc -eq "Y") {
@@ -93,11 +93,11 @@ if ($ahk -eq "y" -or $ahk -eq "Y") {
   Write-Output "Copying ahk scripts into $env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\..."
   Copy-Item -Force '.\ahk\win_tweaks.exe' -Destination "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
 }
-  
+
 
 if ($wterm -eq "y" -or $wterm -eq "Y") {
   Write-Output "Copying Terminal config into $env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\..."
-  Copy-Item -Force '.\profiles.json' -Destination "$env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+  Copy-Item -Force '.\settings.json' -Destination "$env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 }
 
 if ($gitconf -eq "y" -or $gitconf -eq "Y") {
@@ -113,7 +113,7 @@ if ($mcsym -eq "y" -or $mcsym -eq "Y") {
 $dep = Read-Host -Prompt 'Dotfiles installed. Attempt to install dependencies? This will prompt for admin. (y/N)'
 if ($dep -eq "y" -or $dep -eq "Y") {
   $flags += "d"
-  If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {   
+  If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Start-Process -WindowStyle hidden powershell.exe -Verb runAs -ArgumentList "$curDir\setup.ps1 $flags"
   }
 }
