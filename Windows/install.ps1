@@ -31,14 +31,18 @@ if ($d) {
     Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
   }
   Write-Output "Installing tools and dependencies..."
-  choco install microsoft-edge powertoys microsoft-windows-terminal powershell-core firacode-ttf mingw git vscode androidstudio vim hwmonitor grep gawk -y
+  choco install chocolateygui choco-protocol-support logitech-options firacode-ttf microsoft-edge powertoys windows-sandbox powershell-core microsoft-windows-terminal vscode hwinfo hwmonitor cpu-z gpu-z wireshark nmap fing git mingw python androidstudio flutter adb nano vim sed grep gawk patch diffutils gnupg keybase -y
   if ($p) {
     Write-Warning "A new version of PowerShell was installed, profiles & functions must now be updated."
     pwshProfile
   }
+  $sw = Read-Host -Prompt 'Install gaming software? (y/N)'
+  if ($sw -eq "y" -or $sw -eq "Y") {
+    choco install geforce-experience cuda ds4windows goggalaxy steam minecraft itch battle.net epicgameslauncher origin uplay autoclicker steam-cleaner borderlessgaming xsplit-gamecaster -y
+  }
   $sw = Read-Host -Prompt 'Install additional software? (y/N)'
   if ($sw -eq "y" -or $sw -eq "Y") {
-    choco install googlechrome firefox 7zip vlc autohotkey malwarebytes gimp python filezilla inkscape virtualbox rufus youtube-dl audacity steam deluge kdenlive spotify windscribe teracopy obs-studio edgedeflector discord autoit unchecky krita screentogif picpick.portable dopamine sdformatter 1password -y
+    choco install firefox 7zip vlc autohotkey malwarebytes adwcleaner filezilla waifu2x-caffe inkscape rufus youtube-dl youtube-dl-gui audacity deluge kdenlive spotify windscribe teracopy edgedeflector discord autoit unchecky screentogif picpick.portable dopamine sdformatter rpi-imager -y
   }
   if ([System.Environment]::OSVersion.Version.Build -ge 18917) {
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart | Out-Null

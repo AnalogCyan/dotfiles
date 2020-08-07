@@ -52,8 +52,10 @@ Set-Alias fish "$curDir\functions\fish.ps1"
 Set-Alias ~ "$curDir\functions\home.ps1"
 Set-Alias vi "vim"
 Set-Alias vim "$curDir\functions\vim.ps1"
+Set-Alias nano "$curDir\functions\nano.ps1"
 Set-Alias cd "$curDir\functions\cd.ps1" -Option AllScope
 Set-Alias clera Clear-Host
+Set-Alias lsd "$curDir\functions\lsd.ps1"
 
 $host.UI.RawUI.ForegroundColor = "White"
 $host.UI.RawUI.BackgroundColor = "Black"

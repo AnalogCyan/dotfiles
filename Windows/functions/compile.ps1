@@ -5,14 +5,14 @@ if (-Not $x) {
   $x = "./*.cpp"
 }
 
-if (Get-Command g++.exe -errorAction SilentlyContinue) {
+if (Get-Command g++.exe -ErrorAction SilentlyContinue) {
   g++ -std=c++11 $x.Replace("\", "/")
 }
 else {
   Write-Warning -Message "Could not compile for Windows, g++.exe not found!"
 }
 
-if (Get-Command wsl.exe -errorAction SilentlyContinue) {
+if (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
   wsl.exe -- g++ -std=c++11 $x.Replace("\", "/")
 }
 else {

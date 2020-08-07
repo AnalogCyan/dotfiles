@@ -1,14 +1,6 @@
 param( $x )
 
-if (Get-Command wsl.exe -errorAction SilentlyContinue) {
-  if ($x) {
-    wsl -- vim $x
-  }
-  else {
-    wsl -- vim
-  }
-}
-elseif (Get-Command vim.exe -errorAction SilentlyContinue) {
+if (Get-Command vim.exe -ErrorAction SilentlyContinue) {
   if ($x) {
     vim.exe $x
   }
@@ -16,6 +8,14 @@ elseif (Get-Command vim.exe -errorAction SilentlyContinue) {
     vim.exe
   }
 }
+elseif (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
+  if ($x) {
+    wsl -- vim $x
+  }
+  else {
+    wsl -- vim
+  }
+}
 else {
-  Write-Warning -Message "Could not open, either wsl and/or vim are not installed!"
+  Write-Warning -Message "Failed to open, could not find vim!"
 }
