@@ -75,7 +75,7 @@ $ahk = Read-Host -Prompt 'Install ahk scripts? (y/N)'
 $wterm = Read-Host -Prompt 'Install Terminal config? (y/N)'
 $gitconf = Read-Host -Prompt 'Install git config? (y/N)'
 $mcsym = Read-Host -Prompt 'Create .minecraft -> OneDrive symbolic link? (y/N)'
-  
+
 Set-Location $curDir
 
 if ($pfunc -eq "y" -or $pfunc -eq "Y") {
@@ -93,7 +93,7 @@ if ($ahk -eq "y" -or $ahk -eq "Y") {
   Write-Output "Copying ahk scripts into $env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\..."
   Copy-Item -Force '.\ahk\win_tweaks.exe' -Destination "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
 }
-  
+
 
 if ($wterm -eq "y" -or $wterm -eq "Y") {
   Write-Output "Copying Terminal config into $env:HOMEPATH\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\..."
@@ -113,7 +113,7 @@ if ($mcsym -eq "y" -or $mcsym -eq "Y") {
 $dep = Read-Host -Prompt 'Dotfiles installed. Attempt to install dependencies? This will prompt for admin. (y/N)'
 if ($dep -eq "y" -or $dep -eq "Y") {
   $flags += "d"
-  If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {   
+  If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Start-Process -WindowStyle hidden powershell.exe -Verb runAs -ArgumentList "$curDir\setup.ps1 $flags"
   }
 }

@@ -1,0 +1,10 @@
+[Unit]
+Description=Lock the screen on resume from suspend
+
+[Service]
+User=cyan
+Environment=DISPLAY=:0
+ExecStart=/home/cyan/bin/lock
+
+[Install]
+WantedBy=suspend.target

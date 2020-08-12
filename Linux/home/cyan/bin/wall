@@ -1,0 +1,6 @@
+#!/bin/sh
+
+wall=$(shuf -n1 -e /home/cyan/Pictures/Wallpapers/*)
+feh --bg-fill $wall
+betterlockscreen -u $wall 
+
