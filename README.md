@@ -10,7 +10,7 @@ To install, run `./install.sh` and follow the prompts.
 
 These are the various aliases I have set in [fish](https://fishshell.com/).
 
-`function fish_greeting` Change the fish greeting to display a fortune.
+`function fish_greeting` Changed the fish greeting to display a custom welcome message with the weather on one system, and a fortune everywhere else.
 
 `alias ..` & `alias cd..` Alternate commands for cd ...
 
@@ -18,7 +18,7 @@ These are the various aliases I have set in [fish](https://fishshell.com/).
 
 `alias clera` Fix common miss-type of clear.
 
-`alias !!` & `alias fuck` Run as root, previous command if no arg.
+`alias !!` & `alias fuck` Run as root, previous command if no arguments given.
 
 `alias generate-password` Generate a random password.
 
@@ -30,14 +30,7 @@ These are the various aliases I have set in [fish](https://fishshell.com/).
 
 `alias vi` Ensure vi always opens vim.
 
-### lxterminal.conf
 
-Config for a terminal emulator I use, [LXTerminal](https://github.com/lxde/lxterminal).
-Uses [Tomorrow Night Bright](https://github.com/ChrisKempson/Tomorrow-Theme) theme with some tweaks.
-
-### conky
-
-My current [conky](https://github.com/brndnmtthws/conky) configs.
 
 ### .gitconfig
 
@@ -51,17 +44,17 @@ To install, run `.\install.ps1` and follow the prompts.
 
 These are the various aliases I have set in powershell.
 
-`alias adbIP` Connect adb over IP in one command. 
+`alias adbIP` Connect adb over IP in one command.
 
 `alias cd` Make cd behave as it does in Linux.
 
-`alias compile` Compile the specified source for both Windows and Linux (currently C++ only).  
+`alias compile` Compile the specified source for both Windows and Linux (currently C++ only).
 
-`alias fish` Run commands in the fish shell. 
+`alias fish` Run commands in the fish shell.
 
-`alias home` Map ~ to the user's home directory, like in Linux.  
+`alias home` Map ~ to the user's home directory, like in Linux.
 
-`alias vim` Map both vi and vim to vim in WSL. 
+`alias vim` Map both vi and vim to vim in WSL.
 
 ### ahk
 
