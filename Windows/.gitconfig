@@ -1,5 +1,5 @@
 [core]
-	editor = \"C:\\Users\\thayn\\AppData\\Local\\Programs\\Microsoft VS Code Insiders\\Code - Insiders.exe\" --wait
+	editor = code-insiders --wait -n
 [user]
 	name = Cyan Thayn
 	email = git@thayn.me
