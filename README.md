@@ -2,6 +2,8 @@
 
 My personal dotfiles I use in Linux and Windows.
 
+⚠ I'm currently reworking the installers, and some parts of them are broken. I wouldn't rely on them until I finish updating them.
+
 ## 🐧 Linux
 
 To install, run `./install.sh` and follow the prompts.
