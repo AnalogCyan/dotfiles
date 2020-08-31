@@ -66,9 +66,6 @@ Some of these also have .desktop files to facilitate easy launching from GUI lau
 
 `weather` Fetch the current weather for `$CITY` via [wttr.in](https://github.com/chubin/wttr.in).
 
-### .gitconfig
-
-Just my personal git configuration.
 
 ## 🐱‍💻 Windows
 
@@ -101,7 +98,3 @@ Config for [Windows Terminal](https://devblogs.microsoft.com/commandline/introdu
 ### profile.ps1
 
 Profile config for powershell.
-
-### .gitconfig
-
-Just my personal git configuration.
