@@ -1,8 +1,8 @@
 # ⚙ dotfiles
 
-My personal dotfiles I use in Linux and Windows.
+My personal dotfiles/scripts I use in Linux and Windows.
 
-⚠ I'm currently reworking the installers, as some parts are broken. I wouldn't rely on them until I finish updating them.
+⚠ I'm currently reworking the installers, and some parts are broken. I wouldn't rely on them until they're updated.
 
 ## 🐧 Linux
 
