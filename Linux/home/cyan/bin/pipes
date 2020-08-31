@@ -1,4 +1,2 @@
-#!/bin/sh
-
+#!/usr/bin/env sh
 st -g 274x80 -e sh -c "pipes.sh"
-

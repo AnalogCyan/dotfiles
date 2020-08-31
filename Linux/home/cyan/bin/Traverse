@@ -1,0 +1,37 @@
+#!/bin/sh
+# Traverse -- Search a directory structure for a file that matched a criterion
+#
+# Usage:
+#   Traverse StartDir Pattern
+#
+#   where
+
+if [ $# != 2 ]; then
+   exec /home/morell/bin/printdirections $0
+fi
+
+Match () {
+   local File
+   for File in * 
+   do
+      if [ -d "$File" ]; then
+         cd "$File"
+         echo "vvvvvvvvvvvvvvvvvv Descending to $File vvvvvvvvvvvvvvvvvv"
+         Match
+         cd ..
+         echo "^^^^^^^^^^^^^^^^^^ Ascending to $File ^^^^^^^^^^^^^^^^^^"
+      else
+         if grep "$Pattern" "$File" > /dev/null; then
+            echo "----------------------------------------"
+            echo $(pwd)/$File contains matches for "$Pattern"
+            grep "$Pattern" "$File"
+         fi
+      fi
+   done 
+}
+
+StartDir=$1
+Pattern=$2
+cd $StartDir
+Match 
+
