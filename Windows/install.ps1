@@ -9,7 +9,7 @@ $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 function pwshProfile {
   $CurrentUserAllHosts_Path = pwsh.exe -NoProfile -Command Split-Path "`$PROFILE.CurrentUserAllHosts"
   Write-Output "Copying pwsh profile & functions into $CurrentUserAllHosts_Path\..."
-  Copy-Item -Force ".\profile.ps1" -Destination (New-Item -Path "$CurrentUserAllHosts_Path\" -ItemType "file" -name "Profile.ps1" -Force)
+  Copy-Item -Force ".\profile.ps1" -Destination (New-Item -Path "$CurrentUserAllHosts_Path\" -ItemType "file" -Name "Profile.ps1" -Force)
   Copy-Item -Force .\functions -Destination $CurrentUserAllHosts_Path\ -Recurse
 }
 
@@ -23,7 +23,7 @@ function wslRestart {
 # ! Run check to ensure running in powershell and not pwsh, as running updates
 # ! in pwsh when pwsh has an update can break it
 if ($d) {
-  if (Get-Command chocolatey.exe -errorAction SilentlyContinue) {
+  if (Get-Command chocolatey.exe -ErrorAction SilentlyContinue) {
     Write-Output "Existing Chocolatey install detected, attempting updates..."
     choco upgrade all -y
   }
@@ -85,12 +85,17 @@ Set-Location $curDir
 if ($pfunc -eq "y" -or $pfunc -eq "Y") {
   $CurrentUserAllHosts_Path = powershell.exe -NoProfile -Command Split-Path "`$PROFILE.CurrentUserAllHosts"
   Write-Output "Copying pwsh profile & functions into $CurrentUserAllHosts_Path\..."
-  Copy-Item -Force ".\profile.ps1" -Destination (New-Item -Path "$CurrentUserAllHosts_Path\" -ItemType "file" -name "Profile.ps1" -Force)
+  Copy-Item -Force ".\profile.ps1" -Destination (New-Item -Path "$CurrentUserAllHosts_Path\" -ItemType "file" -Name "Profile.ps1" -Force)
   Copy-Item -Force .\functions -Destination $CurrentUserAllHosts_Path\ -Recurse
   $flags += "p"
-  if (Get-Command pwsh.exe -errorAction SilentlyContinue) {
+  if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
     pwshProfile
   }
+}
+
+if ($winget -eq "y" -or $winget -eq "Y") {
+  Write-Output "Copying winget config into $env:HOMEPATH\AppData\Local\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\..."
+  Copy-Item -Force '.\winget\settings.json' -Destination "$env:HOMEPATH\AppData\Local\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState"
 }
 
 if ($ahk -eq "y" -or $ahk -eq "Y") {

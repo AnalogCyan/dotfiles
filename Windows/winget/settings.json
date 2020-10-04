@@ -1,0 +1,16 @@
+{
+  // For documentation on these settings, see: https://aka.ms/winget-settings
+  // "source": {
+  //    "autoUpdateIntervalInMinutes": 5
+  // },
+
+  "visual": {
+    "progressBar": "rainbow"
+  },
+
+  "experimentalFeatures": {
+    "experimentalCmd": true,
+    "experimentalArg": true,
+    "experimentalMSStore": true
+  }
+}
