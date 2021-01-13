@@ -31,18 +31,19 @@ if ($d) {
     Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
   }
   Write-Output "Installing tools and dependencies..."
-  choco install chocolateygui choco-protocol-support logitech-options firacode-ttf microsoft-edge powertoys windows-sandbox powershell-core microsoft-windows-terminal vscode hwinfo hwmonitor cpu-z gpu-z wireshark nmap fing git mingw python androidstudio flutter adb nano vim sed grep gawk patch diffutils gnupg keybase -y
+  choco install chocolateygui choco-protocol-support logitech-options firacode-ttf powertoys powershell-core vscode msiafterburner samsung-magician hwinfo hwmonitor cpu-z gpu-z sqlitebrowser wireshark nmap git mingw python androidstudio flutter adb vim sed grep gawk patch diffutils gnupg keybase -y
+  winget install Microsoft.SurfaceDuoEmulator
   if ($p) {
     Write-Warning "A new version of PowerShell was installed, profiles & functions must now be updated."
     pwshProfile
   }
   $sw = Read-Host -Prompt 'Install gaming software? (y/N)'
   if ($sw -eq "y" -or $sw -eq "Y") {
-    choco install geforce-experience cuda ds4windows goggalaxy steam minecraft itch battle.net epicgameslauncher origin uplay autoclicker steam-cleaner borderlessgaming xsplit-gamecaster -y
+    choco install ds4windows playnite minecraft steam itch battle.net epicgameslauncher origin uplay autoclicker steam-cleaner borderlessgaming xsplit-gamecaster -y
   }
   $sw = Read-Host -Prompt 'Install additional software? (y/N)'
   if ($sw -eq "y" -or $sw -eq "Y") {
-    choco install firefox 7zip vlc autohotkey malwarebytes adwcleaner filezilla waifu2x-caffe inkscape rufus youtube-dl youtube-dl-gui audacity deluge kdenlive spotify windscribe teracopy edgedeflector discord autoit unchecky screentogif picpick.portable dopamine sdformatter rpi-imager -y
+    choco install firefox 7zip vlc autohotkey malwarebytes adwcleaner filezilla waifu2x-caffe inkscape rufus youtube-dl youtube-dl-gui audacity deluge kdenlive spotify windscribe teracopy discord unchecky screentogif dopamine sdformatter rpi-imager -y
   }
   if ([System.Environment]::OSVersion.Version.Build -ge 18917) {
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart | Out-Null

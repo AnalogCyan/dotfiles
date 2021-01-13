@@ -2,7 +2,7 @@
 
 printf ''
 sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
-sudo apt install gcc g++ git vim fish
+sudo apt install gcc g++ git vim fish htop
 chsh -s /usr/bin/fish
 
 printf 'Install fish functions? (y/N) : '
