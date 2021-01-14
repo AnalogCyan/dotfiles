@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=lock
+Comment=Lock the computer
+Path=/home/cyan/bin/
+Exec=/home/cyan/bin/lock
+

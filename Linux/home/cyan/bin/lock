@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+betterlockscreen -l dim --lock -- --timestr '%l:%H:%S %p'
