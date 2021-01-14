@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=wall
+Comment=Set a random wallpaper & lockscreen image from ~/Pictures/Wallpapers
+Path=/home/cyan/bin/
+Exec=/home/cyan/bin/wall
+
