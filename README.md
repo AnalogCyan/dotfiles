@@ -6,7 +6,7 @@ My personal dotfiles/scripts I use in Linux and Windows.
 
 ## 🐧 Linux
 
-To install, run `./install.sh` and follow the prompts.
+To install, run `./install.sh` in bash and follow the prompts.
 
 ### misc
 
@@ -71,7 +71,7 @@ Some of these also have .desktop files to facilitate easy launching from GUI lau
 
 ## 🐱‍💻 Windows
 
-To install, run `.\install.ps1` and follow the prompts.
+To install, run `.\install.ps1` pwsh and follow the prompts.
 
 ### functions
 
