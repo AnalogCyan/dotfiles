@@ -2,7 +2,7 @@
 
 My personal dotfiles/scripts I use in Linux and Windows.
 
-⚠ I'm currently reworking the installers, and some parts are broken. I wouldn't rely on them until they're updated.
+⚠ I'm currently reworking the installers, and some parts are broken. Also some of these files are now outdated. I wouldn't rely on this as an accurate or working representation of my dotfiles until it's updated and this message is removed.
 
 ## 🐧 Linux
 
