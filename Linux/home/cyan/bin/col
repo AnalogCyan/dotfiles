@@ -4,17 +4,17 @@
 #    col [-r] [c] col-1 col-2 ...
 #   where [c] if supplied defines the field separator
 #   where each col-i represents a column interpreted according to  the presence of -r as follows:
-#        -r present : counting starts from the right end of the line 
+#        -r present : counting starts from the right end of the line
 #        -r absent  : counting starts from the left side of the line
 Separator=" "
 Reverse=false
-      
+
 OutputSeparator=' '
 case "$1" in
  -r )  Reverse=true; shift
  ;;
  -s )  shift; OutputSeparator=$1; shift;;
- [0-9]* ) 
+ [0-9]* )
  ;;
  * )Separator="$1"; shift;
  ;;
@@ -24,7 +24,7 @@ case "$1" in
  -r )  Reverse=true; shift
  ;;
  -s )  shift; OutputSeparator=$1; shift;;
- [0-9]* ) 
+ [0-9]* )
  ;;
  * )Separator="$1"; shift;
  ;;
@@ -34,7 +34,7 @@ case "$1" in
  -r )  Reverse=true; shift
  ;;
  -s )  shift; OutputSeparator=$1; shift;;
- [0-9]* ) 
+ [0-9]* )
  ;;
  * )Separator="$1"; shift;
  ;;
@@ -46,16 +46,13 @@ Cols=""
 for  f in $*
 do
   if [ $Reverse = true ]; then
-     Cols="$Cols \$(NF-$f+1)\"$OutputSeparator\"" 
+     Cols="$Cols \$(NF-$f+1)\"$OutputSeparator\""
   else
-     Cols="$Cols \$$f\"$OutputSeparator\"" 
+     Cols="$Cols \$$f\"$OutputSeparator\""
   fi
-    
+
 done
 
 Cols=`echo "$Cols" | sed "s/\"$OutputSeparator\"\$//"`
 #echo "Using column specifications of $Cols $OutputSeparator"
 awk -F "$Separator"  "{print $Cols}"
-
-
-

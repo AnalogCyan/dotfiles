@@ -36,6 +36,7 @@ whiptail --title "Install Software" --checklist --separate-output \
 "g++" "Allow connections from other hosts" ON \
 "git" "Allow mounting of local devices" ON \
 "vim" "Allow mounting of remote devices" ON \
+"htop" "htop" ON \
 "fish" "The fish shell." ON 2>results
 
 while read choice
@@ -50,6 +51,8 @@ do
     vim) PACKAGES="${PACKAGES} vim"
     ;;
     fish) PACKAGES="${PACKAGES} fish"
+        ;;
+    htop) PACKAGES="${PACKAGES} htop"
     ;;
 		*)
 		;;
