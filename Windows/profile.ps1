@@ -9,6 +9,7 @@ Function Prompt {
   if ($PSVersionTable.PSVersion.Major -ge 6) {
     $color = "Cyan"
     $promptIcon = "»"
+    $homeIcon = "~"
 
     function gitSetup {
       Import-Module posh-git
@@ -22,7 +23,8 @@ Function Prompt {
       gitSetup
     }
 
-    $prompt = Write-Prompt `n$(Split-Path (Get-Item -Path ".\").FullName -Leaf) -ForegroundColor $color
+    if ($(Split-Path (Get-Item -Path ".\").FullName -Leaf) -eq "cyan") { $prompt = Write-Prompt `n$homeIcon -ForegroundColor $color }
+    else { $prompt = Write-Prompt `n$(Split-Path (Get-Item -Path ".\").FullName -Leaf) -ForegroundColor $color }
     $prompt += & $GitPromptScriptBlock
     $prompt += Write-Prompt " $($promptIcon * ($nestedPromptLevel + 1)) "
   }
