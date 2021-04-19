@@ -1,0 +1,119 @@
+{
+  "files.autoSave": "afterDelay",
+  "window.restoreWindows": "none",
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "gitlens.advanced.messages": {
+    "suppressCommitHasNoPreviousCommitWarning": false,
+    "suppressCommitNotFoundWarning": false,
+    "suppressFileNotUnderSourceControlWarning": false,
+    "suppressGitVersionWarning": false,
+    "suppressLineUncommittedWarning": false,
+    "suppressNoRepositoryWarning": false
+  },
+  "editor.tabSize": 2,
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [80],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": false,
+    "editor.tabSize": 2
+  },
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
+  "bashBeautify.tabSize": 2,
+  "editor.detectIndentation": false,
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Chromium, IndentWidth: 2, ColumnLimit: 0}",
+  "editor.fontFamily": "'FiraCode NF', 'Fira Code', 'CaskaydiaCove Nerd Font Mono', 'Cascadia Mono'",
+  "editor.fontLigatures": true,
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "explorer.confirmDragAndDrop": false,
+  "editor.cursorSmoothCaretAnimation": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "C_Cpp.default.compilerPath": "C:\\ProgramData\\chocolatey\\bin\\gcc.exe",
+  "workbench.iconTheme": "vscode-icons",
+  "powershell.integratedConsole.showOnStartup": false,
+  "window.newWindowDimensions": "inherit",
+  "workbench.colorTheme": "BeardedTheme Earth",
+  "terminal.integrated.shell.windows": "pwsh.exe",
+  "window.zoomLevel": 0,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "extensions.ignoreRecommendations": false,
+  "git.showPushSuccessNotification": true,
+  "editor.cursorBlinking": "smooth",
+  "editor.acceptSuggestionOnEnter": "smart",
+  "files.simpleDialog.enable": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "vsicons.dontShowNewVersionMessage": true,
+  "zoombar.uiDisplayOrder": "@",
+  "openInGitHub.providerType": "github",
+  "powershell.sideBar.CommandExplorerVisibility": false,
+  "liveServer.settings.donotVerifyTags": true,
+  "php.validate.enable": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "remote.SSH.remotePlatform": {
+    "boole.cs.atu.edu": "linux",
+    "192.168.1.100": "linux",
+    "192.168.8.175": "linux",
+    "192.168.8.102": "linux",
+    "192.168.8.104": "linux"
+  },
+  "editor.linkedEditing": true,
+  "git.confirmSync": false,
+  "java.semanticHighlighting.enabled": true,
+  "webhint.enableTelemetry": "disabled",
+  "liveServer.settings.fullReload": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "zenMode.hideLineNumbers": false,
+  "zenMode.hideStatusBar": false,
+  "zenMode.hideTabs": false,
+  "projectManager.git.baseFolders": [
+    "C:\\Users\\cyan\\OneDrive\\Projects",
+    "C:\\Users\\cyan\\OneDrive\\Projects\\*"
+  ],
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "[powershell]": {
+    "editor.defaultFormatter": "ms-vscode.powershell"
+  },
+  "window.openFilesInNewWindow": "default",
+  "projectManager.any.baseFolders": ["C:\\Users\\cyan\\OneDrive\\Projects\\"],
+  "liveServer.settings.CustomBrowser": "firefox",
+  "dart.checkForSdkUpdates": false,
+  "workbench.editor.wrapTabs": true,
+  "screencastMode.onlyKeyboardShortcuts": true,
+  "zenMode.restore": false,
+  "workbench.editorAssociations": [
+    {
+      "viewType": "jupyter-notebook",
+      "filenamePattern": "*.ipynb"
+    }
+  ],
+  "python.languageServer": "Microsoft",
+  "settingsSync.ignoredSettings": [
+    "-C_Cpp.clang_format_fallbackStyle",
+    "-C_Cpp.clang_format_path",
+    "-C_Cpp.clang_format_style",
+    "-C_Cpp.default.intelliSenseMode"
+  ],
+  "workbench.startupEditor": "none",
+  "C_Cpp.updateChannel": "Insiders",
+  "formattingToggle.affects": ["formatOnSave"]
+}

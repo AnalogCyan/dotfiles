@@ -1,5 +1,5 @@
 [core]
-	editor = code-insiders --wait -n
+	editor = code --wait -n
 [user]
-	name = Cyan Thayn
+  name = AnalogCyan
 	email = git@thayn.me
