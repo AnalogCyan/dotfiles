@@ -5,7 +5,7 @@ printf 'Would you like to continue? (y/N) : '
 read -r update
 if [ "$update" = "y" ] || [ "$update" = "Y" ]; then
   sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
-  sudo apt install gcc g++ git vim fish
+  sudo apt install gcc g++ git vim fish htop
 fi
 
 printf 'Set fish as the default shell? (y/N) : '

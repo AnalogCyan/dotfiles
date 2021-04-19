@@ -43,7 +43,7 @@ if ($d) {
   }
   $sw = Read-Host -Prompt 'Install additional software? (y/N)'
   if ($sw -eq "y" -or $sw -eq "Y") {
-    choco install firefox 7zip vlc autohotkey malwarebytes adwcleaner filezilla waifu2x-caffe inkscape rufus youtube-dl youtube-dl-gui audacity deluge kdenlive spotify windscribe teracopy discord unchecky screentogif dopamine sdformatter rpi-imager -y
+    choco install firefox 7zip vlc autohotkey malwarebytes adwcleaner filezilla waifu2x-caffe inkscape rufus youtube-dl youtube-dl-gui audacity deluge kdenlive windscribe teracopy discord unchecky screentogif dopamine sdformatter rpi-imager -y
   }
   if ([System.Environment]::OSVersion.Version.Build -ge 18917) {
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart | Out-Null
