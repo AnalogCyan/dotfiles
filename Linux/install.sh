@@ -5,7 +5,7 @@ printf 'Would you like to continue? (y/N) : '
 read -r update
 if [ "$update" = "y" ] || [ "$update" = "Y" ]; then
   sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
-  sudo apt install gcc g++ git vim fish htop
+  sudo apt install gcc g++ git vim fish htop fortune
 fi
 
 printf 'Set fish as the default shell? (y/N) : '
@@ -28,12 +28,14 @@ if [ "$fish" = "y" ] || [ "$fish" = "Y" ]; then
 fi
 
 if [ "$dbin" = "y" ] || [ "$dbin" = "Y" ]; then
-echo "Copying bin scripts into ~/bin/..."
+  echo "Copying bin scripts into ~/bin/..."
   mkdir -pv ~/bin/apps/
   cp -r ./home/cyan/bin/* ~/bin/
   echo "Copying bin shortcuts into ~/.local/share/applications/..."
   mkdir -pv ~/.local/share/applications/
   cp -r ./home/cyan/.local/share/applications/* ~/.local/share/applications/
+  echo "Installing pfetch into ~/bin/apps/pfetch/..."
+  git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/
 fi
 
 if [ "$ffunc" = "y" ] || [ "$ffunc" = "Y" ]; then
