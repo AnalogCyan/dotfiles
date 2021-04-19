@@ -30,16 +30,16 @@ fi
 if [ "$dbin" = "y" ] || [ "$dbin" = "Y" ]; then
 echo "Copying bin scripts into ~/bin/..."
   mkdir -pv ~/bin/apps/
-  cp ./home/cyan/bin/* ~/bin/
+  cp -r ./home/cyan/bin/* ~/bin/
   echo "Copying bin shortcuts into ~/.local/share/applications/..."
   mkdir -pv ~/.local/share/applications/
-  cp ./home/cyan/.local/share/applications/* ~/.local/share/applications/
+  cp -r ./home/cyan/.local/share/applications/* ~/.local/share/applications/
 fi
 
 if [ "$ffunc" = "y" ] || [ "$ffunc" = "Y" ]; then
   echo "Copying fish configs into ~/.config/fish/..."
   mkdir -pv ~/.config/fish/functions/
-  cp ./.config/fish/* ~/.config/fish/
+  cp -r ./home/cyan/.config/fish/* ~/.config/fish/
 fi
 
 if [ "$sowm" = "y" ] || [ "$sowm" = "Y" ]; then
@@ -54,5 +54,5 @@ fi
 
 if [ "$gitconf" = "y" ] || [ "$gitconf" = "Y" ]; then
   echo "Copying git config into ~/.gitconfig..."
-  cp ../.gitconfig ~/.gitconfig
+  cp  ../.gitconfig ~/.gitconfig
 fi
