@@ -94,8 +94,8 @@ My current [AutoHotkey](https://www.autohotkey.com) scripts.
 
 ### profiles.json
 
-Config for [Windows Terminal](https://devblogs.microsoft.com/commandline/introducing-windows-terminal/).
+Config for [Windows Terminal](https://github.com/Microsoft/Terminal).
 
 ### profile.ps1
 
-Profile config for powershell.
+Profile config for PowerShell.
