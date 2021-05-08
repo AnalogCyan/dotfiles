@@ -8,9 +8,9 @@ then
 fi
 
 # Determine if whiptail is installed.
-if command -v whiptail &> /dev/null
+if ! command -v whiptail &> /dev/null
 then
-  printf "Error: this script uses whiptail for its TUI, and whiptail was not found on this system. Install whiptail? (Y/n) : "
+  printf "Error: whiptail not found. Install whiptail? (Y/n) : "
   read -r wti
   if [ "$wti" = "n" ] || [ "$wti" = "N" ]; then
     echo "Error: whiptail not found. Aborting."
@@ -31,13 +31,15 @@ fi
 
 # Prompt user to install software.
 whiptail --title "Install Software" --checklist --separate-output \
-"Some essential software will now be installed.\nYou may uncheck any you do not wish to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
-"gcc" "Allow connections to other hosts" ON \
-"g++" "Allow connections from other hosts" ON \
-"git" "Allow mounting of local devices" ON \
-"vim" "Allow mounting of remote devices" ON \
+"Some software will now be installed.\nYou may uncheck any you do not wish to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
+"gcc" "gcc" ON \
+"g++" "g++" ON \
+"git" "git" ON \
+"vim" "vim" ON \
 "htop" "htop" ON \
-"fish" "The fish shell." ON 2>results
+"screen" "screen" ON \
+"fish" "fish" ON \
+"fortune" "fortune" ON 2>results
 
 while read choice
 do
@@ -50,9 +52,11 @@ do
 		;;
     vim) PACKAGES="${PACKAGES} vim"
     ;;
-    fish) PACKAGES="${PACKAGES} fish"
-        ;;
-    htop) PACKAGES="${PACKAGES} htop"
+    fish) PACKAGES="${PACKAGES} htop"
+    ;;
+    htop) PACKAGES="${PACKAGES} fish"
+    ;;
+    fortune) PACKAGES="${PACKAGES} fortune"
     ;;
 		*)
 		;;
@@ -68,6 +72,15 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
   if (whiptail --title "Change default shell?" --yesno "Either you have chosen to install fish, or fish is already on your system. Would you like to change your default shell to fish?" 8 78); then
     clear && echo "Changing shell to fish..." && echo '' && sleep 1s
     chsh -s /usr/bin/fish
+  fi
+
+  if (whiptail --title "Install omf?" --yesno "Install oh-my-fish?" 8 78); then
+    clear && echo "Installing oh-my-fish..." && echo '' && sleep 1s
+    curl -L https://get.oh-my.fish | fish
+    if (whiptail --title "Install edan theme?" --yesno "Install the oh-my-fish edan theme?" 8 78); then
+    clear && echo "Installing edan theme..." && echo '' && sleep 1s
+    fish --command="omf install edan"
+    fi
   fi
 
   whiptail --title "Install fish config & functions?" --checklist --separate-output \
@@ -89,19 +102,52 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
 
   while read choice
   do
-  	case $choice in
-  		gcc) FUNCTIONS="${FUNCTIONS} gcc"
-  		;;
-  		g++) FUNCTIONS="${FUNCTIONS} g++"
-  		;;
-  		git) FUNCTIONS="${FUNCTIONS} git"
-  		;;
-      vim) FUNCTIONS="${FUNCTIONS} vim"
+	  case $choice in
+	  	config) CONFIG="true"
+	  	;;
+	  	fish_greeting) FUNCTIONS="${FUNCTIONS} fish_greeting.fish"
+	  	;;
+	  	!!) FUNCTIONS="${FUNCTIONS} !!.fish"
+	  	;;
+      ..) FUNCTIONS="${FUNCTIONS} ...fish"
       ;;
-      fish) FUNCTIONS="${FUNCTIONS} fish"
+      bsh) FUNCTIONS="${FUNCTIONS} bsh.fish"
       ;;
-  		*)
-  		;;
-  	esac
+      cd..) FUNCTIONS="${FUNCTIONS} cd...fish"
+      ;;
+      clera) FUNCTIONS="${FUNCTIONS} clera.fish"
+      ;;
+      fuck) FUNCTIONS="${FUNCTIONS} fuck.fish"
+      ;;
+      generate-password) FUNCTIONS="${FUNCTIONS} generate-password.fish"
+      ;;
+      lh) FUNCTIONS="${FUNCTIONS} lh.fish"
+      ;;
+      mkdir) FUNCTIONS="${FUNCTIONS} mkdir.fish"
+      ;;
+      sudo !!) FUNCTIONS="${FUNCTIONS} sudo !!.fish"
+      ;;
+      sudo!!) FUNCTIONS="${FUNCTIONS} sudo!!.fish"
+      ;;
+      vi) FUNCTIONS="${FUNCTIONS} vi.fish"
+      ;;
+	  	*)
+	  	;;
+	  esac
   done < results
+  if [[ $CONFIG == *"true"* ]]; then
+    clear && echo "Installing fish config..." && echo '' && sleep 1s
+    # Install fish config
+  fi
+  if ! [ -z "$FUNCTIONS" ]; then
+    clear && echo "Installing functions: $PACKAGES..." && echo '' && sleep 1s
+    # Install selected functions
+  fi
 fi
+
+# bin scripts/shortcuts
+# remove no longer needed items from bin configs
+
+# sowm & config
+
+# git config
