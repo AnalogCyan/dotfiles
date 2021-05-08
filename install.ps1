@@ -39,7 +39,7 @@ if (Get-Command winget.exe -ErrorAction SilentlyContinue) {
 else {
   Write-Output "Installing winget..."
   New-Item -Force -ItemType Directory -Path ".\tmp"
-  Invoke-WebRequest -UseBasicParsing -Uri 'https://aka.ms/Microsoft.VCLibs.x64.14.0.Desktop.appx' -OutFile '.\tmp\VCLibs.appx'
+  Invoke-WebRequest -UseBasicParsing -Uri 'https://download.microsoft.com/download/4/7/c/47c6134b-d61f-4024-83bd-b9c9ea951c25/14.0.29231.0.Desktop/Microsoft.VCLibs.x64.14.00.Desktop.appx' -OutFile '.\tmp\VCLibs.appx'
   Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/microsoft/winget-cli/releases/download/v-0.3.11102-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle' -OutFile '.\tmp\winget-cli.appxbundle'
   Add-AppxPackage .\tmp\VCLibs.appx
   Add-AppxPackage .\tmp\winget-cli.appxbundle
