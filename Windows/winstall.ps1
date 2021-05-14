@@ -81,3 +81,4 @@ winget install --id=GitHub.GitHubDesktop -e
 winget install --id=Google.Chrome -e
 winget install --id=Yarn.Yarn -e
 winget install --id=Canonical.Ubuntu -e
+winget install --id=Clement.bottom -e
