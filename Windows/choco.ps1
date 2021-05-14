@@ -1,5 +1,4 @@
 choco upgrade autohotkey -y
-choco upgrade choco-protocol-support -y
 choco upgrade chocolateygui -y
 
 choco upgrade cascadia-code-nerd-font -y
