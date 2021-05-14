@@ -13,14 +13,22 @@ if ($a -ne "n" -or $a -ne "N") {
   exit
 }
 
-Write-Output "Enabling virtualization features (Hyper-V, Sandbox, WSL, etc.)..."
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart | Out-Null
-Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -All -NoRestart | Out-Null
-Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -All -NoRestart | Out-Null
-Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All -NoRestart | Out-Null
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All -NoRestart | Out-Null
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart | Out-Null
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart | Out-Null
+if ((Get-Command wsl.exe -ErrorAction SilentlyContinue) -and (Get-Command ubuntu.exe -ErrorAction SilentlyContinue)) {
+  wsl --set-default-version 2
+  wsl -- sudo apt-get update
+  wsl -- sudo apt-get upgrade
+  wsl -- ./install.sh
+}
+elseif ( -not (Get-Command hvc.exe -ErrorAction SilentlyContinue) -or (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
+  Write-Output "Enabling virtualization features (Hyper-V, Sandbox, WSL, etc.)..."
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart | Out-Null
+  Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -All -NoRestart | Out-Null
+  Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -All -NoRestart | Out-Null
+  Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All -NoRestart | Out-Null
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All -NoRestart | Out-Null
+  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart | Out-Null
+  dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart | Out-Null
+}
 
 if (Get-Command chocolatey.exe -ErrorAction SilentlyContinue) {
   Write-Output "Existing Chocolatey install detected, attempting updates..."
@@ -43,6 +51,8 @@ else {
   Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/microsoft/winget-cli/releases/download/v-0.3.11102-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle' -OutFile '.\tmp\winget-cli.appxbundle'
   Add-AppxPackage .\tmp\VCLibs.appx
   Add-AppxPackage .\tmp\winget-cli.appxbundle
+  Write-Output "Copying winget config into $env:HOMEPATH\AppData\Local\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\..."
+  Copy-Item -Force '.\Windows\winget\settings.json' -Destination "$env:HOMEPATH\AppData\Local\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState"
   refreshenv
 }
 
