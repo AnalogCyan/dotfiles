@@ -10,6 +10,7 @@
     "list": true,
     "upgrade": true,
     "uninstall": true,
+    "export": true,
     "import": true,
     "restSource": true
   }
