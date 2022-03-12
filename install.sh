@@ -25,7 +25,7 @@ whiptail --title "AnalogCyan's dotfiles" --msgbox "This script will guide you th
 
 # Prompt user to check for and install updates.
 if (whiptail --title "Install Updates" --yesno "This script will first ensure the system is up to date.\nInstall updates?" 8 78); then
-clear && echo "Ensuring system is up-to-date..." && echo '' && sleep 1s
+  clear && echo "Ensuring system is up-to-date..." && echo '' && sleep 1s
   sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
 fi
 
@@ -37,19 +37,20 @@ whiptail --title "Install Software" --checklist --separate-output \
 "git" "git" ON \
 "vim" "vim" ON \
 "htop" "htop" ON \
-"screen" "screen" ON \
 "fish" "fish" ON \
-"fortune" "fortune" ON 2>results
+"fortune" "fortune" ON \
+"mosh" "mosh" ON \
+"screen" "screen" ON 2>results
 
 while read choice
 do
-	case $choice in
-		gcc) PACKAGES="${PACKAGES} gcc"
-		;;
-		g++) PACKAGES="${PACKAGES} g++"
-		;;
-		git) PACKAGES="${PACKAGES} git"
-		;;
+  case $choice in
+    gcc) PACKAGES="${PACKAGES} gcc"
+    ;;
+    g++) PACKAGES="${PACKAGES} g++"
+    ;;
+    git) PACKAGES="${PACKAGES} git"
+    ;;
     vim) PACKAGES="${PACKAGES} vim"
     ;;
     fish) PACKAGES="${PACKAGES} htop"
@@ -58,31 +59,35 @@ do
     ;;
     fortune) PACKAGES="${PACKAGES} fortune"
     ;;
-		*)
-		;;
-	esac
+    mosh) PACKAGES="${PACKAGES} mosh"
+    ;;
+    screen) PACKAGES="${PACKAGES} screen"
+    ;;
+    *)
+    ;;
+  esac
 done < results
 if ! [ -z "$PACKAGES" ]; then
   clear && echo "Installing: $PACKAGES..." && echo '' && sleep 1s
   sudo apt install $PACKAGES
 fi
 
-# Prompt user for fish-specific actions if they have fish.
+# Prompt user for fish specific actions if they have fish.
 if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
   if (whiptail --title "Change default shell?" --yesno "Either you have chosen to install fish, or fish is already on your system. Would you like to change your default shell to fish?" 8 78); then
     clear && echo "Changing shell to fish..." && echo '' && sleep 1s
     chsh -s /usr/bin/fish
   fi
-
+  
   if (whiptail --title "Install omf?" --yesno "Install oh-my-fish?" 8 78); then
     clear && echo "Installing oh-my-fish..." && echo '' && sleep 1s
     curl -L https://get.oh-my.fish | fish
     if (whiptail --title "Install edan theme?" --yesno "Install the oh-my-fish edan theme?" 8 78); then
-    clear && echo "Installing edan theme..." && echo '' && sleep 1s
-    fish --command="omf install edan"
+      clear && echo "Installing edan theme..." && echo '' && sleep 1s
+      fish --command="omf install edan"
     fi
   fi
-
+  
   whiptail --title "Install fish config & functions?" --checklist --separate-output \
   "Either you have chosen to install fish, or fish is already on your system. Some corresponding configs/scripts will now be installed. You may uncheck any you do not with to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
   "config" "Fish configuration." ON \
@@ -99,55 +104,86 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
   "sudo !!" "Run previous command as root." ON \
   "sudo!!" "Run previous command as root." ON \
   "vi" "Ensure vi always opens vim." ON 2>results
-
+  
+  FUNCTIONS=()
   while read choice
   do
-	  case $choice in
-	  	config) CONFIG="true"
-	  	;;
-	  	fish_greeting) FUNCTIONS="${FUNCTIONS} fish_greeting.fish"
-	  	;;
-	  	!!) FUNCTIONS="${FUNCTIONS} !!.fish"
-	  	;;
-      ..) FUNCTIONS="${FUNCTIONS} ...fish"
+    case $choice in
+      config) CONFIG="true"
       ;;
-      bsh) FUNCTIONS="${FUNCTIONS} bsh.fish"
+      fish_greeting) FUNCTIONS+=("fish_greeting.fish")
       ;;
-      cd..) FUNCTIONS="${FUNCTIONS} cd...fish"
+      !!) FUNCTIONS+=("!!.fish")
       ;;
-      clera) FUNCTIONS="${FUNCTIONS} clera.fish"
+      ..) FUNCTIONS+=("...fish")
       ;;
-      fuck) FUNCTIONS="${FUNCTIONS} fuck.fish"
+      bsh) FUNCTIONS+=("bsh.fish")
       ;;
-      generate-password) FUNCTIONS="${FUNCTIONS} generate-password.fish"
+      cd..) FUNCTIONS+=("cd...fish")
       ;;
-      lh) FUNCTIONS="${FUNCTIONS} lh.fish"
+      clera) FUNCTIONS+=("clera.fish")
       ;;
-      mkdir) FUNCTIONS="${FUNCTIONS} mkdir.fish"
+      fuck) FUNCTIONS+=("fuck.fish")
       ;;
-      sudo !!) FUNCTIONS="${FUNCTIONS} sudo !!.fish"
+      generate-password) FUNCTIONS+=("generate-password.fish")
       ;;
-      sudo!!) FUNCTIONS="${FUNCTIONS} sudo!!.fish"
+      lh) FUNCTIONS+=("lh.fish")
       ;;
-      vi) FUNCTIONS="${FUNCTIONS} vi.fish"
+      mkdir) FUNCTIONS+=("mkdir.fish")
       ;;
-	  	*)
-	  	;;
-	  esac
+      'sudo !!') FUNCTIONS+=("sudo !!.fish")
+      ;;
+      sudo!!) FUNCTIONS+=("sudo!!.fish")
+      ;;
+      vi) FUNCTIONS+=("vi.fish")
+      ;;
+      *)
+      ;;
+    esac
   done < results
   if [[ $CONFIG == *"true"* ]]; then
     clear && echo "Installing fish config..." && echo '' && sleep 1s
-    # Install fish config
+    mkdir -pv ~/.config/fish/
+    cp -r ./Linux/home/cyan/.config/fish/config.fish ~/.config/fish/
   fi
-  if ! [ -z "$FUNCTIONS" ]; then
-    clear && echo "Installing functions: $PACKAGES..." && echo '' && sleep 1s
-    # Install selected functions
+  if ! [ -z "${FUNCTIONS[@]}" ]; then
+    clear && echo "Installing functions: "${FUNCTIONS[@]}"..." && echo '' && sleep 1s
+    mkdir -pv ~/.config/fish/functions/
+    for i in "${FUNCTIONS[@]}"; do
+      cp -r "./Linux/home/cyan/.config/fish/functions/$i" ~/.config/fish/functions/
+    done
   fi
 fi
 
 # bin scripts/shortcuts
-# remove no longer needed items from bin configs
+# TODO: add menu for selecting which to install
+if (whiptail --title "~/bin" --yesno "Would you like to install bin scripts/shortcuts?" 8 78); then
+  clear && echo "Installing bin scripts/shortcuts..." && echo '' && sleep 1s
+  echo "Copying bin scripts into ~/bin/..."
+  mkdir -pv ~/bin/apps/
+  cp -r ./Linux/home/cyan/bin/* ~/bin/
+  echo "Copying bin shortcuts into ~/.local/share/applications/..."
+  mkdir -pv ~/.local/share/applications/
+  cp -r ./Linux/home/cyan/.local/share/applications/* ~/.local/share/applications/
+  echo "Installing pfetch into ~/bin/apps/pfetch/..."
+  git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
+fi
 
-# sowm & config
+# TODO: sowm & config
 
 # git config
+if command -v git &> /dev/null; then
+  if (whiptail --title ".gitconfig" --yesno "Would you like to configure git?" 8 78); then
+    if (whiptail --title ".gitconfig" --yesno "Do you use a DE/WM on this sytem?" 8 78); then
+      clear && echo "Configuring git..." && echo '' && sleep 1s
+      git config --global core.editor "code --wait -n"
+      git config --global user.name "AnalogCyan"
+      git config --global user.email "git@thayn.me"
+    else
+      clear && echo "Configuring git..." && echo '' && sleep 1s
+      git config --global core.editor "vim"
+      git config --global user.name "AnalogCyan"
+      git config --global user.email "git@thayn.me"
+    fi
+  fi
+fi
