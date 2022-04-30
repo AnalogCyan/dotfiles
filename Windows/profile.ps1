@@ -58,6 +58,9 @@ if (Test-Path($ChocolateyProfile)) {
   Import-Module "$ChocolateyProfile"
 }
 
+# Terminal-Icons
+Import-Module -Name Terminal-Icons
+
 $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Alias adbIP "$curDir\functions\adbIP.ps1"
 Set-Alias compile "$curDir\functions\compile.ps1"
@@ -69,6 +72,7 @@ Set-Alias nano "$curDir\functions\nano.ps1"
 Set-Alias cd "$curDir\functions\cd.ps1" -Option AllScope
 Set-Alias clera Clear-Host
 Set-Alias lsd "$curDir\functions\lsd.ps1"
+Set-Alias mosh "$curDir\functions\mosh.ps1"
 
 $host.UI.RawUI.ForegroundColor = "White"
 $host.UI.RawUI.BackgroundColor = "Black"
