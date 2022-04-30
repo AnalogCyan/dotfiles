@@ -43,9 +43,8 @@
   "workbench.iconTheme": "vscode-icons",
   "powershell.integratedConsole.showOnStartup": false,
   "window.newWindowDimensions": "inherit",
-  "workbench.colorTheme": "BeardedTheme Earth",
+  "workbench.colorTheme": "Bearded Theme Earth",
   "terminal.integrated.shell.windows": "pwsh.exe",
-  "window.zoomLevel": 0,
   "liveServer.settings.donotShowInfoMsg": true,
   "extensions.ignoreRecommendations": false,
   "git.showPushSuccessNotification": true,
@@ -60,7 +59,6 @@
   "powershell.sideBar.CommandExplorerVisibility": false,
   "liveServer.settings.donotVerifyTags": true,
   "php.validate.enable": false,
-  "diffEditor.ignoreTrimWhitespace": false,
   "remote.SSH.remotePlatform": {
     "boole.cs.atu.edu": "linux",
     "192.168.1.100": "linux",
@@ -83,10 +81,7 @@
   "zenMode.hideLineNumbers": false,
   "zenMode.hideStatusBar": false,
   "zenMode.hideTabs": false,
-  "projectManager.git.baseFolders": [
-    "C:\\Users\\cyan\\OneDrive\\Projects",
-    "C:\\Users\\cyan\\OneDrive\\Projects\\*"
-  ],
+  "projectManager.git.baseFolders": ["C:\\Users\\cyan\\OneDrive\\Projects"],
   "[cpp]": {
     "editor.defaultFormatter": "ms-vscode.cpptools"
   },
@@ -95,18 +90,13 @@
   },
   "window.openFilesInNewWindow": "default",
   "projectManager.any.baseFolders": ["C:\\Users\\cyan\\OneDrive\\Projects\\"],
-  "liveServer.settings.CustomBrowser": "firefox",
-  "dart.checkForSdkUpdates": false,
   "workbench.editor.wrapTabs": true,
   "screencastMode.onlyKeyboardShortcuts": true,
   "zenMode.restore": false,
-  "workbench.editorAssociations": [
-    {
-      "viewType": "jupyter-notebook",
-      "filenamePattern": "*.ipynb"
-    }
-  ],
-  "python.languageServer": "Microsoft",
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  },
+  "python.languageServer": "Pylance",
   "settingsSync.ignoredSettings": [
     "-C_Cpp.clang_format_fallbackStyle",
     "-C_Cpp.clang_format_path",
@@ -115,5 +105,54 @@
   ],
   "workbench.startupEditor": "none",
   "C_Cpp.updateChannel": "Insiders",
-  "formattingToggle.affects": ["formatOnSave"]
+  "formattingToggle.affects": ["formatOnSave"],
+  "files.eol": "\n",
+  "prettier.endOfLine": "lf",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "codesnap.transparentBackground": true,
+  "codesnap.target": "window",
+  "liveServer.settings.port": 0,
+  "dart.flutterCreateOrganization": "me.thayn",
+  "redhat.telemetry.enabled": false,
+  "markdown-preview-enhanced.liveUpdate": true,
+  "java.project.importOnFirstTimeStartup": "automatic",
+  //exludes fies & folders in search indexing
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true,
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/env": true,
+    "**/venv": true
+  },
+  //exludes fies & folders for watcher service
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/env/**": true,
+    "**/venv/**": true,
+    "env-*": true
+  },
+  "gradle.nestedProjects": true,
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
+  },
+  "GitLive.Issue tracker integration": "Disabled",
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": false,
+    "markdown": false
+  },
+  "codesnap.realLineNumbers": true,
+  "codesnap.showWindowTitle": true,
+  "sonarlint.ls.javaHome": "c:\\Users\\cyan\\.vscode\\extensions\\sonarsource.sonarlint_managed-jre\\jre\\jdk-11.0.11+9-jre",
+  "zenMode.centerLayout": false,
+  "tabnine.experimentalAutoImports": true,
+  "tabnine.receiveBetaChannelUpdates": true
 }
