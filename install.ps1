@@ -132,6 +132,7 @@ function install_winget_app {
   "9PLDPG46G47Z", # Xbox Insider Hub
   "9PNNWB4TQ5H0", # Free Duplicate Finder
   "9WZDNCRF0083", # Messenger
+  "9WZDNCRFHWLH", # HP Smart
   "9WZDNCRFHWQT", # Drawboard PDF
   "9WZDNCRFJ3L1", # Hulu
   "9WZDNCRFJ3PS", # Microsoft Remote Desktop
