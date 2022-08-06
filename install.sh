@@ -78,7 +78,7 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
     clear && echo "Changing shell to fish..." && echo '' && sleep 1s
     chsh -s /usr/bin/fish
   fi
-  
+
   if (whiptail --title "Install omf?" --yesno "Install oh-my-fish?" 8 78); then
     clear && echo "Installing oh-my-fish..." && echo '' && sleep 1s
     curl -L https://get.oh-my.fish | fish
@@ -87,7 +87,7 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
       fish --command="omf install edan"
     fi
   fi
-  
+
   whiptail --title "Install fish config & functions?" --checklist --separate-output \
   "Either you have chosen to install fish, or fish is already on your system. Some corresponding configs/scripts will now be installed. You may uncheck any you do not with to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
   "config" "Fish configuration." ON \
@@ -103,8 +103,11 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
   "mkdir" "Have mkdir always run with -pv." ON \
   "sudo !!" "Run previous command as root." ON \
   "sudo!!" "Run previous command as root." ON \
-  "vi" "Ensure vi always opens vim." ON 2>results
-  
+  "vi" "Ensure vi always opens vim." ON \
+  "yt-dlp-ba" "Run yt-dlp w/ best audio settings." ON \
+  "yt-dlp-bv" "Run yt-dlp w/ best video settings." ON \
+  "ytmdl-sp" "Run ytmdl w/ in a shorter command." ON 2>results
+
   FUNCTIONS=()
   while read choice
   do
@@ -154,6 +157,8 @@ if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
     done
   fi
 fi
+
+# TODO: add option to specify location for fish_greeting/wthr if installed
 
 # bin scripts/shortcuts
 # TODO: add menu for selecting which to install
