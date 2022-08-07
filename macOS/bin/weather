@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+curl -s 'https://wttr.in/$CITY?format=3' | sed 's/[^ ]* //' | sed 's/   +/ /'

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+export PF_INFO="ascii title os host kernel uptime"
+~/bin/apps/pfetch/pfetch
