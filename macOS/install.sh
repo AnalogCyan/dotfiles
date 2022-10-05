@@ -16,10 +16,10 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 mkdir -pv ~/.oh-my-zsh/custom/
 mv ~/.zshrc ~/.zshrc.dotbak
 cp ./home/cyan/.zshrc ~/.zshrc
-cp ./home/cyan/.oh-my-zsh/custom/* ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
+cp ./home/cyan/.oh-my-zsh/custom/* "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 
 # ln Minecraft dir > iCloud
-ln -s "~/Library/Mobile Documents/com~apple~CloudDocs/Minecraft/Install" "~/Library/Application Support/minecraft"
+ln -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Minecraft/Install" "$HOME/Library/Application Support/minecraft"
 
 # Install additonal deps/apps
 taps=(
@@ -43,14 +43,14 @@ casks=(
     "powershell"
     "raycast"
 )
-for i in ${taps[@]}; do
-    brew tap $i
+for i in "${taps[@]}"; do
+    brew tap "$i"
 done
-for i in ${formulae[@]}; do
-    brew install $i
+for i in "${formulae[@]}"; do
+    brew install "$i"
 done
-for i in ${casks[@]}; do
-    brew install --cask $i
+for i in "${casks[@]}"; do
+    brew install --cask "$i"
 done
 $(brew --prefix)/opt/fzf/install
 
