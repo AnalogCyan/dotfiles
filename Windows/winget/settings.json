@@ -5,13 +5,9 @@
   "visual": {
     "progressBar": "rainbow"
   },
-  "experimentalFeatures": {
-    "experimentalMSStore": true,
-    "list": true,
-    "upgrade": true,
-    "uninstall": true,
-    "export": true,
-    "import": true,
-    "restSource": true
+  "installBehavior": {
+    "preferences": {
+      "architectures": ["arm64"]
+    }
   }
 }

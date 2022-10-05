@@ -2,9 +2,8 @@
 # An extremely basic script for installing my dotfiles on macOS.
 
 # Copy/install ~/bin scripts/apps
-mkdir ~/bin/
-cp ./bin/* ~/bin/
-mkdir ~/bin/apps/
+mkdir -pv ~/bin/apps/
+cp ./home/cyan/bin/* ~/bin/
 git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/
 
 # Install homebrew
@@ -14,15 +13,45 @@ git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Backup & import .zshrc config
+mkdir -pv ~/.oh-my-zsh/custom/
 mv ~/.zshrc ~/.zshrc.dotbak
-cp ./.zshrc ~/.zshrc
+cp ./home/cyan/.zshrc ~/.zshrc
+cp ./home/cyan/.oh-my-zsh/custom/* ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
 
 # ln Minecraft dir > iCloud
-ln -s "/Users/cyan/Library/Mobile Documents/com~apple~CloudDocs/Minecraft/Install" "/Users/cyan/Library/Application Support/minecraft"
+ln -s "~/Library/Mobile Documents/com~apple~CloudDocs/Minecraft/Install" "~/Library/Application Support/minecraft"
 
-# Install additonal deps
-brew install --cask 1password/tap/1password-cli
-brew install yt-dlp mosh fortune gh fzf
+# Install additonal deps/apps
+taps=(
+    "homebrew/cask-fonts"
+)
+formulae=(
+    "bat"
+    "ffmpeg"
+    "fortune"
+    "fzf"
+    "gh"
+    "mosh"
+    "xz"
+    "yt-dlp"
+)
+casks=(
+    "1password/tap/1password-cli"
+    "crunch"
+    "font-fira-code"
+    "font-sf-mono-nerd-font"
+    "powershell"
+    "raycast"
+)
+for i in ${taps[@]}; do
+    brew tap $i
+done
+for i in ${formulae[@]}; do
+    brew install $i
+done
+for i in ${casks[@]}; do
+    brew install --cask $i
+done
 $(brew --prefix)/opt/fzf/install
 
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
