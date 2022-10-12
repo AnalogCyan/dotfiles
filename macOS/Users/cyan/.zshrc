@@ -97,7 +97,7 @@ plugins=(
     zsh-history-substring-search # # MUST be loaded after zsh-syntax-highlighting to work.
 )
 
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src # MUST be before the ZSH source line.
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
