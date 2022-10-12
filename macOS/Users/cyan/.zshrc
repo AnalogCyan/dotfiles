@@ -93,9 +93,11 @@ plugins=(
     vscode
     zsh-autosuggestions
     zsh-interactive-cd
-    zsh-syntax-highlighting
+    zsh-syntax-highlighting      # MUST be loaded before zsh-history-substring-search to work.
+    zsh-history-substring-search # # MUST be loaded after zsh-syntax-highlighting to work.
 )
 
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
