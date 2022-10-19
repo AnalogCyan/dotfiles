@@ -1,7 +1,10 @@
 #!/usr/bin/env pwsh
 
 function InstallLinux {
-
+    if (-Not $(Get-Command "apt")) {
+        Write-Error "This script was only designed for debian-based systems. Aborting."
+        exit
+    }
 }
 
 function InstallMacOS {
