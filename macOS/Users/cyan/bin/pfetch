@@ -1,3 +1,10 @@
 #!/usr/bin/env sh
-export PF_INFO="ascii title os host kernel uptime"
-~/bin/apps/pfetch/pfetch
+if [ -e ~/bin/apps/pfetch/pfetch ]; then
+    export PF_INFO="ascii title os host kernel uptime"
+    ~/bin/apps/pfetch/pfetch
+else
+    mkdir -pv ~/bin/apps/pfetch/
+    git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
+    export PF_INFO="ascii title os host kernel uptime"
+    ~/bin/apps/pfetch/pfetch
+fi
