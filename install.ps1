@@ -5,6 +5,10 @@ function InstallLinux {
         Write-Error "This script was only designed for debian-based systems. Aborting."
         exit
     }
+
+    sudo bash -c "apt update --fix-missing && apt upgrade && apt autoremove && apt --fix-broken install"
+    sudo apt install gcc g++ git vim htop zsh fish fortune mosh screen
+    
 }
 
 function InstallMacOS {
