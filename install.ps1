@@ -1,8 +1,4 @@
 #!/usr/bin/env pwsh
-if ((id -u) -eq 0) {
-    Write-Error "This script should not be run as administrator!"
-    exit 1
-}
 
 function InstallLinux {
     if (-Not $(Get-Command "apt")) {
@@ -50,12 +46,41 @@ function InstallMacOS {
 }
 
 function InstallWindows {
-    
+    function add_to_path {
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullOrEmpty()]
+            [string]
+            $path,
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullOrEmpty()]
+            [bool]
+            $system
+        )
+    }
+    function install_winget_app {
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullOrEmpty()]
+            [string]
+            $ID
+        )
+        $n = winget upgrade --silent --accept-package-agreements --accept-source-agreements --force -e $name
+        if ($n -eq "No installed package found matching input criteria.") {
+            winget install --silent --accept-package-agreements --accept-source-agreements --force -e $name
+        }
+    }
+    function Get-Updates {
+        $command = 'Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod; if (-not(Get-Command PSWindowsUpdate -ErrorAction SilentlyContinue)) { Install-Module -ErrorAction SilentlyContinue -Name PSWindowsUpdate -Force }; Import-Module PSWindowsUpdate; Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2'
+        Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile $command" -Wait
+    }
 }
 
 switch ($true) {
-    $IsLinux { InstallLinux }
-    $IsMacOS { InstallMacOS }
-    $IsWindows { InstallWindows }
-    Default { Write-Error -Message "Could not determine host operating system." }
+    $IsLinux { if ((id -u) -eq 0) { throw "This script should not be run as administrator!" } else { InstallLinux } }
+    $IsMacOS { if ((id -u) -eq 0) { throw "This script should not be run as administrator!" } else { InstallMacOS } }
+    $IsWindows { if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { throw "This script should not be run as administrator!" } else { InstallWindows } }
+    Default { throw "Could not determine host operating system." }
 }
