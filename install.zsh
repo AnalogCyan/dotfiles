@@ -8,6 +8,10 @@ git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
 
 # Install homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#- Run these three commands in your terminal to add Homebrew to your PATH:
+#    echo '# Set PATH, MANPATH, etc., for Homebrew.' >> /Users/cyan/.zprofile
+#    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/cyan/.zprofile
+#    eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -17,6 +21,9 @@ mkdir -pv ~/.oh-my-zsh/custom/
 mv ~/.zshrc ~/.zshrc.dotbak
 cp ./macOS/Users/cyan/.zshrc ~/.zshrc
 cp ./macOS/Users/cyan/.oh-my-zsh/custom/* "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
+
+# ln Downloads dir > icloud
+ln -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads" "$HOME/Downloads"
 
 # ln Minecraft dir > iCloud
 ln -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Minecraft/Install" "$HOME/Library/Application Support/minecraft"
@@ -33,8 +40,10 @@ formulae=(
   "fortune"
   "fzf"
   "gh"
+  "iterm2"
   "mas"
   "mosh"
+  "mpv"
   "node"
   "xz"
   "yt-dlp"
@@ -66,18 +75,14 @@ apps=(
   "1432182561" # Cascadea
   "1452453066" # Hidden Bar
   "1453273600" # Data Jar
-  "1456188526" # Mini Motorways
   "1463298887" # Userscripts
   "1474276998" # HP Smart
   "1480068668" # Messenger
-  "1482454543" # Twitter
   "1482920575" # DuckDuckGo Privacy for Safari
-  "1538650027" # The Lost City
   "1544743900" # Hush
   "1568262835" # Super Agent
   "1569813296" # 1Password for Safari
   "1573461917" # SponsorBlock for YouTube - Skip Sponsorships
-  "1576663233" # Alto's Adventure The Spirit of the Mountain
   "1577761052" # Malwarebytes Browser Guard
   "1586435171" # Actions
   "1589151155" # Rerouter
@@ -120,6 +125,9 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
 git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+# Install iTerm2 shell integration
+curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 
 # Done!
 echo "Dotfiles installed! Restart your terminal to see the changes!"
