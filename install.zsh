@@ -52,6 +52,7 @@ casks=(
   "1password/tap/1password-cli"
   "crunch"
   "font-fira-code"
+  "font-hack-nerd-font"
   "font-sf-mono-nerd-font"
   "powershell"
   "raycast"
@@ -59,6 +60,7 @@ casks=(
   "windscribe"
   "etcher"
 )
+nfonts=$(brew search "Nerd Font")
 npm=(
   "prettier"
   "prettier-plugin-sh"
@@ -112,6 +114,11 @@ for i in "${formulae[@]}"; do
 done
 for i in "${casks[@]}"; do
   brew install --cask "$i"
+done
+for item in {$nfonts}; do
+  if [[ "$item" == *"nerd-font"* ]]; then
+    brew install --cask $item
+  fi
 done
 for i in "${npm[@]}"; do
   npm i -g "$i"
