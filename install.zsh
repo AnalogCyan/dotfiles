@@ -45,6 +45,7 @@ formulae=(
   "mosh"
   "mpv"
   "node"
+  "thefuck"
   "xz"
   "yt-dlp"
 )

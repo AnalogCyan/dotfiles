@@ -72,33 +72,35 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    1password
-    docker
-    docker-compose
-    emoji
-    extract
-    genpass
-    gh
-    git
-    gitignore
-    history
-    isodate
-    lol
-    macos
-    mosh
-    npm
-    pip
-    safe-paste
-    screen
-    vscode
-    zsh-autosuggestions
-    zsh-interactive-cd
-    zsh-syntax-highlighting      # MUST be loaded before zsh-history-substring-search to work.
-    zsh-history-substring-search # # MUST be loaded after zsh-syntax-highlighting to work.
+  1password
+  docker
+  docker-compose
+  emoji
+  extract
+  genpass
+  gh
+  git
+  gitignore
+  history
+  isodate
+  lol
+  macos
+  mosh
+  npm
+  pip
+  safe-paste
+  screen
+  vscode
+  zsh-autosuggestions
+  zsh-interactive-cd
+  zsh-syntax-highlighting      # MUST be loaded before zsh-history-substring-search to work.
+  zsh-history-substring-search # # MUST be loaded after zsh-syntax-highlighting to work.
 )
 
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src # MUST be before the ZSH source line.
 source $ZSH/oh-my-zsh.sh
+
+eval $(thefuck --alias)
 
 # User configuration
 
