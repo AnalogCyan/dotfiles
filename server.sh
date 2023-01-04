@@ -114,4 +114,5 @@ sudo apt update
 sudo apt -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Done!
-echo "Dotfiles installed! Restart your terminal to see the changes!"
+read -p "Dotfiles installed! Press Enter to reboot now." < /dev/tty
+sudo reboot
