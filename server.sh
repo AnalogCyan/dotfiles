@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # An extremely basic script for configuring my home server.
 
 # Install updates.
