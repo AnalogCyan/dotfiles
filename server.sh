@@ -15,22 +15,23 @@ pkgs=(
   "docker"
   "ffmpeg"
   "fortune"
+  "fzf"
   "g++"
   "gcc"
+  "gh"
   "git"
   "gnupg"
   "htop"
   "lsb-release"
   "mosh"
-  "screen"
-  "vim"
-  "zsh"
-  "fzf"
-  "gh"
   "mpv"
+  "nodejs"
+  "screen"
   "thefuck"
+  "vim"
   "xz-utils"
   "yt-dlp"
+  "zsh"
 )
 for i in "${pkgs[@]}"; do
   sudo apt -y install "$i"
@@ -52,13 +53,6 @@ sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
 curl -sS https://downloads.1password.com/linux/keys/1password.asc \
   | sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
 sudo apt update && sudo apt install 1password-cli
-
-# Install PowerShell
-sudo apt-get install -y wget apt-transport-https software-properties-common
-wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
-sudo dpkg -i packages-microsoft-prod.deb
-sudo apt-get update
-sudo apt-get install -y powershell
 
 # Install node packages.
 npm=(
