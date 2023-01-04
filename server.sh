@@ -90,6 +90,7 @@ mkdir -pv ~/.oh-my-zsh/custom/
 mv ~/.zshrc ~/.zshrc.dotbak
 cp ./macOS/Users/cyan/.zshrc ~/.zshrc
 cp ./macOS/Users/cyan/.oh-my-zsh/custom/zsh_greeting.zsh ~/.oh-my-zsh/custom
+cp ./macOS/Users/cyan/.oh-my-zsh/custom/ls.zsh ~/.oh-my-zsh/custom
 
 # Install additional zsh plugins.
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
