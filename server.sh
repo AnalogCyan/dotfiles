@@ -37,8 +37,8 @@ for i in "${pkgs[@]}"; do
 done
 
 # Fix issue with apt version of bat
-mkdir -p ~/.local/bin
-ln -s /usr/bin/batcat ~/.local/bin/bat
+sudo mkdir -p ~/.local/bin
+sudo ln -s /usr/bin/batcat ~/.local/bin/bat
 
 # Install 1Password CLI
 curl -sS https://downloads.1password.com/linux/keys/1password.asc \
