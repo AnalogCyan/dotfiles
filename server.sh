@@ -42,6 +42,10 @@ done
 sudo mkdir -p ~/.local/bin
 sudo ln -s /usr/bin/batcat ~/.local/bin/bat
 
+# Install logo-ls
+wget -q "https://github.com/Yash-Handa/logo-ls/releases/download/v1.3.7/logo-ls_amd64.deb"
+sudo dpkg -i logo-ls_amd64.deb
+
 # Install 1Password CLI
 curl -sS https://downloads.1password.com/linux/keys/1password.asc \
   | sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
@@ -54,6 +58,12 @@ sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
 curl -sS https://downloads.1password.com/linux/keys/1password.asc \
   | sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
 sudo apt update && sudo apt install 1password-cli
+
+# Install PowerShell
+wget -q "https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb"
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
+sudo apt install -y powershell
 
 # Install node packages.
 npm=(
@@ -92,6 +102,10 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 
 # Install NextDNS
 sh -c "$(curl -sL https://nextdns.io/install)"
+
+# Install Plex
+wget -q "https://downloads.plex.tv/plex-media-server-new/1.30.0.6486-629d58034/debian/plexmediaserver_1.30.0.6486-629d58034_amd64.deb"
+sudo dpkg -i plexmediaserver_1.30.0.6486-629d58034_amd64.deb
 
 # Remove old Docker install(s)
 sudo apt-get remove docker docker-engine docker.io containerd runc
