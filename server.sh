@@ -26,6 +26,7 @@ pkgs=(
   "mosh"
   "mpv"
   "nodejs"
+  "npm"
   "screen"
   "thefuck"
   "vim"
@@ -62,28 +63,29 @@ npm=(
   "prettier-plugin-tailwind"
 )
 for i in "${npm[@]}"; do
-  npm i -g "$i"
+  sudo npm i -g "$i"
 done
 
 # Install ~/bin scripts/apps
 mkdir -pv ~/bin/apps/pfetch/
 cp ./Linux/home/cyan/bin/* ~/bin/
 git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
+sudo chmod +x ~/bin/*
 
 # Install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-# Backup & import .zshrc config
+# Backup & import zsh config
 mkdir -pv ~/.oh-my-zsh/custom/
 mv ~/.zshrc ~/.zshrc.dotbak
 cp ./macOS/Users/cyan/.zshrc ~/.zshrc
-cp ./macOS/Users/cyan/.oh-my-zsh/custom/* "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
+cp ./macOS/Users/cyan/.oh-my-zsh/custom/zsh_greeting.zsh ~/.oh-my-zsh/custom
 
 # Install additional zsh plugins.
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
-git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
+git clone https://github.com/zsh-users/zsh-history-substring-search ~/.oh-my-zsh/custom/plugins/zsh-history-substring-search
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
 # Install iTerm2 shell integration
 curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
