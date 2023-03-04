@@ -48,6 +48,7 @@ formulae=(
   "thefuck"
   "xz"
   "yt-dlp"
+  "nodejs"
 )
 casks=(
   "1password/tap/1password-cli"
