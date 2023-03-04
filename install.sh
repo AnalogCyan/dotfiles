@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 
 # Determine if running on compatible distro
-if ! command -v apt &> /dev/null
-then
+if ! command -v apt &> /dev/null; then
   echo "Error: this script was only designed for debian-based systems. Aborting."
-  return 2>/dev/null || exit
+  return 2> /dev/null || exit
 fi
 
 # Determine if whiptail is installed.
-if ! command -v whiptail &> /dev/null
-then
+if ! command -v whiptail &> /dev/null; then
   printf "Error: whiptail not found. Install whiptail? (Y/n) : "
   read -r wti
   if [ "$wti" = "n" ] || [ "$wti" = "N" ]; then
     echo "Error: whiptail not found. Aborting."
-    return 2>/dev/null || exit
+    return 2> /dev/null || exit
   else
     sudo apt install whiptail
   fi
@@ -29,42 +27,51 @@ if (whiptail --title "Install Updates" --yesno "This script will first ensure th
   sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
 fi
 
+# add fzf
 # Prompt user to install software.
 whiptail --title "Install Software" --checklist --separate-output \
-"Some software will now be installed.\nYou may uncheck any you do not wish to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
-"gcc" "gcc" ON \
-"g++" "g++" ON \
-"git" "git" ON \
-"vim" "vim" ON \
-"htop" "htop" ON \
-"fish" "fish" ON \
-"fortune" "fortune" ON \
-"mosh" "mosh" ON \
-"screen" "screen" ON 2>results
+  "Some software will now be installed.\nYou may uncheck any you do not wish to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
+  "gcc" "gcc" ON \
+  "g++" "g++" ON \
+  "git" "git" ON \
+  "vim" "vim" ON \
+  "htop" "htop" ON \
+  "zsh" "zsh" ON \
+  "fortune" "fortune" ON \
+  "mosh" "mosh" ON \
+  "screen" "screen" ON 2> results
 
-while read choice
-do
+while read choice; do
   case $choice in
-    gcc) PACKAGES="${PACKAGES} gcc"
-    ;;
-    g++) PACKAGES="${PACKAGES} g++"
-    ;;
-    git) PACKAGES="${PACKAGES} git"
-    ;;
-    vim) PACKAGES="${PACKAGES} vim"
-    ;;
-    fish) PACKAGES="${PACKAGES} htop"
-    ;;
-    htop) PACKAGES="${PACKAGES} fish"
-    ;;
-    fortune) PACKAGES="${PACKAGES} fortune"
-    ;;
-    mosh) PACKAGES="${PACKAGES} mosh"
-    ;;
-    screen) PACKAGES="${PACKAGES} screen"
-    ;;
-    *)
-    ;;
+    gcc)
+      PACKAGES="${PACKAGES} gcc"
+      ;;
+    g++)
+      PACKAGES="${PACKAGES} g++"
+      ;;
+    git)
+      PACKAGES="${PACKAGES} git"
+      ;;
+    vim)
+      PACKAGES="${PACKAGES} vim"
+      ;;
+    htop)
+      PACKAGES="${PACKAGES} htop"
+      ;;
+    zsh)
+      PACKAGES="${PACKAGES} zsh"
+      ;;
+    fortune)
+      PACKAGES="${PACKAGES} fortune"
+      ;;
+    mosh)
+      PACKAGES="${PACKAGES} mosh"
+      ;;
+    screen)
+      PACKAGES="${PACKAGES} screen"
+      ;;
+    *) ;;
+
   esac
 done < results
 if ! [ -z "$PACKAGES" ]; then
@@ -73,75 +80,84 @@ if ! [ -z "$PACKAGES" ]; then
 fi
 
 # Prompt user for fish specific actions if they have fish.
-if [[ $PACKAGES == *"fish"* ]] || command -v fish &> /dev/null; then
-  if (whiptail --title "Change default shell?" --yesno "Either you have chosen to install fish, or fish is already on your system. Would you like to change your default shell to fish?" 8 78); then
-    clear && echo "Changing shell to fish..." && echo '' && sleep 1s
-    chsh -s /usr/bin/fish
+if [[ $PACKAGES == *"zsh"* ]] || command -v zsh &> /dev/null; then
+  if (whiptail --title "Change default shell?" --yesno "Either you have chosen to install zsh, or zsh is already on your system. Would you like to change your default shell to zsh?" 8 78); then
+    clear && echo "Changing shell to zsh..." && echo '' && sleep 1s
+    chsh -s /usr/bin/zsh
   fi
 
-  if (whiptail --title "Install omf?" --yesno "Install oh-my-fish?" 8 78); then
-    clear && echo "Installing oh-my-fish..." && echo '' && sleep 1s
-    curl -L https://get.oh-my.fish | fish
-    if (whiptail --title "Install edan theme?" --yesno "Install the oh-my-fish edan theme?" 8 78); then
-      clear && echo "Installing edan theme..." && echo '' && sleep 1s
-      fish --command="omf install edan"
-    fi
+  if (whiptail --title "Install omz?" --yesno "Install oh-my-zsh?" 8 78); then
+    clear && echo "Installing oh-my-zsh..." && echo '' && sleep 1s
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   fi
 
-  whiptail --title "Install fish config & functions?" --checklist --separate-output \
-  "Either you have chosen to install fish, or fish is already on your system. Some corresponding configs/scripts will now be installed. You may uncheck any you do not with to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
-  "config" "Fish configuration." ON \
-  "fish_greeting" "Custom greeting with weather or fortune." ON \
-  "!!" "Run as root, previous command if no args." ON \
-  ".." "Alt command for moving up a directory." ON \
-  "bsh" "Alt command to run bash." ON \
-  "cd.." "Alt command for moving up a directory." ON \
-  "clera" "Fix common miss-type of clear." ON \
-  "fuck" "Run as root, previous command if no args." ON \
-  "generate-password" "Generate a random password." ON \
-  "lh" "List hidden files." ON \
-  "mkdir" "Have mkdir always run with -pv." ON \
-  "sudo !!" "Run previous command as root." ON \
-  "sudo!!" "Run previous command as root." ON \
-  "vi" "Ensure vi always opens vim." ON \
-  "yt-dlp-ba" "Run yt-dlp w/ best audio settings." ON \
-  "yt-dlp-bv" "Run yt-dlp w/ best video settings." ON \
-  "ytmdl-sp" "Run ytmdl w/ in a shorter command." ON 2>results
+  whiptail --title "Install zsh config & functions?" --checklist --separate-output \
+    "Either you have chosen to install fish, or fish is already on your system. Some corresponding configs/scripts will now be installed. You may uncheck any you do not with to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
+    "config" "Fish configuration." ON \
+    "fish_greeting" "Custom greeting with weather or fortune." ON \
+    "!!" "Run as root, previous command if no args." ON \
+    ".." "Alt command for moving up a directory." ON \
+    "bsh" "Alt command to run bash." ON \
+    "cd.." "Alt command for moving up a directory." ON \
+    "clera" "Fix common miss-type of clear." ON \
+    "fuck" "Run as root, previous command if no args." ON \
+    "generate-password" "Generate a random password." ON \
+    "lh" "List hidden files." ON \
+    "mkdir" "Have mkdir always run with -pv." ON \
+    "sudo !!" "Run previous command as root." ON \
+    "sudo!!" "Run previous command as root." ON \
+    "vi" "Ensure vi always opens vim." ON \
+    "yt-dlp-ba" "Run yt-dlp w/ best audio settings." ON \
+    "yt-dlp-bv" "Run yt-dlp w/ best video settings." ON \
+    "ytmdl-sp" "Run ytmdl w/ in a shorter command." ON 2> results
 
   FUNCTIONS=()
-  while read choice
-  do
+  while read choice; do
     case $choice in
-      config) CONFIG="true"
-      ;;
-      fish_greeting) FUNCTIONS+=("fish_greeting.fish")
-      ;;
-      !!) FUNCTIONS+=("!!.fish")
-      ;;
-      ..) FUNCTIONS+=("...fish")
-      ;;
-      bsh) FUNCTIONS+=("bsh.fish")
-      ;;
-      cd..) FUNCTIONS+=("cd...fish")
-      ;;
-      clera) FUNCTIONS+=("clera.fish")
-      ;;
-      fuck) FUNCTIONS+=("fuck.fish")
-      ;;
-      generate-password) FUNCTIONS+=("generate-password.fish")
-      ;;
-      lh) FUNCTIONS+=("lh.fish")
-      ;;
-      mkdir) FUNCTIONS+=("mkdir.fish")
-      ;;
-      'sudo !!') FUNCTIONS+=("sudo !!.fish")
-      ;;
-      sudo!!) FUNCTIONS+=("sudo!!.fish")
-      ;;
-      vi) FUNCTIONS+=("vi.fish")
-      ;;
-      *)
-      ;;
+      config)
+        CONFIG="true"
+        ;;
+      fish_greeting)
+        FUNCTIONS+=("fish_greeting.fish")
+        ;;
+      !!)
+        FUNCTIONS+=("!!.fish")
+        ;;
+      ..)
+        FUNCTIONS+=("...fish")
+        ;;
+      bsh)
+        FUNCTIONS+=("bsh.fish")
+        ;;
+      cd..)
+        FUNCTIONS+=("cd...fish")
+        ;;
+      clera)
+        FUNCTIONS+=("clera.fish")
+        ;;
+      fuck)
+        FUNCTIONS+=("fuck.fish")
+        ;;
+      generate-password)
+        FUNCTIONS+=("generate-password.fish")
+        ;;
+      lh)
+        FUNCTIONS+=("lh.fish")
+        ;;
+      mkdir)
+        FUNCTIONS+=("mkdir.fish")
+        ;;
+      'sudo !!')
+        FUNCTIONS+=("sudo !!.fish")
+        ;;
+      sudo!!)
+        FUNCTIONS+=("sudo!!.fish")
+        ;;
+      vi)
+        FUNCTIONS+=("vi.fish")
+        ;;
+      *) ;;
+
     esac
   done < results
   if [[ $CONFIG == *"true"* ]]; then
