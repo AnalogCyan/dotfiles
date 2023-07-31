@@ -91,11 +91,17 @@ plugins=(
   safe-paste
   screen
   vscode
+  you-should-use
+  zsh-syntax-highlighting  # MUST be loaded before zsh-history-substring-search to work.
+  fast-syntax-highlighting # MUST be loaded before zsh-history-substring-search to work.
+  zsh-autocomplete         # MUST be loaded before zsh-history-substring-search to work.
   zsh-autosuggestions
   zsh-interactive-cd
-  zsh-syntax-highlighting      # MUST be loaded before zsh-history-substring-search to work.
-  zsh-history-substring-search # # MUST be loaded after zsh-syntax-highlighting to work.
+  zsh-history-substring-search # MUST be loaded after zsh-syntax-highlighting to work.
 )
+
+# Set the style for zsh-autosuggestions so it is visible.
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
 
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src # MUST be before the ZSH source line.
 source $ZSH/oh-my-zsh.sh
@@ -138,3 +144,5 @@ zsh_greeting
 # echo
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
