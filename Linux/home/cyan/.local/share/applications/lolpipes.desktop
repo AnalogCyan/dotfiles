@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=lolpipes
-Comment=Display the pipes.sh terminal screen saver via lolcat
-Path=/home/cyan/bin/
-Exec=/home/cyan/bin/lolpipes
-

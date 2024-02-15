@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=pipes
-Comment=Display the pipes.sh terminal screen saver
-Path=/home/cyan/bin/
-Exec=/home/cyan/bin/pipes
-
