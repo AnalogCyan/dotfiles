@@ -1,8 +1,8 @@
 # This script creates a shortcut to the iCloud directory if it doesn't exist, and assigns an alias 'icloud' to cd into iCloud directory.
 
 function iCloud() {
-  iCloudPath="~/Library/Mobile\ Documents/com~apple~CloudDocs"
-  shortcutPath="~/iCloud"
+  iCloudPath="$HOME/Library/Mobile\ Documents/com~apple~CloudDocs"
+  shortcutPath="$HOME/iCloud"
 
   # Checks if iCloud directory exists
   if [ ! -d "${iCloudPath}" ]; then
