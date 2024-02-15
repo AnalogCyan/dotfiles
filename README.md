@@ -1,101 +1,75 @@
-# ⚙ dotfiles
+# ⚙ Dotfiles
 
-My personal dotfiles/scripts I use in Linux and Windows.
+These are the base dotfiles that I start with when I set up a new environment. They are stored in this repository for convenience and are broken down into macOS, Linux, and Windows sections for easy access and installation.
 
-⚠ I'm currently reworking the installers, and some parts are broken. Also some of these files are now outdated. I wouldn't rely on this as an accurate or working representation of my dotfiles until it's updated and this message is removed.
+## 🍎 macOS
+
+This repository contains a straightforward installation script for setting up a new macOS environment according to my preferred configurations. Files are located in the `macOS` directory.
+
+This script covers several areas:
+
+**Applications**: It installs essential apps like Homebrew, and other tools in `~/bin/apps`.
+
+**Configuration Files**: It replaces the current `.zshrc` file with my custom configuration, and includes extra setups for `oh-my-zsh`.
+
+**Package Managers**: It leverages Homebrew to install various packages, casks, and fonts. Furthermore, it makes use of npm for JavaScript package installations.
+
+**MAS Apps**: This script also handles the installation of various Mac App Store apps using their respective MAS ids.
+
+**Oh-My-Zsh**: Lastly, Oh-My-Zsh and its plugins are installed. The script ensures that source files for plugins are added to the `.zshrc` file for proper usage.
+
+To get started, clone the repository and run the provided script like so:
+
+```bash
+$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ cd ~/dotfiles
+$ chmod +x install.zsh
+$ ./install.zsh
+```
+
+That's it! Your new macOS environment should now be set up with my dotfiles. Restart the terminal to see the changes.
+
+Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
 
 ## 🐧 Linux
 
-To install, run `./install.sh` in bash and follow the prompts.
+This repository contains a straightforward installation script for setting up a new Linux environment according to my preferred configurations. Files are located in the `Linux` directory.
 
-### misc
+This script includes the following operations:
 
-`~/sowm/config.h` is my configuration for [sowm](https://github.com/dylanaraps/sowm), my current desktop of choice.
+**System Compatibility Check**: It checks if the system is a Debian-based distribution since the script was designed for these types of systems. If the check fails, the script will abort.
 
-`/etc/systemd/system/lock.service` is a simple system service for running my lock script on suspend.
+**System Updates**: This part ensures that the system packages are updated, removed when not needed, and that all installations are fixed if broken.
 
-My current fish config, `~/.config/fish/config.fish`, simply adds `~/bin` to `$PATH`.
+**Software Installation**: It installs essential packages like `gcc`, `g++`, `git`, `vim`, `htop`, `zsh`, `fortune`, `mosh`, `screen`.
 
-### functions
+**Default Shell Change**: It switches the default shell to zsh.
 
-These are the various aliases I have set in [fish](https://fishshell.com/).
+**Oh-My-Zsh Installation**: It installs `oh-my-zsh`.
 
-`fish_greeting` Custom greeting to display pfetch, weather, and fortune.
+**Zsh Configuration and Functions**: Post oh-my-zsh installation, the script replaces the `.zshrc` file with my custom configuration and copies custom function files to `~/.oh-my-zsh/custom/functions/`.
 
-`..` & `cd..` Alternate commands for moving up a directory.
+**Bin Scripts and Shortcuts**: It copies bin scripts and `.desktop` shortcuts from the repository to `~/bin` and `~/.local/share/applications/` respectively. It also installs `pfetch`.
 
-`bsh` Alternate command to run bash.
+**Git Configurations**: If git has been installed, the script sets up git with my user configurations: name, email, and preferred editor.
 
-`clera` Fix common miss-type of clear.
+To set up a new Linux environment with these configurations, clone the repository and run the setup script like so:
 
-`!!` & `fuck` Run as root, previous command if no arguments given.
+```bash
+$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ cd ~/dotfiles/
+$ chmod +x install.sh
+$ ./install.sh
+```
 
-`generate-password` Generate a random password.
+After the script finishes executing, restart your terminal to see the full changes. You may need to log out and back in if the default shell was changed during the configuration process.
 
-`lh` List hidden files in a shorter command.
+Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
 
-`mkdir` Have mkdir always run with -pv.
+## 🪟 Windows
 
-`sudo !!` & `sudo!!` Run previous command as root.
+As of now, my Windows-related dotfiles are outdated as the Windows platform is no longer my primary desktop operating system. However, I understand the importance of providing up-to-date configurations for those who still find it useful.
 
-`vi` Ensure vi always opens vim.
+Please bear with me as I am currently in the process of updating my Windows dotfiles. Once completed, a comprehensive, updated guide similar to the macOS and Linux sections will be provided here. Thank you for your patience and understanding!
 
-### bin
-
-These are various scripts I've added to my user bin directory. Some depend on certain apps being installed in weird ways, due to the nature of one system I use.
-
-Some of these also have .desktop files to facilitate easy launching from GUI launchers.
-
-`col` Script for extracting columns from a file.
-
-`files` Launch [fff](https://github.com/dylanaraps/fff) in [st](https://st.suckless.org/).
-
-`fish` Launch fish from `~/bin/apps/`.
-
-`lock` Lock the system using [betterlockscreen](https://github.com/pavanjadhaw/betterlockscreen).
-
-`lolpipes` Launch [pipes.sh](https://github.com/pipeseroni/pipes.sh) with [lolcat](https://github.com/busyloop/lolcat) in [st](https://st.suckless.org/).
-
-`neofetch` Launch neofetch from `~/bin/apps/`.
-
-`pfetch` Launch pfetch from `~/bin/apps`, ensuring custom config is set.
-
-`pipes` Launch [pipes.sh](https://github.com/pipeseroni/pipes.sh) in [st](https://st.suckless.org/).
-
-`Traverse` Script for searching directories.
-
-`wall` Set a random wallpaper & lock screen using [feh](https://feh.finalrewind.org/) and [betterlockscreen](https://github.com/pavanjadhaw/betterlockscreen).
-
-`weather` Fetch the current weather for `$CITY` via [wttr.in](https://github.com/chubin/wttr.in).
-
-## 🐱‍💻 Windows
-
-To install, run `.\install.ps1` in pwsh and follow the prompts.
-
-### functions
-
-These are the various aliases I have set in powershell.
-
-`adbIP` Connect adb over IP in one command.
-
-`cd` Make cd behave as it does in Linux.
-
-`compile` Compile the specified source for both Windows and Linux (currently C++ only).
-
-`fish` Run commands in the fish shell.
-
-`home` Map ~ to the user's home directory, like in Linux.
-
-`vim` Map both vi and vim to vim in Win or WSL, depending on what is installed.
-
-### ahk
-
-My current [AutoHotkey](https://www.autohotkey.com) scripts.
-
-### profiles.json
-
-Config for [Windows Terminal](https://github.com/Microsoft/Terminal).
-
-### profile.ps1
-
-Profile config for PowerShell.
+Stay tuned for more updates!
