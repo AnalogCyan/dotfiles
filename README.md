@@ -4,7 +4,7 @@ These are the base dotfiles that I start with when I set up a new environment. T
 
 ## 🍎 macOS
 
-This repository contains a straightforward installation script for setting up a new macOS environment according to my preferred configurations. Files are located in the `macOS` directory.
+This repository contains a straightforward installation script for setting up a new macOS environment according to my preferred configurations. Files are located in the `Nix` directory.
 
 This script covers several areas:
 
@@ -33,7 +33,7 @@ Remember to replace the `.gitconfig` with your own info, and bear in mind you ma
 
 ## 🐧 Linux & Homelab Server
 
-This repository contains a straightforward installation script for setting up a new Linux environment according to my preferred configurations. Files are located in the `Linux` directory. It also includes setup steps specific for homelab server environments, which can be optionally executed.
+This repository contains a straightforward installation script for setting up a new Linux environment according to my preferred configurations. Files are located in the `Nix` directory. It also includes setup steps specific for homelab server environments, which can be optionally executed.
 
 This script includes the following operations:
 
