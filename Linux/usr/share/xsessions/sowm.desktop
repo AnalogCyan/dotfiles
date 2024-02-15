@@ -1,5 +1,0 @@
-[Desktop Entry]
-Name=sowm
-Comment=This session runs sowm as desktop manager
-Exec=compton & exec sowm
-Type=Application
