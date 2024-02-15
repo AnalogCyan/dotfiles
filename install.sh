@@ -1,210 +1,102 @@
 #!/usr/bin/env bash
 
-# Determine if running on compatible distro
-if ! command -v apt &> /dev/null; then
-  echo "Error: this script was only designed for debian-based systems. Aborting."
-  return 2> /dev/null || exit
-fi
-
-# Determine if whiptail is installed.
-if ! command -v whiptail &> /dev/null; then
-  printf "Error: whiptail not found. Install whiptail? (Y/n) : "
-  read -r wti
-  if [ "$wti" = "n" ] || [ "$wti" = "N" ]; then
-    echo "Error: whiptail not found. Aborting."
-    return 2> /dev/null || exit
-  else
-    sudo apt install whiptail
+# Define functions for different installation steps
+check_system_compatibility() {
+  if ! command -v apt &>/dev/null; then
+    echo "Error: this script was only designed for debian-based systems. Aborting."
+    exit 1
   fi
-fi
+}
 
-# Intro message.
-whiptail --title "AnalogCyan's dotfiles" --msgbox "This script will guide you through installing my dotfiles.\nHit OK to continue." 8 78
-
-# Prompt user to check for and install updates.
-if (whiptail --title "Install Updates" --yesno "This script will first ensure the system is up to date.\nInstall updates?" 8 78); then
-  clear && echo "Ensuring system is up-to-date..." && echo '' && sleep 1s
+install_updates() {
+  echo "Ensuring system is up-to-date..."
   sudo apt update --fix-missing && sudo apt upgrade && sudo apt autoremove && sudo apt --fix-broken install
-fi
+}
 
-# add fzf
-# Prompt user to install software.
-whiptail --title "Install Software" --checklist --separate-output \
-  "Some software will now be installed.\nYou may uncheck any you do not wish to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
-  "gcc" "gcc" ON \
-  "g++" "g++" ON \
-  "git" "git" ON \
-  "vim" "vim" ON \
-  "htop" "htop" ON \
-  "zsh" "zsh" ON \
-  "fortune" "fortune" ON \
-  "mosh" "mosh" ON \
-  "screen" "screen" ON 2> results
+install_software() {
+  local packages=(
+    "gcc"
+    "g++"
+    "git"
+    "vim"
+    "htop"
+    "zsh"
+    "fortune"
+    "mosh"
+    "screen"
+  )
 
-while read choice; do
-  case $choice in
-    gcc)
-      PACKAGES="${PACKAGES} gcc"
-      ;;
-    g++)
-      PACKAGES="${PACKAGES} g++"
-      ;;
-    git)
-      PACKAGES="${PACKAGES} git"
-      ;;
-    vim)
-      PACKAGES="${PACKAGES} vim"
-      ;;
-    htop)
-      PACKAGES="${PACKAGES} htop"
-      ;;
-    zsh)
-      PACKAGES="${PACKAGES} zsh"
-      ;;
-    fortune)
-      PACKAGES="${PACKAGES} fortune"
-      ;;
-    mosh)
-      PACKAGES="${PACKAGES} mosh"
-      ;;
-    screen)
-      PACKAGES="${PACKAGES} screen"
-      ;;
-    *) ;;
+  echo "Installing: ${packages[*]}..."
+  sudo apt install ${packages[*]}
+}
 
-  esac
-done < results
-if ! [ -z "$PACKAGES" ]; then
-  clear && echo "Installing: $PACKAGES..." && echo '' && sleep 1s
-  sudo apt install $PACKAGES
-fi
+change_default_shell() {
+  echo "Changing shell to zsh..."
+  chsh -s $(which zsh)
+}
 
-# Prompt user for fish specific actions if they have fish.
-if [[ $PACKAGES == *"zsh"* ]] || command -v zsh &> /dev/null; then
-  if (whiptail --title "Change default shell?" --yesno "Either you have chosen to install zsh, or zsh is already on your system. Would you like to change your default shell to zsh?" 8 78); then
-    clear && echo "Changing shell to zsh..." && echo '' && sleep 1s
-    chsh -s /usr/bin/zsh
+install_ohmyzsh() {
+  echo "Installing oh-my-zsh..."
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
+
+install_zsh_configs_and_functions() {
+  echo "Installing zsh config and functions..."
+
+  if [[ -e ~/.oh-my-zsh ]]; then
+    # create custom directories in the "~/.oh-my-zsh/custom" directory for functions if they do not exist
+    [[ ! -e ~/.oh-my-zsh/custom/functions ]] && mkdir ~/.oh-my-zsh/custom/functions
+
+    # copy your functions there
+    cp ./Linux/home/cyan/.oh-my-zsh/custom/functions/*.zsh ~/.oh-my-zsh/custom/functions/
   fi
 
-  if (whiptail --title "Install omz?" --yesno "Install oh-my-zsh?" 8 78); then
-    clear && echo "Installing oh-my-zsh..." && echo '' && sleep 1s
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  fi
+  # Copy zsh config after oh-my-zsh installation, to prevent overwriting by oh-my-zsh
+  cp ./Linux/home/cyan/.zshrc ~/
+}
 
-  whiptail --title "Install zsh config & functions?" --checklist --separate-output \
-    "Either you have chosen to install fish, or fish is already on your system. Some corresponding configs/scripts will now be installed. You may uncheck any you do not with to have installed below, or select <Cancel> to skip this entirely." 20 78 10 \
-    "config" "Fish configuration." ON \
-    "fish_greeting" "Custom greeting with weather or fortune." ON \
-    "!!" "Run as root, previous command if no args." ON \
-    ".." "Alt command for moving up a directory." ON \
-    "bsh" "Alt command to run bash." ON \
-    "cd.." "Alt command for moving up a directory." ON \
-    "clera" "Fix common miss-type of clear." ON \
-    "fuck" "Run as root, previous command if no args." ON \
-    "generate-password" "Generate a random password." ON \
-    "lh" "List hidden files." ON \
-    "mkdir" "Have mkdir always run with -pv." ON \
-    "sudo !!" "Run previous command as root." ON \
-    "sudo!!" "Run previous command as root." ON \
-    "vi" "Ensure vi always opens vim." ON \
-    "yt-dlp-ba" "Run yt-dlp w/ best audio settings." ON \
-    "yt-dlp-bv" "Run yt-dlp w/ best video settings." ON \
-    "ytmdl-sp" "Run ytmdl w/ in a shorter command." ON 2> results
-
-  FUNCTIONS=()
-  while read choice; do
-    case $choice in
-      config)
-        CONFIG="true"
-        ;;
-      fish_greeting)
-        FUNCTIONS+=("fish_greeting.fish")
-        ;;
-      !!)
-        FUNCTIONS+=("!!.fish")
-        ;;
-      ..)
-        FUNCTIONS+=("...fish")
-        ;;
-      bsh)
-        FUNCTIONS+=("bsh.fish")
-        ;;
-      cd..)
-        FUNCTIONS+=("cd...fish")
-        ;;
-      clera)
-        FUNCTIONS+=("clera.fish")
-        ;;
-      fuck)
-        FUNCTIONS+=("fuck.fish")
-        ;;
-      generate-password)
-        FUNCTIONS+=("generate-password.fish")
-        ;;
-      lh)
-        FUNCTIONS+=("lh.fish")
-        ;;
-      mkdir)
-        FUNCTIONS+=("mkdir.fish")
-        ;;
-      'sudo !!')
-        FUNCTIONS+=("sudo !!.fish")
-        ;;
-      sudo!!)
-        FUNCTIONS+=("sudo!!.fish")
-        ;;
-      vi)
-        FUNCTIONS+=("vi.fish")
-        ;;
-      *) ;;
-
-    esac
-  done < results
-  if [[ $CONFIG == *"true"* ]]; then
-    clear && echo "Installing fish config..." && echo '' && sleep 1s
-    mkdir -pv ~/.config/fish/
-    cp -r ./Linux/home/cyan/.config/fish/config.fish ~/.config/fish/
-  fi
-  if ! [ -z "${FUNCTIONS[@]}" ]; then
-    clear && echo "Installing functions: "${FUNCTIONS[@]}"..." && echo '' && sleep 1s
-    mkdir -pv ~/.config/fish/functions/
-    for i in "${FUNCTIONS[@]}"; do
-      cp -r "./Linux/home/cyan/.config/fish/functions/$i" ~/.config/fish/functions/
-    done
-  fi
-fi
-
-# TODO: add option to specify location for fish_greeting/wthr if installed
-
-# bin scripts/shortcuts
-# TODO: add menu for selecting which to install
-if (whiptail --title "~/bin" --yesno "Would you like to install bin scripts/shortcuts?" 8 78); then
-  clear && echo "Installing bin scripts/shortcuts..." && echo '' && sleep 1s
-  echo "Copying bin scripts into ~/bin/..."
+install_bin_scripts_and_shortcuts() {
+  echo "Installing bin scripts and shortcuts..."
   mkdir -pv ~/bin/apps/
   cp -r ./Linux/home/cyan/bin/* ~/bin/
-  echo "Copying bin shortcuts into ~/.local/share/applications/..."
+
   mkdir -pv ~/.local/share/applications/
   cp -r ./Linux/home/cyan/.local/share/applications/* ~/.local/share/applications/
-  echo "Installing pfetch into ~/bin/apps/pfetch/..."
+
+  echo "Installing pfetch..."
   git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
-fi
+}
 
-# TODO: sowm & config
-
-# git config
-if command -v git &> /dev/null; then
-  if (whiptail --title ".gitconfig" --yesno "Would you like to configure git?" 8 78); then
-    if (whiptail --title ".gitconfig" --yesno "Do you use a DE/WM on this sytem?" 8 78); then
-      clear && echo "Configuring git..." && echo '' && sleep 1s
-      git config --global core.editor "code --wait -n"
-      git config --global user.name "AnalogCyan"
-      git config --global user.email "git@thayn.me"
-    else
-      clear && echo "Configuring git..." && echo '' && sleep 1s
-      git config --global core.editor "vim"
-      git config --global user.name "AnalogCyan"
-      git config --global user.email "git@thayn.me"
-    fi
+configure_git() {
+  local editor
+  if [ -z "$DISPLAY" ]; then
+    # No graphical interface detected, default to vim
+    editor="vim"
+  else
+    # A graphical interface is available, default to vscode
+    editor="code --wait -n"
   fi
-fi
+
+  echo "Configuring git..."
+  git config --global core.editor "$editor"
+  git config --global user.name "AnalogCyan"
+  git config --global user.email "git@thayn.me"
+}
+
+# Main function to call all defined functions.
+main() {
+  check_system_compatibility
+  install_updates
+  install_software
+  change_default_shell
+  install_ohmyzsh
+  install_zsh_configs_and_functions
+  install_bin_scripts_and_shortcuts
+
+  if command -v git &>/dev/null; then
+    configure_git
+  fi
+
+  echo "Dotfiles installed! Please restart your terminal to see the changes. You may need to log out and log back in to see changes in the default shell."
+}
+main
