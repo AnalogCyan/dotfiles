@@ -73,3 +73,30 @@ As of now, my Windows-related dotfiles are outdated as the Windows platform is n
 Please bear with me as I am currently in the process of updating my Windows dotfiles. Once completed, a comprehensive, updated guide similar to the macOS and Linux sections will be provided here. Thank you for your patience and understanding!
 
 Stay tuned for more updates!
+
+## 🖥️ Homelab Server
+
+This repository includes a `server.sh` script designed to orchestrate the configuration of my personal homelab server environment.
+
+To initially configure the server, the script executes the [Linux install script](#-linux) to set up a base environment that suits my preferences. This involves installations of various packages and tools, configuration of dotfiles, and more. Please refer to the [Linux section](#-linux) for more details.
+
+After the Linux environment setup, the script proceeds with several server-specific steps:
+
+**Check System Compatibility**: Verifies if the server is a Debian-based system since the script is specifically designed to cater to such systems. If the system fails this compatibility check, the script halts immediately.
+
+**Software Installation**: Installs selected server-specific applications and tools, crucial to my homelab server setup, which are not covered in the Linux install script.
+
+**Homelab Specific Configurations**: Implements homelab specific configurations such as specific `~/bin` scripts/apps setup, NextDNS, Plex, and Docker installations, among other customizations.
+
+Here's how you can set up a new homelab server environment using these configurations:
+
+```bash
+$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ cd ~/dotfiles
+$ chmod +x server_setup.sh
+$ ./server_setup.sh
+```
+
+On completion, the script will prompt a server reboot to ensure all changes come into effect.
+
+Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
