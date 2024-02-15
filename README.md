@@ -31,9 +31,9 @@ That's it! Your new macOS environment should now be set up with my dotfiles. Res
 
 Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
 
-## 🐧 Linux
+## 🐧 Linux & Homelab Server
 
-This repository contains a straightforward installation script for setting up a new Linux environment according to my preferred configurations. Files are located in the `Linux` directory.
+This repository contains a straightforward installation script for setting up a new Linux environment according to my preferred configurations. Files are located in the `Linux` directory. It also includes setup steps specific for homelab server environments, which can be optionally executed.
 
 This script includes the following operations:
 
@@ -49,20 +49,24 @@ This script includes the following operations:
 
 **Zsh Configuration and Functions**: Post oh-my-zsh installation, the script replaces the `.zshrc` file with my custom configuration and copies custom function files to `~/.oh-my-zsh/custom/functions/`.
 
-**Bin Scripts and Shortcuts**: It copies bin scripts and `.desktop` shortcuts from the repository to `~/bin` and `~/.local/share/applications/` respectively. It also installs `pfetch`.
+**Server Specific Operations**: For users setting up a homelab server, the script can optionally execute server-specific steps like installing selected applications and tools, implementing homelab specific configurations, among other customizations.
+
+**Bin Scripts and Shortcuts**: It copies bin scripts and shortcuts from the repository to `~/bin`. It also installs `pfetch`.
 
 **Git Configurations**: If git has been installed, the script sets up git with my user configurations: name, email, and preferred editor.
 
-To set up a new Linux environment with these configurations, clone the repository and run the setup script like so:
+To set up a new Linux environment or a homelab server environment with these configurations, clone the repository and run the setup script like so:
 
 ```bash
-$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ git clone https://github.com/username /dotfiles.git ~/dotfiles
 $ cd ~/dotfiles/
 $ chmod +x install.sh
 $ ./install.sh
 ```
 
-After the script finishes executing, restart your terminal to see the full changes. You may need to log out and back in if the default shell was changed during the configuration process.
+During the execution of the script, it will ask if you are setting up a server environment and proceed with the additional server-specific configurations if affirmed.
+
+After the script finishes executing, you will be prompted to restart your system to see the full changes.
 
 Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
 
@@ -74,29 +78,6 @@ Please bear with me as I am currently in the process of updating my Windows dotf
 
 Stay tuned for more updates!
 
-## 🖥️ Homelab Server
-
-This repository includes a `server.sh` script designed to orchestrate the configuration of my personal homelab server environment.
-
-To initially configure the server, the script executes the [Linux install script](#-linux) to set up a base environment that suits my preferences. This involves installations of various packages and tools, configuration of dotfiles, and more. Please refer to the [Linux section](#-linux) for more details.
-
-After the Linux environment setup, the script proceeds with several server-specific steps:
-
-**Check System Compatibility**: Verifies if the server is a Debian-based system since the script is specifically designed to cater to such systems. If the system fails this compatibility check, the script halts immediately.
-
-**Software Installation**: Installs selected server-specific applications and tools, crucial to my homelab server setup, which are not covered in the Linux install script.
-
-**Homelab Specific Configurations**: Implements homelab specific configurations such as specific `~/bin` scripts/apps setup, NextDNS, Plex, and Docker installations, among other customizations.
-
-Here's how you can set up a new homelab server environment using these configurations:
-
-```bash
-$ git clone https://github.com/username/dotfiles.git ~/dotfiles
-$ cd ~/dotfiles
-$ chmod +x server_setup.sh
-$ ./server_setup.sh
 ```
 
-On completion, the script will prompt a server reboot to ensure all changes come into effect.
-
-Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
+```
