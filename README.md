@@ -77,7 +77,3 @@ As of now, my Windows-related dotfiles are outdated as the Windows platform is n
 Please bear with me as I am currently in the process of updating my Windows dotfiles. Once completed, a comprehensive, updated guide similar to the macOS and Linux sections will be provided here. Thank you for your patience and understanding!
 
 Stay tuned for more updates!
-
-```
-
-```
