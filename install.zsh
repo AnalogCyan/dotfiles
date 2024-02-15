@@ -31,8 +31,8 @@ install_config_files() {
     cp ./macOS/Users/cyan/.zshrc ~/.zshrc
     cp ./macOS/Users/cyan/.oh-my-zsh/custom/* "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 
-    # ls iCloud & Downloads in home directory
-    ls -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/iCloud" "$HOME/iCloud"
+    # ln iCloud & Downloads in home directory
+    ln -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/iCloud" "$HOME/iCloud"
     ln -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads" "$HOME/Downloads"
 }
 
