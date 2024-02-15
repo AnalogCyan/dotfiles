@@ -9,7 +9,7 @@ install_apps() {
 
     # Copy/install ~/bin scripts/apps
     mkdir -pv ~/bin/apps/pfetch/
-    cp ./macOS/Users/cyan/bin/* ~/bin/
+    cp ./Nix/Users/cyan/bin/* ~/bin/
     git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
 
     # Install homebrew
@@ -28,8 +28,8 @@ install_config_files() {
     # Backup & import .zshrc config
     mkdir -pv ~/.oh-my-zsh/custom/
     mv ~/.zshrc ~/.zshrc.dotbak
-    cp ./macOS/Users/cyan/.zshrc ~/.zshrc
-    cp ./macOS/Users/cyan/.oh-my-zsh/custom/* "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
+    cp ./Nix/Users/cyan/.zshrc ~/.zshrc
+    cp ./Nix/Users/cyan/.oh-my-zsh/custom/* "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"
 
     # ln iCloud & Downloads in home directory
     ln -s "$HOME/Library/Mobile Documents/com~apple~CloudDocs/iCloud" "$HOME/iCloud"

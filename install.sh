@@ -135,14 +135,14 @@ install_zsh_configs_and_functions() {
 
   # Backup & import zsh config
   mv ~/.zshrc ~/.zshrc.dotbak
-  cp ./macOS/Users/cyan/.zshrc ~/.zshrc
-  cp ./macOS/Users/cyan/.oh-my-zsh/custom/*.zsh ~/.oh-my-zsh/custom/
+  cp ./Nix/Users/cyan/.zshrc ~/.zshrc
+  cp ./Nix/Users/cyan/.oh-my-zsh/custom/*.zsh ~/.oh-my-zsh/custom/
 }
 
 install_bin_scripts_and_shortcuts() {
   echo "Installing bin scripts and shortcuts..."
   mkdir -pv ~/bin/apps/pfetch/
-  cp -r ./Linux/home/cyan/bin/* ~/bin/
+  cp -r ./Nix/home/cyan/bin/* ~/bin/
 
   echo "Installing pfetch..."
   git clone https://github.com/dylanaraps/pfetch.git ~/bin/apps/pfetch/
