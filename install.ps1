@@ -221,3 +221,4 @@ Install-Apps
 #? .gitconfig
 #? add stuff to user/system path as needed
 #? Win11 cursors
+#? oh-my-posh
