@@ -1,0 +1,64 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Remove the extra newline at the start
+add_newline = false
+
+# Mimics the arrow theme from oh-my-zsh
+format = """
+$directory$character"""
+
+# Right side of prompt
+right_format = """$git_branch $git_status"""
+
+# User-aware color (Red for root, Yellow otherwise)
+[username]
+style_user = "bold yellow"
+style_root = "bold red"
+show_always = true         # Set to false if you don't want the username displayed
+
+# Prompt symbols 
+[character]
+success_symbol = "[](bold yellow)" # Nerd Font arrow
+error_symbol = "[](bold red)"      # Nerd Font arrow (error)
+vicmd_symbol = "[](bold green)"    # Nerd Font arrow (vim mode)
+
+# Directory Display
+[directory]
+style = "bold yellow"
+format = "[ $path ]($style)" # Folder icon
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = false
+
+# Git Branch Display
+[git_branch]
+symbol = " "                       # Nerd Font Git branch icon
+style = "bold yellow"
+format = '[$symbol$branch]($style)'
+
+# Git Status Display (Enhanced)
+[git_status]
+style = "bold yellow"
+format = '[$all_status$ahead_behind]($style)' # Wrap status in brackets
+modified = " "                               # Pencil for modified files
+staged = " "                                 # Checkmark for staged changes
+untracked = " "                              # Question mark for untracked files
+stashed = " "                                # Box for stashed changes
+deleted = " "                                # Trash bin for deleted files
+renamed = " "                                # Rename icon
+ahead = "⇡ "                                  # Same for ahead of remote
+behind = "⇣ "                                 # Same for behind remote
+diverged = "⇕ "                               # Same for diverged commits
+
+# Display hostname when in an SSH session
+[hostname]
+ssh_only = true
+format = "[󰒋 $hostname](bold cyan) " # Server icon
+
+# LS colors (Ensures alignment with `ls`)
+[env_var.LSCOLORS]
+default = "exfxcxdxbxbxbxbxbxbxbx"
+
+[env_var.LS_COLORS]
+default = "di=34;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=31;40:cd=31;40:su=31;40:sg=31;40:tw=31;40:ow=31;40:"

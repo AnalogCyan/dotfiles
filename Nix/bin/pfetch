@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Set pfetch configuration
+export PF_INFO="ascii title os host kernel uptime memory pkgs"
+PFETCH_DIR="${HOME}/bin/apps/pfetch"
+PFETCH_REPO="https://github.com/dylanaraps/pfetch.git"
+
+# Print colored output
+print_info() {
+    echo -e "\033[1;34m=>\033[0m $1"
+}
+
+print_error() {
+    echo -e "\033[1;31mError:\033[0m $1" >&2
+}
+
+# Ensure pfetch is installed
+if [ ! -e "${PFETCH_DIR}/pfetch" ]; then
+    print_info "Installing pfetch..."
+
+    if ! command -v git >/dev/null 2>&1; then
+        print_error "git is required but not installed"
+        exit 1
+    fi
+
+    # Create directory if it doesn't exist
+    mkdir -p "${PFETCH_DIR}" || {
+        print_error "Failed to create directory ${PFETCH_DIR}"
+        exit 1
+    }
+
+    # Clone the repository
+    git clone --quiet "${PFETCH_REPO}" "${PFETCH_DIR}" || {
+        print_error "Failed to clone pfetch repository"
+        exit 1
+    }
+
+    print_info "pfetch installed successfully"
+fi
+
+# Run pfetch with error handling
+if ! "${PFETCH_DIR}/pfetch"; then
+    print_error "Failed to run pfetch"
+    exit 1
+fi

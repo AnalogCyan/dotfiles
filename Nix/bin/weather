@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+# Configuration
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/weather"
+CONFIG_FILE="${CONFIG_DIR}/config"
+CACHE_FILE="${CONFIG_DIR}/cache"
+CACHE_DURATION=1800 # 30 minutes
+
+# Ensure configuration directory exists
+mkdir -p "${CONFIG_DIR}"
+
+# Check for the --no-cache flag
+NO_CACHE=false
+if [[ "$1" == "--no-cache" ]]; then
+  NO_CACHE=true
+fi
+
+# Load or create configuration
+if [ -f "${CONFIG_FILE}" ]; then
+  source "${CONFIG_FILE}"
+else
+  if ! command -v curl >/dev/null 2>&1; then
+    echo "Error: curl is required but not installed" >&2
+    exit 1
+  fi
+  CITY=$(curl -s "https://ipapi.co/city")
+  if [ $? -eq 0 ] && [ -n "${CITY}" ] && [ "${CITY}" != "Undefined" ]; then
+    echo "CITY=\"${CITY}\"" >"${CONFIG_FILE}"
+  else
+    echo "Could not detect location automatically."
+    echo "Enter your city name:"
+    read -r CITY
+    echo "CITY=\"${CITY}\"" >"${CONFIG_FILE}"
+  fi
+fi
+
+# Cross-platform stat command
+get_file_mtime() {
+  local file="$1"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    stat -f %m "$file"
+  else
+    stat -c %Y "$file"
+  fi
+}
+
+# Check if we have a cached result that's still valid
+if [ -f "${CACHE_FILE}" ] && [ "$NO_CACHE" == "false" ]; then
+  CACHE_TIME=$(get_file_mtime "${CACHE_FILE}")
+  CURRENT_TIME=$(date +%s)
+  if [ $((CURRENT_TIME - CACHE_TIME)) -lt "${CACHE_DURATION}" ]; then
+    cat "${CACHE_FILE}"
+    exit 0
+  fi
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "Error: curl is required but not installed" >&2
+  exit 1
+fi
+
+# Fetch the weather.
+# We fetch the condition icon and the Celsius temperature, then convert Celsius to Fahrenheit.
+# Expected output format: <icon> <Fahrenheit>°F/<Celsius>°C
+fetch_weather() {
+  local max_retries=3
+  local retry_count=0
+  local weather_raw=""
+  local icon=""
+  local temp_c_str=""
+  local temp_c=0
+  local temp_f=0
+
+  while [ ${retry_count} -lt ${max_retries} ]; do
+    # Fetch weather data with Celsius temperature (%t) and condition icon (%c)
+    weather_raw=$(curl -s -f -m 10 "https://wttr.in/${CITY}?format=%c+%t")
+    if [ $? -eq 0 ] && [ -n "$weather_raw" ] && [[ ! "$weather_raw" =~ "Unknown location" ]]; then
+      # Collapse any extra whitespace.
+      weather_raw=$(echo "$weather_raw" | awk '{$1=$1; print}')
+      # Expecting format: "<icon> <temp>" e.g. "⛅️ +0°C"
+      icon=$(echo "$weather_raw" | awk '{print $1}')
+      temp_c_str=$(echo "$weather_raw" | awk '{print $2}')
+      # Remove any non-digit and non-minus characters, so we get a clean Celsius value.
+      temp_c=$(echo "$temp_c_str" | sed -E 's/[^0-9-]//g')
+      # Convert Celsius to Fahrenheit using the formula: (C * 9/5) + 32
+      temp_f=$(((temp_c * 9) / 5 + 32))
+      echo "${icon} ${temp_f}°F/${temp_c}°C" | tee "${CACHE_FILE}"
+      return 0
+    fi
+    ((retry_count++))
+    sleep 2
+  done
+
+  return 1
+}
+
+if [ -z "$CITY" ]; then
+  echo "Error: City not specified in ${CONFIG_FILE}" >&2
+  exit 1
+fi
+
+if [ "$NO_CACHE" == "true" ]; then
+  rm -f "${CACHE_FILE}"
+fi
+
+if ! fetch_weather; then
+  if [ -f "${CACHE_FILE}" ]; then
+    cat "${CACHE_FILE}"
+    exit 0
+  fi
+  echo "Error: Unable to fetch weather data after multiple attempts" >&2
+  exit 1
+fi

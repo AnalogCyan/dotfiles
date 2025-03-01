@@ -2,23 +2,45 @@
 
 These are the base dotfiles that I start with when I set up a new environment. They are stored in this repository for convenience and are broken down into macOS, Linux, and Windows sections for easy access and installation.
 
+## 🔧 Repository Structure
+
+```
+dotfiles/
+├── install.ps1       # Windows installation script
+├── install.sh        # Linux installation script
+├── install.zsh       # macOS installation script
+├── Nix/              # Shared Unix configurations
+│   └── Users/
+│       └── cyan/
+│           ├── bin/  # Custom scripts and utilities
+│           └── ...
+└── Windows/          # Windows-specific configurations
+    ├── Terminal/
+    ├── winget/
+    └── ...
+```
+
 ## 🍎 macOS
 
-This repository contains a straightforward installation script for setting up a new macOS environment according to my preferred configurations. Files are located in the `Nix` directory.
+This repository contains a straightforward installation script (`install.zsh`) for setting up a new macOS environment according to my preferred configurations.
 
-This script covers several areas:
+### Features
 
-**Applications**: It installs essential apps like Homebrew, and other tools in `~/bin/apps`.
+- **Package Managers**: Installs and configures Homebrew with various formulae, casks, and fonts. Also configures npm for JavaScript packages.
+- **Applications**: Installs essential applications via Homebrew casks and Mac App Store (using `mas`).
+- **Configuration Files**: Replaces the current `.zshrc` file with my custom configuration.
+- **Shell Environment**: Installs Oh-My-Zsh with custom plugins:
+  - zsh-history-substring-search
+  - zsh-completions
+  - zsh-you-should-use
+  - zsh-syntax-highlighting
+  - zsh-autosuggestions
+  - fzf shell extensions
+- **Binary Scripts**: Installs various custom utilities and tools to `~/bin/`.
+- **iCloud Integration**: Creates symbolic links to iCloud Drive folders.
+- **Git Configuration**: Sets up git with personalized configurations.
 
-**Configuration Files**: It replaces the current `.zshrc` file with my custom configuration, and includes extra setups for `oh-my-zsh`.
-
-**Package Managers**: It leverages Homebrew to install various packages, casks, and fonts. Furthermore, it makes use of npm for JavaScript package installations.
-
-**MAS Apps**: This script also handles the installation of various Mac App Store apps using their respective MAS ids.
-
-**Oh-My-Zsh**: Lastly, Oh-My-Zsh and its plugins are installed. The script ensures that source files for plugins are added to the `.zshrc` file for proper usage.
-
-To get started, clone the repository and run the provided script like so:
+### Installation
 
 ```bash
 $ git clone https://github.com/username/dotfiles.git ~/dotfiles
@@ -27,53 +49,106 @@ $ chmod +x install.zsh
 $ ./install.zsh
 ```
 
-That's it! Your new macOS environment should now be set up with my dotfiles. Restart the terminal to see the changes.
-
-Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
+After installation completes, you'll be prompted to restart your terminal to see the changes.
 
 ## 🐧 Linux & Homelab Server
 
-This repository contains a straightforward installation script for setting up a new Linux environment according to my preferred configurations. Files are located in the `Nix` directory. It also includes setup steps specific for homelab server environments, which can be optionally executed.
+This repository includes an installation script (`install.sh`) for setting up a new Linux environment on Debian-based distributions, with optional homelab server configurations.
 
-This script includes the following operations:
+### Features
 
-**System Compatibility Check**: It checks if the system is a Debian-based distribution since the script was designed for these types of systems. If the check fails, the script will abort.
+- **System Compatibility**: Ensures the script runs only on compatible Debian-based systems.
+- **System Updates**: Updates system packages and fixes any broken installations.
+- **Software Installation**: Installs essential packages:
+  - Development tools (gcc, g++, git)
+  - System utilities (vim, htop, screen)
+  - Shell enhancements (zsh, fortune, mosh)
+  - Media tools (ffmpeg, mpv, yt-dlp)
+  - Additional utilities (bat, fzf, thefuck, etc.)
+- **Shell Environment**: Changes default shell to zsh and installs Oh-My-Zsh with plugins.
+- **Configuration Files**: Installs custom zsh configurations and functions.
+- **Server-Specific Features**: When set up as a server, additionally installs:
+  - iTerm2 shell integration
+  - NextDNS
+  - Plex Media Server
+  - Docker with proper configuration
+- **Binary Scripts**: Installs pfetch and other custom utilities to `~/bin/`.
+- **Git Configuration**: Sets up git with personalized settings.
 
-**System Updates**: This part ensures that the system packages are updated, removed when not needed, and that all installations are fixed if broken.
-
-**Software Installation**: It installs essential packages like `gcc`, `g++`, `git`, `vim`, `htop`, `zsh`, `fortune`, `mosh`, `screen`.
-
-**Default Shell Change**: It switches the default shell to zsh.
-
-**Oh-My-Zsh Installation**: It installs `oh-my-zsh`.
-
-**Zsh Configuration and Functions**: Post oh-my-zsh installation, the script replaces the `.zshrc` file with my custom configuration and copies custom function files to `~/.oh-my-zsh/custom/functions/`.
-
-**Server Specific Operations**: For users setting up a homelab server, the script can optionally execute server-specific steps like installing selected applications and tools, implementing homelab specific configurations, among other customizations.
-
-**Bin Scripts and Shortcuts**: It copies bin scripts and shortcuts from the repository to `~/bin`. It also installs `pfetch`.
-
-**Git Configurations**: If git has been installed, the script sets up git with my user configurations: name, email, and preferred editor.
-
-To set up a new Linux environment or a homelab server environment with these configurations, clone the repository and run the setup script like so:
+### Installation
 
 ```bash
-$ git clone https://github.com/username /dotfiles.git ~/dotfiles
-$ cd ~/dotfiles/
+$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ cd ~/dotfiles
 $ chmod +x install.sh
 $ ./install.sh
 ```
 
-During the execution of the script, it will ask if you are setting up a server environment and proceed with the additional server-specific configurations if affirmed.
-
-After the script finishes executing, you will be prompted to restart your system to see the full changes.
-
-Remember to replace the `.gitconfig` with your own info, and bear in mind you may need to adjust the files and scripts as needed to match your setup. This README section is specific for the given script and doesn't take into account other potential files or changes.
+During installation, you'll be asked if you're setting up a server environment. Based on your response, additional configurations will be applied.
 
 ## 🪟 Windows
 
-As of now, my Windows-related dotfiles are outdated as the Windows platform is no longer my primary desktop operating system. However, I understand the importance of providing up-to-date configurations for those who still find it useful.
+The Windows installation script (`install.ps1`) provides comprehensive setup for Windows 10 and 11 environments.
 
-Please bear with me as I am currently in the process of updating my Windows dotfiles. Once completed, a comprehensive, updated guide similar to the macOS and Linux sections will be provided here. Thank you for your patience and understanding!
+### Features
 
-Stay tuned for more updates!
+- **System Configuration**: Configures Windows features including WSL2, Hyper-V, and Windows Sandbox.
+- **System Updates**: Ensures Windows is up-to-date using PowerShell modules.
+- **Package Managers**: Installs and configures:
+  - Chocolatey
+  - Windows Package Manager (winget)
+- **Applications**: Installs a wide range of applications using both package managers:
+  - Development tools (Git, Visual Studio, VSCode, etc.)
+  - System utilities (PowerToys, Terminal, etc.)
+  - Media applications (Plex, Spotify, etc.)
+  - Gaming platforms (Steam, Epic Games, etc.)
+- **PowerShell Environment**: Installs and configures:
+  - Oh-My-Posh
+  - PSReadLine
+  - Terminal-Icons
+- **Configuration Files**: Installs custom configurations for:
+  - PowerShell profile
+  - Windows Terminal
+  - Winget settings
+- **Development Environments**: Sets up Flutter SDK.
+- **Git Configuration**: Configures git with personalized settings.
+
+### Installation
+
+```powershell
+# Clone the repository
+git clone https://github.com/username/dotfiles.git ~\dotfiles
+cd ~\dotfiles
+
+# Run the installation script (requires non-admin PowerShell)
+.\install.ps1
+```
+
+After installation completes, you'll be prompted to restart your computer to apply all changes.
+
+## ⚠️ Important Notes
+
+- Always review the scripts before running them to ensure they match your needs.
+- Replace the git configuration with your own information.
+- Some applications may require additional manual setup after installation.
+- These scripts are designed for personal use and may need adjustment for your specific environment.
+
+## 🔄 Updates and Maintenance
+
+These dotfiles are regularly updated as my workflow evolves. To update your existing installation:
+
+```bash
+# Navigate to your dotfiles directory
+cd ~/dotfiles
+
+# Pull the latest changes
+git pull
+
+# Run the appropriate installation script for your OS
+# macOS:
+./install.zsh
+# Linux:
+./install.sh
+# Windows:
+./install.ps1
+```
