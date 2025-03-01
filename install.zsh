@@ -4,7 +4,7 @@
 #  Dotfiles Installer Script for macOS
 #
 #  Author: AnalogCyan
-#  License: MIT
+#  License: Unlicense
 #
 # =============================================================================
 

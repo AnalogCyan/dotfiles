@@ -4,7 +4,7 @@
 #  Dotfiles Installer Script for Debian-based Systems
 #
 #  Author: AnalogCyan
-#  License: MIT
+#  License: Unlicense
 #
 # =============================================================================
 

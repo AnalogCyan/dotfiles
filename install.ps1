@@ -4,7 +4,7 @@
 #  Dotfiles Installer Script for Windows Systems
 #
 #  Author: AnalogCyan
-#  License: MIT
+#  License: Unlicense
 #
 # =============================================================================
 
