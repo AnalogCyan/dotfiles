@@ -1,15 +1,13 @@
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Remove the extra newline at the start
+# Prompt configuration
 add_newline = false
-
-# Mimics the arrow theme from oh-my-zsh
 format = """
 $directory$character"""
 
 # Right side of prompt
-right_format = """$git_branch $git_status"""
+right_format = """$python$git_branch $git_status"""
 
 # User-aware color (Red for root, Yellow otherwise)
 [username]
@@ -19,9 +17,9 @@ show_always = true         # Set to false if you don't want the username display
 
 # Prompt symbols 
 [character]
-success_symbol = "[](bold yellow)" # Nerd Font arrow
-error_symbol = "[](bold red)"      # Nerd Font arrow (error)
-vicmd_symbol = "[](bold green)"    # Nerd Font arrow (vim mode)
+success_symbol = "[●](bold yellow)" # Filled dot for success
+error_symbol = "[○](bold red)"      # Outlined dot for error
+vicmd_symbol = "[●](bold green)"    # Filled dot in vim mode
 
 # Directory Display
 [directory]
@@ -30,6 +28,21 @@ format = "[ $path ]($style)" # Folder icon
 truncation_length = 3
 truncation_symbol = "…/"
 truncate_to_repo = false
+
+# Python Environment Display
+[python]
+symbol = " " # Python icon
+style = "bold blue"
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+detect_extensions = ["py"]
+detect_files = [
+  "requirements.txt",
+  "pyproject.toml",
+  "setup.py",
+  "Pipfile",
+  ".python-version",
+]
+detect_folders = [".venv", "venv", "env", ".tox"]
 
 # Git Branch Display
 [git_branch]
