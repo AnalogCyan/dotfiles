@@ -9,14 +9,16 @@ dotfiles/
 ├── install.ps1       # Windows installation script
 ├── install.sh        # Linux installation script
 ├── install.zsh       # macOS installation script
+├── starship.toml     # Cross-platform Starship prompt configuration
 ├── Nix/              # Shared Unix configurations
-│   └── Users/
-│       └── cyan/
-│           ├── bin/  # Custom scripts and utilities
-│           └── ...
+│   ├── .zshrc        # ZSH configuration file
+│   ├── .zsh_plugins.txt # Antidote plugin definitions
+│   ├── bin/          # Custom scripts and utilities
+│   └── functions/    # ZSH function definitions
 └── Windows/          # Windows-specific configurations
-    ├── Terminal/
-    ├── winget/
+    ├── Profile.ps1   # PowerShell profile
+    ├── Terminal/     # Windows Terminal settings
+    ├── winget/       # Windows Package Manager settings
     └── ...
 ```
 
@@ -28,14 +30,17 @@ This repository contains a straightforward installation script (`install.zsh`) f
 
 - **Package Managers**: Installs and configures Homebrew with various formulae, casks, and fonts. Also configures npm for JavaScript packages.
 - **Applications**: Installs essential applications via Homebrew casks and Mac App Store (using `mas`).
+- **Shell Environment**:
+  - Uses Antidote for plugin management (replacing Oh-My-Zsh)
+  - Installs customized ZSH plugins including:
+    - zsh-history-substring-search
+    - zsh-completions
+    - zsh-you-should-use
+    - zsh-syntax-highlighting
+    - zsh-autosuggestions
+    - fzf shell extensions
+  - Configures Starship prompt for beautiful, informative terminal
 - **Configuration Files**: Replaces the current `.zshrc` file with my custom configuration.
-- **Shell Environment**: Installs Oh-My-Zsh with custom plugins:
-  - zsh-history-substring-search
-  - zsh-completions
-  - zsh-you-should-use
-  - zsh-syntax-highlighting
-  - zsh-autosuggestions
-  - fzf shell extensions
 - **Binary Scripts**: Installs various custom utilities and tools to `~/bin/`.
 - **iCloud Integration**: Creates symbolic links to iCloud Drive folders.
 - **Git Configuration**: Sets up git with personalized configurations.
@@ -65,7 +70,10 @@ This repository includes an installation script (`install.sh`) for setting up a 
   - Shell enhancements (zsh, fortune, mosh)
   - Media tools (ffmpeg, mpv, yt-dlp)
   - Additional utilities (bat, fzf, thefuck, etc.)
-- **Shell Environment**: Changes default shell to zsh and installs Oh-My-Zsh with plugins.
+- **Shell Environment**:
+  - Changes default shell to zsh
+  - Uses Antidote for plugin management
+  - Installs the Starship prompt for a consistent cross-platform experience
 - **Configuration Files**: Installs custom zsh configurations and functions.
 - **Server-Specific Features**: When set up as a server, additionally installs:
   - iTerm2 shell integration
@@ -125,6 +133,27 @@ cd ~\dotfiles
 ```
 
 After installation completes, you'll be prompted to restart your computer to apply all changes.
+
+## 🌟 Key Components
+
+### Starship Prompt
+
+This repository uses [Starship](https://starship.rs/), a minimal, blazing-fast, and infinitely customizable cross-platform prompt. The `starship.toml` configuration provides:
+
+- Customized prompt symbol (arrow) with color-coding for success/failure
+- Git branch and status information displayed on the right
+- Directory path display with customizable truncation
+- Special indicators for SSH sessions
+- Vim mode indicators
+
+### Antidote Plugin Manager
+
+The repository has migrated from Oh-My-Zsh to [Antidote](https://getantidote.github.io/), a fast and flexible plugin manager for ZSH:
+
+- Simpler, cleaner plugin management
+- Faster shell startup time
+- All plugins defined in a single `.zsh_plugins.txt` file
+- Continued support for popular plugins previously used with Oh-My-Zsh
 
 ## ⚠️ Important Notes
 
