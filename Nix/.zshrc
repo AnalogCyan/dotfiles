@@ -12,22 +12,12 @@ export PATH="${XDG_DATA_HOME:-$HOME/.local/share}/codeium/bin:$PATH"
 export EDITOR='vim'
 
 # =============================================================================
-#  Plugin Management (Antidote)
-# =============================================================================
-
-# Initialize Antidote
-source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh" 2>/dev/null || source "$HOME/.antidote/antidote.zsh"
-antidote load ~/.zsh_plugins.txt
-
-# =============================================================================
 #  Shell Configuration
 # =============================================================================
 
-# Set completion options
+# Initialize completion system before Antidote
 autoload -Uz compinit
 compinit -d ~/.zcompdump
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # History configuration
 HISTFILE=~/.zsh_history
@@ -37,11 +27,24 @@ setopt appendhistory
 setopt histignorealldups
 setopt histignorespace
 
+# =============================================================================
+#  Plugin Management (Antidote)
+# =============================================================================
+
+# Initialize Antidote
+source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
+antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh
+source ~/.zsh_plugins.zsh
+
 # Plugin configuration
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
 
 # Custom completion paths
 fpath=(~/.zsh.d/ $fpath)
+
+# Set completion options after plugins are loaded
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # =============================================================================
 #  Tool Initializations

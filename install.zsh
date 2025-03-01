@@ -78,7 +78,6 @@ BREW_FORMULAE=(
   "xz"                                   # General-purpose data compression tool
   "yt-dlp"                               # Fork of youtube-dl with additional features
   "zoxide"                               # Smarter cd command with learning abilities
-  "zsh-antidote"                         # Plugin manager for Zsh
 )
 
 BREW_CASKS=(
@@ -262,8 +261,8 @@ install_config_files() {
   log_info "Installing configuration files..."
 
   # Create necessary directories
-  mkdir -pv ~/.config/zsh/functions || {
-    log_warning "Failed to create zsh functions directory."
+  mkdir -pv ~/.config/zsh/functions ~/.zsh.d || {
+    log_warning "Failed to create zsh directories."
   }
 
   # Backup existing zshrc if it exists
@@ -281,7 +280,7 @@ install_config_files() {
     }
   else
     log_error "Could not find .zshrc in the dotfiles repo."
-    # Create a minimal .zshrc file
+    # Create a minimal .zshrc file with proper initialization order
     log_info "Creating a minimal .zshrc file..."
     cat >"$HOME/.zshrc" <<EOF
 # =============================================================================
@@ -295,22 +294,12 @@ export PATH=\$HOME/bin:/usr/local/bin:\$PATH
 export EDITOR='vim'
 
 # =============================================================================
-#  Plugin Management (Antidote)
-# =============================================================================
-
-# Initialize Antidote
-source "\$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh" 2>/dev/null || source "\$HOME/.antidote/antidote.zsh"
-antidote load ~/.zsh_plugins.txt
-
-# =============================================================================
 #  Shell Configuration
 # =============================================================================
 
-# Set completion options
+# Initialize completion system before Antidote
 autoload -Uz compinit
 compinit -d ~/.zcompdump
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # History configuration
 HISTFILE=~/.zsh_history
@@ -319,6 +308,18 @@ SAVEHIST=10000
 setopt appendhistory
 setopt histignorealldups
 setopt histignorespace
+
+# =============================================================================
+#  Plugin Management (Antidote)
+# =============================================================================
+
+# Initialize Antidote
+source "\$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh" 2>/dev/null || source "\$HOME/.antidote/antidote.zsh"
+antidote load ~/.zsh_plugins.txt
+
+# Set completion options after plugins are loaded
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # =============================================================================
 #  Tool Initializations
@@ -336,36 +337,15 @@ eval "\$(starship init zsh)"
 EOF
   fi
 
-  # Copy plugins file
+  # Copy plugins file with updated configuration
   if [ -f "$DOTFILES_DIR/Nix/.zsh_plugins.txt" ]; then
     cp "$DOTFILES_DIR/Nix/.zsh_plugins.txt" ~/.zsh_plugins.txt || {
       log_warning "Failed to copy .zsh_plugins.txt."
     }
-  else
-    log_error "Could not find .zsh_plugins.txt in the dotfiles repo."
-    # Create default plugins file
-    log_info "Creating default .zsh_plugins.txt..."
-    cat >~/.zsh_plugins.txt <<EOF
-# Essential ZSH plugins with Antidote
-
-# Core ZSH libraries
-mattmc3/zephyr path:lib/completion.zsh
-mattmc3/zephyr path:lib/history.zsh
-mattmc3/zephyr path:lib/key-bindings.zsh
-mattmc3/zephyr path:lib/directories.zsh
-mattmc3/zephyr path:lib/theme-and-appearance.zsh
-
-# Essential plugins
-zsh-users/zsh-completions
-zsh-users/zsh-autosuggestions
-zsh-users/zsh-syntax-highlighting
-zsh-users/zsh-history-substring-search
-robbyrussell/oh-my-zsh path:plugins/git
-robbyrussell/oh-my-zsh path:plugins/sudo
-robbyrussell/oh-my-zsh path:plugins/command-not-found
-agkozak/zsh-z
-robbyrussell/oh-my-zsh path:plugins/extract
-EOF
+    log_info "Note: Deprecated plugins have been removed and replaced with maintained alternatives."
+    log_info "      - zpm-zsh/1password replaced with official 1Password CLI"
+    log_info "      - Docker plugins replaced with official completions"
+    log_info "      - Other unmaintained plugins have been removed or replaced"
   fi
 
   # Copy custom functions
@@ -507,45 +487,6 @@ install_mas_apps() {
   log_success "Mac App Store applications installed."
 }
 
-install_antidote() {
-  log_info "Installing Antidote for ZSH plugin management..."
-
-  # Try to install via Homebrew first (macOS preferred method)
-  if command -v brew &>/dev/null; then
-    log_info "Installing Antidote via Homebrew..."
-    brew install zsh-antidote || {
-      log_warning "Failed to install Antidote through Homebrew, falling back to git installation."
-      install_antidote_git
-    }
-  else
-    install_antidote_git
-  fi
-
-  # Install and configure fzf
-  if command -v fzf &>/dev/null; then
-    log_info "Setting up fzf shell extensions..."
-    if [[ -d "$(brew --prefix)/opt/fzf" ]]; then
-      $(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc || {
-        log_warning "Failed to install fzf shell extensions from Homebrew."
-      }
-    # Fall back to git installation for fzf completions
-    elif [[ ! -f "$HOME/.fzf.zsh" ]]; then
-      log_info "Installing fzf shell extensions from git..."
-      git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf" 2>/dev/null || {
-        log_info "fzf shell repo already exists, updating..."
-        (cd "$HOME/.fzf" && git pull)
-      }
-      "$HOME/.fzf/install" --key-bindings --completion --no-update-rc || {
-        log_warning "Failed to install fzf shell extensions."
-      }
-    fi
-  else
-    log_warning "fzf is not installed. Skipping shell extensions."
-  fi
-
-  log_success "Antidote and ZSH plugins configured."
-}
-
 # Helper function to install Antidote via git when Homebrew is unavailable
 install_antidote_git() {
   log_info "Installing Antidote via git..."
@@ -618,7 +559,7 @@ main() {
   install_mas_apps
 
   # Shell setup
-  install_antidote
+  install_antidote_git
 
   # Configure git
   configure_git

@@ -1,53 +1,7 @@
-# Essential ZSH plugins with Antidote
-
-# Core ZSH libraries (replacing oh-my-zsh libs)
-mattmc3/zephyr path:lib/completion.zsh
-mattmc3/zephyr path:lib/history.zsh
-mattmc3/zephyr path:lib/key-bindings.zsh
-mattmc3/zephyr path:lib/directories.zsh
-mattmc3/zephyr path:lib/theme-and-appearance.zsh
-
-# Standalone plugins (previously from oh-my-zsh)
-# Note: directly reference the plugin repos instead of using oh-my-zsh's plugin directory
-zsh-users/zsh-completions
-zpm-zsh/1password
-robbyrussell/oh-my-zsh path:plugins/copypath
-robbyrussell/oh-my-zsh path:plugins/copyfile
-robbyrussell/oh-my-zsh path:plugins/copybuffer
-zpm-zsh/docker
-zpm-zsh/docker-compose
-robot-industry/emoji
-robbyrussell/oh-my-zsh path:plugins/extract
-
-# Essential git tools
-robbyrussell/oh-my-zsh path:plugins/git
-robbyrussell/oh-my-zsh path:plugins/gitignore
-robbyrussell/oh-my-zsh path:plugins/gh
-
-# Utility plugins
-MichaelAquilina/zsh-you-should-use
-romkatv/zsh-bench kind:path
-belak/zsh-utils path:history
-robbyrussell/oh-my-zsh path:plugins/isodate
-robbyrussell/oh-my-zsh path:plugins/macos
-robbyrussell/oh-my-zsh path:plugins/mosh
-robbyrussell/oh-my-zsh path:plugins/npm
-robbyrussell/oh-my-zsh path:plugins/pip
-robbyrussell/oh-my-zsh path:plugins/screen
-
-# Editor integration
-robbyrussell/oh-my-zsh path:plugins/vscode
-
-# Shell Enhancements
-zdharma-continuum/fast-syntax-highlighting kind:defer
-zsh-users/zsh-syntax-highlighting
 zsh-users/zsh-autosuggestions
+zdharma-continuum/fast-syntax-highlighting
 zsh-users/zsh-history-substring-search
-
-# Auto-completion & navigation tools
 marlonrichert/zsh-autocomplete
-zsh-users/zsh-interactive-cd
 agkozak/zsh-z
-
-# Additional functionality
-mattmc3/zephyr path
+ohmyzsh/ohmyzsh
+MichaelAquilina/zsh-you-should-use
