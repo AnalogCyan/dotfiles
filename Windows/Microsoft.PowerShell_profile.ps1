@@ -71,6 +71,116 @@ foreach ($alias in $aliasList) {
 }
 
 # =============================================================================
+#  Weather Function with Caching
+# =============================================================================
+
+function Get-Weather {
+  param(
+    [string]$City = "",
+    [switch]$NoCache,
+    [int]$CacheDuration = 1800  # 30 minutes
+  )
+  
+  # Configuration
+  $configDir = Join-Path $env:USERPROFILE ".config\weather"
+  $configFile = Join-Path $configDir "config"
+  $cacheFile = Join-Path $configDir "cache"
+  
+  # Ensure configuration directory exists
+  if (-not (Test-Path $configDir)) {
+    New-Item -ItemType Directory -Path $configDir -Force | Out-Null
+  }
+  
+  # Load or create configuration
+  if (Test-Path $configFile) {
+    $cityConfig = Get-Content $configFile -Raw
+    if ([string]::IsNullOrEmpty($City) -and $cityConfig -match 'CITY="(.*)"') {
+      $City = $matches[1]
+    }
+  }
+  
+  # If city isn't specified and not in config, use provided city or try to detect it
+  if ([string]::IsNullOrEmpty($City)) {
+    try {
+      $City = "Harrison+Arkansas" # Default fallback
+      
+      # Save to config file
+      "CITY=`"$City`"" | Out-File -FilePath $configFile -Encoding utf8 -Force
+    }
+    catch {
+      Write-Error "Could not set default city: $($_.Exception.Message)"
+      return "Weather unavailable"
+    }
+  }
+  
+  # Check if we have a cached result that's still valid
+  if ((Test-Path $cacheFile) -and -not $NoCache) {
+    $cacheTime = (Get-Item $cacheFile).LastWriteTime
+    $currentTime = Get-Date
+    $timeSpan = $currentTime - $cacheTime
+    
+    if ($timeSpan.TotalSeconds -lt $CacheDuration) {
+      return Get-Content $cacheFile -Raw
+    }
+  }
+  
+  # Fetch the weather
+  function Fetch-WeatherData {
+    $maxRetries = 3
+    $retryCount = 0
+    
+    while ($retryCount -lt $maxRetries) {
+      try {
+        # Get weather data with icon, condition, and temperature
+        $weatherData = Invoke-RestMethod -Uri "https://wttr.in/${City}?format=%c+%t" -TimeoutSec 5
+        
+        if (-not [string]::IsNullOrEmpty($weatherData) -and $weatherData -notmatch "Unknown location") {
+          # Parse data
+          $weatherData = $weatherData.Trim()
+          $parts = $weatherData -split "\s+", 2
+          $icon = $parts[0]
+          $tempC = $parts[1]
+          
+          # Extract numeric celsius value and convert to Fahrenheit
+          if ($tempC -match '([+-]?\d+)') {
+            $celsius = [int]$matches[1]
+            $fahrenheit = [math]::Round(($celsius * 9 / 5) + 32)
+            $result = "$icon ${fahrenheit}°F/${celsius}°C"
+            
+            # Cache result
+            $result | Out-File -FilePath $cacheFile -Encoding utf8 -Force
+            return $result
+          }
+        }
+      }
+      catch {
+        # Continue to retry
+      }
+      
+      $retryCount++
+      if ($retryCount -lt $maxRetries) {
+        Start-Sleep -Seconds 2
+      }
+    }
+    
+    # If we get here, fetching failed
+    return $null
+  }
+  
+  $weatherResult = Fetch-WeatherData
+  
+  # If fetch failed but we have a cache, use it even if expired
+  if ($weatherResult -eq $null -and (Test-Path $cacheFile)) {
+    return "$(Get-Content $cacheFile -Raw) (cached)"
+  }
+  elseif ($weatherResult -eq $null) {
+    return "Weather data unavailable"
+  }
+  
+  return $weatherResult
+}
+
+# =============================================================================
 #  Greeting Function - Simplified
 # =============================================================================
 
@@ -90,25 +200,17 @@ function Show-Greeting {
     neofetch
   }
   
-  # Show weather information when available
-  if (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
-    $username = $env:USERNAME
-    $hour = (Get-Date).Hour
-    $greeting = if ($hour -lt 12) { "Good morning" } 
-    elseif ($hour -lt 17) { "Good afternoon" }
-    else { "Good evening" }
-    
-    Write-Host "$greeting, $username!"
-    
-    Write-Host -NoNewLine "Current weather: "
-    try {
-      $weatherResult = wsl.exe -- curl -s --connect-timeout 2 wttr.in/Harrison+Arkansas\?format="%c+%C+%t+%o"
-      Write-Host $weatherResult
-    }
-    catch {
-      Write-Host "Weather data unavailable"
-    }
-  }
+  $username = $env:USERNAME
+  $hour = (Get-Date).Hour
+  $greeting = if ($hour -lt 12) { "Good morning" } 
+  elseif ($hour -lt 17) { "Good afternoon" }
+  else { "Good evening" }
+  
+  Write-Host "$greeting, $username!"
+  
+  Write-Host -NoNewLine "Current weather: "
+  $weather = Get-Weather
+  Write-Host $weather
   
   Write-Host ""
 }
