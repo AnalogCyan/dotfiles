@@ -140,3 +140,23 @@ if (Test-Path $functionDir) {
 
 # Display greeting when profile loads
 Show-Greeting
+
+function prompt {
+  $leftPrompt = $(starship prompt) -replace "`n$"
+  $rightPrompt = "$(starship module time)"  # Modify this to change right prompt content
+
+  # Get terminal width
+  $width = $Host.UI.RawUI.WindowSize.Width
+
+  # Strip ANSI codes from the left prompt to get its actual length
+  $leftPromptPlain = $leftPrompt -replace '\e\[[0-9;]*m', ''
+  $leftPromptLength = ($leftPromptPlain -split "`n")[-1].Length  # Length of last line
+
+  # Calculate spacing for right prompt
+  $spacing = $width - $leftPromptLength - ($rightPrompt.Length + 2)
+  if ($spacing -lt 1) { $spacing = 1 }  # Prevent overlap
+
+  # Move cursor to the right position and print the right prompt
+  $ansiMoveRight = "`e[${spacing}G"
+  "$leftPrompt`n${ansiMoveRight}$rightPrompt "
+}
