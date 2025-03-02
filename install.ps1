@@ -14,6 +14,7 @@
 
 # Package lists - empty for now, to be populated later
 $WINGET_APPS = @(
+  "DEVCOM.JetBrainsMonoNerdFont"
   "Microsoft.PowerShell"
   "Microsoft.WindowsTerminal"
   "Microsoft.Edge"
@@ -23,7 +24,7 @@ $WINGET_APPS = @(
   "Git.Git"
   "Microsoft.PowerToys"
   "Microsoft.VisualStudioCode"
-  "Python.Python3"
+  "Python.Python"
   "Microsoft.DevHome"
   "Starship.Starship"
 )
@@ -178,12 +179,34 @@ function Set-SystemConfiguration {
 }
 
 function Update-System {
-  Write-LogInfo "Ensuring system is up-to-date..."
+  Write-LogInfo "Updating Windows system..."
 
-  $command = 'Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod; if (-not(Get-Command PSWindowsUpdate -ErrorAction SilentlyContinue)) { Install-Module -ErrorAction SilentlyContinue -Name PSWindowsUpdate -Force }; Import-Module PSWindowsUpdate; Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2'
-  Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile $command" -Wait
+  # Force an update scan using modern command
+  Write-LogInfo "Starting Windows update scan..."
+  Start-Process -FilePath "UsoClient.exe" -ArgumentList "StartScan" -NoNewWindow -Wait
 
-  Write-LogSuccess "System update check completed."
+  # Ensure PSWindowsUpdate is installed for the current user
+  if (-not(Get-Command Install-WindowsUpdate -ErrorAction SilentlyContinue)) {
+    Write-LogInfo "Installing PSWindowsUpdate module..."
+    Install-Module -Name PSWindowsUpdate -Scope CurrentUser -Force
+  }
+  Import-Module PSWindowsUpdate
+
+  # Install all available updates except drivers, logging errors
+  try {
+    Write-LogInfo "Installing Windows updates (excluding drivers)..."
+    Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2 -ErrorAction Stop
+  }
+  catch {
+    Write-LogError "Failed to install updates: $_"
+  }
+
+  # Check if a reboot is needed
+  if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
+    Write-LogWarning "A reboot is required to complete updates."
+  }
+
+  Write-LogSuccess "System update process completed."
 }
 
 function Install-PackageManagers {
@@ -415,57 +438,6 @@ function Install-SSHConfig {
   Write-LogSuccess "SSH configuration completed."
 }
 
-function Install-NerdFonts {
-  Write-LogInfo "Installing SFMono Nerd Font..."
-
-  $FontURL = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SFMono.zip"
-  $FontZip = "$env:TEMP\SFMono.zip"
-  $FontExtractPath = "$env:TEMP\SFMono"
-
-  # Download the font zip
-  Write-LogInfo "Downloading SFMono Nerd Font..."
-  Invoke-WebRequest -Uri $FontURL -OutFile $FontZip
-
-  # Create the extraction directory if it doesn't exist
-  if (!(Test-Path $FontExtractPath)) {
-    New-Item -ItemType Directory -Path $FontExtractPath | Out-Null
-  }
-
-  # Extract the font files
-  Write-LogInfo "Extracting font files..."
-  Expand-Archive -Path $FontZip -DestinationPath $FontExtractPath -Force
-
-  # Install the fonts
-  Write-LogInfo "Installing font files..."
-  $FontsFolder = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
-  
-  # Ensure the fonts directory exists
-  if (!(Test-Path $FontsFolder)) {
-    New-Item -ItemType Directory -Path $FontsFolder | Out-Null
-  }
-
-  $Fonts = Get-ChildItem -Path $FontExtractPath -Filter "*.ttf"
-  foreach ($Font in $Fonts) {
-    $DestPath = Join-Path -Path $FontsFolder -ChildPath $Font.Name
-    Copy-Item -Path $Font.FullName -Destination $DestPath -Force
-    Write-Host "Installed: $($Font.Name)"
-  }
-
-  # Add the fonts to the Windows registry (so they appear in font lists)
-  $RegPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
-  foreach ($Font in $Fonts) {
-    $FontName = $Font.BaseName
-    $FontFile = Join-Path -Path $FontsFolder -ChildPath $Font.Name
-    Set-ItemProperty -Path $RegPath -Name "$FontName (TrueType)" -Value $FontFile
-  }
-
-  # Clean up
-  Remove-Item $FontZip -Force
-  Remove-Item $FontExtractPath -Force -Recurse
-
-  Write-LogSuccess "SFMono Nerd Font installed successfully! 🎉"
-}
-
 # =============================================================================
 # MAIN SCRIPT
 # =============================================================================
@@ -494,7 +466,6 @@ function Start-Installation {
   Install-DotfilesConfigs
   Set-GitConfiguration
   Install-SSHConfig
-  Install-NerdFonts
 
   # TODO: Additional tasks as noted in the original script
   # - Configure paths
