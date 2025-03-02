@@ -16,6 +16,9 @@ catch {
 #  Tool Initializations
 # =============================================================================
 
+# Import required modules
+Import-Module PSReadLine, Terminal-Icons, PSFzf, posh-git, PowerShellForGitHub, PSWindowsUpdate, BurntToast -ErrorAction SilentlyContinue
+
 # Windows Package Manager Completion
 Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
   param($wordToComplete, $commandAst, $cursorPosition)
@@ -27,27 +30,37 @@ Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
   }
 }
 
-# Lazy-load Terminal-Icons
-function Import-TerminalIcons {
-  try {
-    if (-not (Get-Module -Name "Terminal-Icons" -ListAvailable)) {
-      Write-Host "Installing Terminal-Icons module..."
-      Install-Module -Name Terminal-Icons -Repository PSGallery -Force -ErrorAction Stop
-    }
-    Import-Module -Name Terminal-Icons -ErrorAction Stop
-    
-    # Remove this function since we don't need it anymore
-    Remove-Item function:Import-TerminalIcons
-  }
-  catch {
-    Write-Host "Error loading Terminal-Icons: $($_.Exception.Message)" -ForegroundColor Yellow
-  }
+# Initialize Zoxide (smart directory navigation)
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+  Invoke-Expression (& { (zoxide init powershell | Out-String) })
 }
 
-# Create function aliases that will trigger lazy loading
-function ll { Import-TerminalIcons; Get-ChildItem @args }
-function ls { Import-TerminalIcons; Get-ChildItem @args }
-function dir { Import-TerminalIcons; Get-ChildItem @args }
+# Configure PSFzf
+if (Get-Module -Name PSFzf -ListAvailable) {
+  # Use PSReadline built-in to search command history with fzf
+  Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+  
+  # Set key bindings for directory navigation (Alt+c opens fzf directory browser)
+  Set-PsFzfOption -TabExpansion
+  
+  # Override built-in directory navigation commands
+  Set-PSFzfOption -EnableAliasFuzzySetLocation
+  Set-PSFzfOption -EnableAliasFuzzyEdit
+  Set-PSFzfOption -EnableAliasFuzzyHistory
+  Set-PSFzfOption -EnableAliasFuzzyKillProcess
+}
+
+# Configure PSReadLine
+if (Get-Module -Name PSReadLine -ListAvailable) {
+  # Enable history search
+  Set-PSReadLineOption -PredictionSource History
+  Set-PSReadLineOption -PredictionViewStyle ListView
+  Set-PSReadLineOption -EditMode Windows
+  
+  # Set key bindings
+  Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+  Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+}
 
 # Define script directory (needed for custom functions)
 $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
@@ -235,6 +248,55 @@ function Install-Starship {
   }
   catch {
     Write-Host "Error installing Starship: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+
+# Function to install fzf if needed
+function Install-Fzf {
+  try {
+    if (-not (winget list --exact --id junegunn.fzf)) {
+      Write-Host "Installing fzf..."
+      winget install --id junegunn.fzf --silent --accept-source-agreements --accept-package-agreements
+      # Refresh PATH
+      $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+      Write-Host "fzf installed successfully!" -ForegroundColor Green
+    }
+    else {
+      Write-Host "fzf is already installed." -ForegroundColor Green
+    }
+  }
+  catch {
+    Write-Host "Error installing fzf: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+
+# Function to install zoxide if needed
+function Install-Zoxide {
+  try {
+    if (-not (winget list --exact --id ajeetdsouza.zoxide)) {
+      Write-Host "Installing zoxide..."
+      winget install --id ajeetdsouza.zoxide --silent --accept-source-agreements --accept-package-agreements
+      # Refresh PATH
+      $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+      Write-Host "zoxide installed successfully!" -ForegroundColor Green
+    }
+    else {
+      Write-Host "zoxide is already installed." -ForegroundColor Green
+    }
+  }
+  catch {
+    Write-Host "Error installing zoxide: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+
+# Function to install PowerShell modules if needed
+function Install-RequiredModules {
+  $modules = @("PSReadLine", "Terminal-Icons", "PSFzf", "posh-git", "PowerShellForGitHub", "PSWindowsUpdate", "BurntToast")
+  foreach ($module in $modules) {
+    if (-not (Get-Module -ListAvailable -Name $module)) {
+      Write-Host "Installing $module module..."
+      Install-Module -Name $module -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+    }
   }
 }
 

@@ -28,6 +28,8 @@ $WINGET_APPS = @(
   "Python.Python.3.13"
   "Microsoft.DevHome"
   "Starship.Starship"
+  "junegunn.fzf"
+  "ajeetdsouza.zoxide"
 )
 
 # Git configuration
@@ -350,15 +352,25 @@ function Install-Applications {
 }
 
 function Install-PowerShellModules {
-  Write-LogInfo "Installing PowerShell modules..."
-
-  # Install PSReadLine
-  if (-not (Get-Module -ListAvailable -Name PSReadLine)) {
-    Write-LogInfo "Installing PSReadLine..."
-    Install-Module -Name PSReadLine -Force
-  }
-  else {
-    Write-LogInfo "PSReadLine is already installed."
+  Write-LogInfo "Installing additional PowerShell modules..."
+  $modules = @(
+    "PSReadLine", 
+    "Terminal-Icons",
+    "PSFzf",
+    "posh-git", 
+    "PowerShellForGitHub", 
+    "PSWindowsUpdate", 
+    "BurntToast"
+  )
+  
+  foreach ($module in $modules) {
+    if (-not (Get-Module -ListAvailable -Name $module)) {
+      Write-LogInfo "Installing $module module..."
+      Install-Module -Name $module -Scope CurrentUser -Force
+    }
+    else {
+      Write-LogInfo "$module is already installed."
+    }
   }
 
   Write-LogSuccess "PowerShell modules installation completed."
