@@ -415,6 +415,24 @@ function Install-DotfilesConfigs {
     Write-LogWarning "PowerShell profile not found at $sourcePSProfile"
   }
 
+  # Copy Windows Terminal settings
+  $terminalSettingsSource = Join-Path $DOTFILES_DIR "Windows\Terminal\settings.json"
+  $terminalSettingsDestination = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+  
+  if (Test-Path $terminalSettingsSource) {
+    Write-LogInfo "Installing Windows Terminal settings..."
+    # Create destination directory if it doesn't exist
+    $terminalSettingsDir = Split-Path -Parent $terminalSettingsDestination
+    if (-not (Test-Path $terminalSettingsDir)) {
+      New-Item -ItemType Directory -Path $terminalSettingsDir -Force | Out-Null
+    }
+    Copy-Item -Path $terminalSettingsSource -Destination $terminalSettingsDestination -Force
+    Write-LogSuccess "Windows Terminal settings installed."
+  }
+  else {
+    Write-LogWarning "Windows Terminal settings not found at $terminalSettingsSource"
+  }
+
   # Copy winget settings
   $wingetSettingsSource = Join-Path $DOTFILES_DIR "Windows\winget\settings.json"
   $wingetSettingsDestination = "%LOCALAPPDATA%\Microsoft\WinGet\Settings.json"
