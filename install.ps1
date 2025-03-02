@@ -24,6 +24,7 @@ $WINGET_APPS = @(
   "Microsoft.PowerToys"
   "Microsoft.VisualStudioCode"
   "Python.Python3"
+  "Microsoft.WSL"
   "Canonical.Ubuntu"
   "Microsoft.DevHome"
   "Starship.Starship"
