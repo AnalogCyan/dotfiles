@@ -187,6 +187,36 @@ confirm() {
 # INSTALLATION FUNCTIONS
 # =============================================================================
 
+install_updates() {
+  log_info "Ensuring system is up-to-date..."
+
+  # Update macOS system software
+  log_info "Checking for macOS system updates..."
+  sudo softwareupdate -ia --force --verbose || {
+    log_warning "Some macOS updates may have failed to install."
+  }
+
+  # Update Homebrew and packages if installed
+  if command -v brew &>/dev/null; then
+    log_info "Updating Homebrew packages..."
+    brew update || {
+      log_warning "Failed to update Homebrew."
+    }
+
+    # Upgrade all packages
+    brew upgrade || {
+      log_warning "Some Homebrew packages failed to upgrade."
+    }
+
+    # Clean up old versions
+    brew cleanup || {
+      log_warning "Homebrew cleanup failed."
+    }
+  fi
+
+  log_success "System update process completed."
+}
+
 check_system_compatibility() {
   log_info "Checking system compatibility..."
 
@@ -556,6 +586,9 @@ main() {
 
   # Basic system checks
   check_system_compatibility
+
+  # Update system
+  install_updates
 
   # Install Homebrew
   install_homebrew
