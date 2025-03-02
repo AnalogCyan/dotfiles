@@ -43,6 +43,7 @@ APT_PACKAGES=(
   "wget"
   "xz-utils"
   "yt-dlp"
+  "zoxide"
   "zsh"
 )
 
