@@ -3,15 +3,40 @@
 # =============================================================================
 
 # Install Starship if not already installed
-if (-not (Get-Command starship -ErrorAction SilentlyContinue)) {
-  Write-Host "Installing Starship..."
-  winget install --id Starship.Starship
-  # Refresh PATH
-  $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+try {
+  if (-not (winget list --exact --id Starship.Starship)) {
+    Write-Host "Installing Starship..."
+    winget install --id Starship.Starship --silent --accept-source-agreements --accept-package-agreements
+    # Refresh PATH
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+  }
+
+  # Initialize Starship if available
+  if (Get-Command starship -ErrorAction SilentlyContinue) {
+    Invoke-Expression (&starship init powershell)
+  }
+  else {
+    Write-Host "Warning: Starship not found. Using default prompt." -ForegroundColor Yellow
+  }
+}
+catch {
+  Write-Host "Error initializing Starship: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host "Falling back to default prompt." -ForegroundColor Yellow
 }
 
-# Initialize Starship
-Invoke-Expression (&starship init powershell)
+# Configure sudo to use inline mode if available
+try {
+  $sudoRegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo"
+  if (Test-Path $sudoRegPath) {
+    if ((Get-ItemProperty -Path $sudoRegPath -Name "Enabled" -ErrorAction SilentlyContinue).Enabled -ne 3) {
+      Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile -Command reg add 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo' /v 'Enabled' /t REG_DWORD /d 3 /f" -Wait
+      Write-Host "Set built-in sudo to inline mode."
+    }
+  }
+}
+catch {
+  Write-Host "Error configuring sudo: $($_.Exception.Message)" -ForegroundColor Yellow
+}
 
 # =============================================================================
 #  Tool Initializations
@@ -29,11 +54,16 @@ Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
 }
 
 # Terminal Icons
-if (-not (Get-Module -Name "Terminal-Icons" -ListAvailable)) {
-  Write-Host "Installing Terminal-Icons module..."
-  Install-Module -Name Terminal-Icons -Repository PSGallery -Force
+try {
+  if (-not (Get-Module -Name "Terminal-Icons" -ListAvailable)) {
+    Write-Host "Installing Terminal-Icons module..."
+    Install-Module -Name Terminal-Icons -Repository PSGallery -Force -ErrorAction Stop
+  }
+  Import-Module -Name Terminal-Icons -ErrorAction Stop
 }
-Import-Module -Name Terminal-Icons
+catch {
+  Write-Host "Error loading Terminal-Icons: $($_.Exception.Message)" -ForegroundColor Yellow
+}
 
 # =============================================================================
 #  Aliases and Functions

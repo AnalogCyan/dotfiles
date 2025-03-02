@@ -87,10 +87,17 @@ function Install-WingetApp {
     $name
   )
   
-  Write-LogInfo "Installing $name via Windows Package Manager..."
-  $n = winget upgrade --accept-package-agreements --accept-source-agreements --force -e $name
-  if ($n -match "No installed package found matching input criteria.") {
-    winget install --accept-package-agreements --accept-source-agreements --force -e $name
+  # First check if the app is already installed
+  Write-LogInfo "Checking if $name is already installed..."
+  $installedApp = winget list -e --id $name 2>$null
+  
+  if ($installedApp -match $name) {
+    Write-LogInfo "$name is already installed. Checking for updates..."
+    winget upgrade --accept-package-agreements --accept-source-agreements -e $name
+  }
+  else {
+    Write-LogInfo "Installing $name via Windows Package Manager..."
+    winget install --accept-package-agreements --accept-source-agreements -e $name
   }
 }
 
@@ -188,14 +195,75 @@ function Update-System {
 function Install-PackageManagers {
   Write-LogInfo "Installing package managers..."
 
-  # Install Windows Package Manager
+  # Install Windows Package Manager (Winget)
   if (-not (Get-Command winget.exe -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Installing Windows Package Manager..."
-    Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile choco install winget -y" -Wait
-    refreshenv
+    Write-LogInfo "Windows Package Manager (Winget) not found. Installing..."
+    
+    # Try to install from Microsoft Store first (preferred method)
+    try {
+      # Use ms-windows-store URI to open Microsoft Store to the App Installer page
+      Start-Process "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1"
+      Write-LogInfo "Microsoft Store has been opened to the App Installer page."
+      Write-LogInfo "Please install the App Installer (Winget) from the Microsoft Store."
+      
+      $confirmation = Confirm-Action "Have you completed the Winget installation from the Microsoft Store? (y/n)"
+      if (-not $confirmation) {
+        Write-LogWarning "Winget installation was not confirmed. Some features may not work correctly."
+      }
+      else {
+        # Refresh environment to detect newly installed Winget
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Write-LogSuccess "Environment refreshed."
+      }
+    }
+    catch {
+      Write-LogError "Failed to open Microsoft Store. Attempting alternative installation method..."
+      
+      # Alternative method - download the latest release from GitHub
+      $apiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+      $downloadUrl = $null
+      
+      try {
+        $release = Invoke-RestMethod -Uri $apiUrl -UseBasicParsing
+        $downloadUrl = ($release.assets | Where-Object { $_.name -like "*.msixbundle" }).browser_download_url
+        
+        if ($downloadUrl) {
+          $tempFile = Join-Path $env:TEMP "WingetInstaller.msixbundle"
+          Write-LogInfo "Downloading Winget installer..."
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $tempFile -UseBasicParsing
+          
+          Write-LogInfo "Installing Winget..."
+          Add-AppPackage -Path $tempFile
+          
+          # Refresh environment to detect newly installed Winget
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+          
+          Remove-Item $tempFile -Force
+          Write-LogSuccess "Winget installed successfully via GitHub release."
+        }
+      }
+      catch {
+        Write-LogError "Failed to install Winget: $_"
+        Write-LogWarning "Please install Winget manually from the Microsoft Store."
+      }
+    }
+    
+    # Verify installation
+    if (Get-Command winget.exe -ErrorAction SilentlyContinue) {
+      Write-LogSuccess "Winget is now available in this session."
+    }
+    else {
+      Write-LogError "Winget installation could not be verified. Please install it manually."
+      if (Confirm-Action "Would you like to continue anyway? Some features may not work. (y/n)") {
+        Write-LogWarning "Continuing without verified Winget installation."
+      }
+      else {
+        exit 1
+      }
+    }
   }
   else {
-    Write-LogInfo "Windows Package Manager is already installed."
+    Write-LogInfo "Windows Package Manager (Winget) is already installed."
   }
 
   Write-LogSuccess "Package managers installation completed."
