@@ -127,7 +127,7 @@ function Show-Greeting {
     }
     
     # Add a fortune quote if available
-    if (wsl.exe -- command -v fortune > /dev/null 2>&1) {
+    if (wsl.exe -- command -v fortune) {
       Write-Host "`nToday's fortune:"
       wsl.exe -- fortune -n 50 -s
     }
