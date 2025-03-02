@@ -181,31 +181,69 @@ function Set-SystemConfiguration {
 function Update-System {
   Write-LogInfo "Updating Windows system..."
 
-  # Force an update scan using modern command
-  Write-LogInfo "Starting Windows update scan..."
-  Start-Process -FilePath "UsoClient.exe" -ArgumentList "StartScan" -NoNewWindow -Wait
-
-  # Ensure PSWindowsUpdate is installed for the current user
-  if (-not(Get-Command Install-WindowsUpdate -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Installing PSWindowsUpdate module..."
-    Install-Module -Name PSWindowsUpdate -Scope CurrentUser -Force
+  # Check if running as admin
+  $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+  
+  if (-not $isAdmin) {
+    Write-LogInfo "Elevation required for system updates. Requesting admin privileges..."
+    
+    # Create a script block with the update commands
+    $updateScript = {
+      # Force an update scan
+      Write-Output "Starting Windows update scan..."
+      Start-Process -FilePath "UsoClient.exe" -ArgumentList "StartScan" -NoNewWindow -Wait
+      
+      # Install PSWindowsUpdate if needed
+      if (-not(Get-Command Install-WindowsUpdate -ErrorAction SilentlyContinue)) {
+        Write-Output "Installing PSWindowsUpdate module..."
+        Install-Module -Name PSWindowsUpdate -Scope AllUsers -Force
+      }
+      Import-Module PSWindowsUpdate
+      
+      # Install updates
+      try {
+        Write-Output "Installing Windows updates (excluding drivers)..."
+        Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2
+      }
+      catch {
+        Write-Output "Error installing updates: $_"
+      }
+    }
+    
+    # Convert the script block to a string command
+    $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($updateScript.ToString()))
+    
+    # Use Start-Process to run the command elevated
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile", "-EncodedCommand", $encodedCommand -Wait
   }
-  Import-Module PSWindowsUpdate
-
-  # Install all available updates except drivers, logging errors
-  try {
-    Write-LogInfo "Installing Windows updates (excluding drivers)..."
-    Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2 -ErrorAction Stop
+  else {
+    # Already running as admin, execute directly
+    # Force an update scan
+    Write-LogInfo "Starting Windows update scan..."
+    Start-Process -FilePath "UsoClient.exe" -ArgumentList "StartScan" -NoNewWindow -Wait
+    
+    # Ensure PSWindowsUpdate is installed system-wide
+    if (-not(Get-Command Install-WindowsUpdate -ErrorAction SilentlyContinue)) {
+      Write-LogInfo "Installing PSWindowsUpdate module..."
+      Install-Module -Name PSWindowsUpdate -Scope AllUsers -Force
+    }
+    Import-Module PSWindowsUpdate
+    
+    # Install updates
+    try {
+      Write-LogInfo "Installing Windows updates (excluding drivers)..."
+      Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2 -ErrorAction Stop
+    }
+    catch {
+      Write-LogError "Failed to install updates: $_"
+    }
   }
-  catch {
-    Write-LogError "Failed to install updates: $_"
-  }
-
+  
   # Check if a reboot is needed
   if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
     Write-LogWarning "A reboot is required to complete updates."
   }
-
+  
   Write-LogSuccess "System update process completed."
 }
 
@@ -368,7 +406,7 @@ function Install-DotfilesConfigs {
   }
 
   # Copy PowerShell profile
-  $sourcePSProfile = Join-Path $DOTFILES_DIR "Windows\Profile.ps1"
+  $sourcePSProfile = Join-Path $DOTFILES_DIR "Windows\Microsoft.PowerShell_profile.ps1"
   if (Test-Path $sourcePSProfile) {
     Write-LogInfo "Installing PowerShell profile..."
     Copy-Item -Path $sourcePSProfile -Destination $PROFILE -Force
@@ -378,8 +416,8 @@ function Install-DotfilesConfigs {
   }
 
   # Copy winget settings
-  $wingetSettingsSource = Join-Path $DOTFILES_DIR "Windows\winget\settings.toml"
-  $wingetSettingsDestination = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.toml"
+  $wingetSettingsSource = Join-Path $DOTFILES_DIR "Windows\winget\settings.json"
+  $wingetSettingsDestination = "%LOCALAPPDATA%\Microsoft\WinGet\Settings.json"
   
   if (Test-Path $wingetSettingsSource) {
     Write-LogInfo "Installing winget settings..."
