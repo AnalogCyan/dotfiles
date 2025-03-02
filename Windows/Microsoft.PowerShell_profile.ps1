@@ -2,26 +2,14 @@
 #  Core Configuration and Prompt
 # =============================================================================
 
-# Install Starship if not already installed
+# Initialize Starship if available (skip check for installation on startup)
 try {
-  if (-not (winget list --exact --id Starship.Starship)) {
-    Write-Host "Installing Starship..."
-    winget install --id Starship.Starship --silent --accept-source-agreements --accept-package-agreements
-    # Refresh PATH
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-  }
-
-  # Initialize Starship if available
   if (Get-Command starship -ErrorAction SilentlyContinue) {
     Invoke-Expression (&starship init powershell)
-  }
-  else {
-    Write-Host "Warning: Starship not found. Using default prompt." -ForegroundColor Yellow
   }
 }
 catch {
   Write-Host "Error initializing Starship: $($_.Exception.Message)" -ForegroundColor Red
-  Write-Host "Falling back to default prompt." -ForegroundColor Yellow
 }
 
 # =============================================================================
@@ -39,27 +27,38 @@ Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
   }
 }
 
-# Terminal Icons
-try {
-  if (-not (Get-Module -Name "Terminal-Icons" -ListAvailable)) {
-    Write-Host "Installing Terminal-Icons module..."
-    Install-Module -Name Terminal-Icons -Repository PSGallery -Force -ErrorAction Stop
+# Lazy-load Terminal-Icons
+function Import-TerminalIcons {
+  try {
+    if (-not (Get-Module -Name "Terminal-Icons" -ListAvailable)) {
+      Write-Host "Installing Terminal-Icons module..."
+      Install-Module -Name Terminal-Icons -Repository PSGallery -Force -ErrorAction Stop
+    }
+    Import-Module -Name Terminal-Icons -ErrorAction Stop
+    
+    # Remove this function since we don't need it anymore
+    Remove-Item function:Import-TerminalIcons
   }
-  Import-Module -Name Terminal-Icons -ErrorAction Stop
+  catch {
+    Write-Host "Error loading Terminal-Icons: $($_.Exception.Message)" -ForegroundColor Yellow
+  }
 }
-catch {
-  Write-Host "Error loading Terminal-Icons: $($_.Exception.Message)" -ForegroundColor Yellow
-}
+
+# Create function aliases that will trigger lazy loading
+function ll { Import-TerminalIcons; Get-ChildItem @args }
+function ls { Import-TerminalIcons; Get-ChildItem @args }
+function dir { Import-TerminalIcons; Get-ChildItem @args }
+
+# Define script directory (needed for custom functions)
+$curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # =============================================================================
 #  Aliases and Functions
 # =============================================================================
 
-# Define script directory
-$curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-
 # Core aliases
 $aliasList = @(
+  # Add your aliases here
 )
 
 foreach ($alias in $aliasList) {
@@ -72,61 +71,105 @@ foreach ($alias in $aliasList) {
 }
 
 # =============================================================================
-#  Greeting Function
+#  Greeting Function - Optimized
 # =============================================================================
 
 function Show-Greeting {
   param(
-    [int]$SleepDuration = 2
+    [int]$SleepDuration = 0,
+    [switch]$Async
   )
   
-  # Wait briefly for any startup messages to clear
-  if ($SleepDuration -gt 0) {
-    Start-Sleep -Seconds $SleepDuration
-  }
-  
-  Clear-Host
-  
-  # Show system info with neofetch if available
-  if (Get-Command neofetch -ErrorAction SilentlyContinue) {
-    neofetch
-  }
-  
-  # Show weather information when available
-  if (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
-    $username = $env:USERNAME
-    $hour = (Get-Date).Hour
-    $greeting = if ($hour -lt 12) { "Good morning" } 
-    elseif ($hour -lt 17) { "Good afternoon" }
-    else { "Good evening" }
+  # Function to display the actual greeting
+  function Display-ActualGreeting {
+    Clear-Host
     
-    Write-Host -NoNewLine "$greeting, $username! It's currently "
-    
-    $min = Get-Date '08:00'
-    $max = Get-Date '17:30'
-    $now = Get-Date
-    if ($min.TimeOfDay -le $now.TimeOfDay -and $max.TimeOfDay -ge $now.TimeOfDay) {
-      wsl.exe -- curl -s wttr.in/Harrison+Arkansas\?format="%c+%C+%t+%o"
-    }
-    else {
-      wsl.exe -- curl -s wttr.in/Harrison+Arkansas\?format="%m+%C+%t+%o"
+    # Show system info with neofetch if available
+    if (Get-Command neofetch -ErrorAction SilentlyContinue) {
+      neofetch
     }
     
-    # Add a fortune quote if available
-    if (wsl.exe -- command -v fortune) {
-      Write-Host "`nToday's fortune:"
-      wsl.exe -- fortune -n 50 -s
+    # Show weather information when available
+    if (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
+      $username = $env:USERNAME
+      $hour = (Get-Date).Hour
+      $greeting = if ($hour -lt 12) { "Good morning" } 
+      elseif ($hour -lt 17) { "Good afternoon" }
+      else { "Good evening" }
+      
+      Write-Host "$greeting, $username!"
+      
+      # Only fetch weather when user explicitly calls Show-Greeting without -Async
+      if (-not $usingAsync) {
+        Write-Host -NoNewLine "Current weather: "
+        try {
+          $weatherResult = wsl.exe -- curl -s --connect-timeout 2 wttr.in/Harrison+Arkansas\?format="%c+%C+%t+%o"
+          Write-Host $weatherResult
+        }
+        catch {
+          Write-Host "Weather data unavailable"
+        }
+        
+        # Add a fortune quote if available
+        try {
+          if (wsl.exe -- command -v fortune 2>/dev/null) {
+            Write-Host "`nToday's fortune:"
+            wsl.exe -- fortune -n 50 -s
+          }
+        }
+        catch {
+          # Silent fail for fortune
+        }
+      }
     }
+    
+    Write-Host ""
   }
   
-  Write-Host ""
+  if ($Async) {
+    $usingAsync = $true
+    # Run the greeting async so PowerShell becomes usable immediately
+    Start-Job -ScriptBlock { 
+      param($sleepTime)
+      Start-Sleep -Seconds $sleepTime
+      # Need to re-define the function in the job context
+      ${function:Display-ActualGreeting} = $using:function:Display-ActualGreeting
+      Display-ActualGreeting
+    } -ArgumentList $SleepDuration | Out-Null
+  }
+  else {
+    $usingAsync = $false
+    if ($SleepDuration -gt 0) {
+      Start-Sleep -Seconds $SleepDuration
+    }
+    Display-ActualGreeting
+  }
 }
 
 # =============================================================================
 #  Initialize Environment
 # =============================================================================
 
-# Load any custom functions from separate files
+# Function to install Starship if needed (can be called explicitly)
+function Install-Starship {
+  try {
+    if (-not (winget list --exact --id Starship.Starship)) {
+      Write-Host "Installing Starship..."
+      winget install --id Starship.Starship --silent --accept-source-agreements --accept-package-agreements
+      # Refresh PATH
+      $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+      Write-Host "Starship installed successfully! Restart your terminal to use it." -ForegroundColor Green
+    }
+    else {
+      Write-Host "Starship is already installed." -ForegroundColor Green
+    }
+  }
+  catch {
+    Write-Host "Error installing Starship: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+
+# Load any custom functions from separate files - only if they exist
 $functionDir = "$curDir\functions"
 if (Test-Path $functionDir) {
   Get-ChildItem -Path $functionDir -Filter "*.ps1" | ForEach-Object {
@@ -138,6 +181,6 @@ if (Test-Path $functionDir) {
   }
 }
 
-# Display greeting when profile loads
-Show-Greeting
+# Display greeting asynchronously when profile loads
+Show-Greeting -Async
 
