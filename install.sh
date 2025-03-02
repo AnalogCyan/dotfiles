@@ -235,16 +235,29 @@ install_1password_cli() {
 install_powershell() {
   log_info "Installing PowerShell..."
 
-  wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" || {
+  # Get the version of Debian
+  source /etc/os-release
+
+  # Download the Microsoft repository GPG keys
+  wget -q "https://packages.microsoft.com/config/debian/$VERSION_ID/packages-microsoft-prod.deb" || {
     log_error "Failed to download PowerShell package."
     return 1
   }
 
+  # Register the Microsoft repository GPG keys
   sudo dpkg -i packages-microsoft-prod.deb
-  rm -f packages-microsoft-prod.deb
 
+  # Delete the Microsoft repository GPG keys file
+  rm packages-microsoft-prod.deb
+
+  # Update package lists after adding Microsoft repository
   sudo apt update
-  sudo apt install -y powershell
+
+  # Install PowerShell
+  sudo apt install -y powershell || {
+    log_error "Failed to install PowerShell."
+    return 1
+  }
 
   log_success "PowerShell installed."
 }
