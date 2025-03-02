@@ -166,18 +166,6 @@ function Test-SystemRequirements {
   Write-LogSuccess "System requirements check passed."
 }
 
-function Set-SystemConfiguration {
-  Write-LogInfo "Configuring system settings..."
-
-  # Virtualization features
-  if (-not (Get-Command hvc.exe -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Enabling virtualization features (Hyper-V, Sandbox, etc.)..."
-    Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart | Out-Null; Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -All -NoRestart | Out-Null; Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All -NoRestart | Out-Null" -Wait
-  }
-
-  Write-LogSuccess "System configuration completed."
-}
-
 function Update-System {
   Write-LogInfo "Updating Windows system..."
 
@@ -495,7 +483,6 @@ function Start-Installation {
   # Run installation steps
   Test-SystemRequirements
   Configure-SudoSupport
-  Set-SystemConfiguration
   Update-System
   Install-PackageManagers
   Install-Applications
