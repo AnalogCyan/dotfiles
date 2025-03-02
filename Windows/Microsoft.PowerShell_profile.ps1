@@ -2,61 +2,16 @@
 #  Core Configuration and Prompt
 # =============================================================================
 
-Function Prompt {
-  # Define prompt appearance based on context
-  $promptColor = "Cyan"
-  $promptIcon = "»"
-  $homeIcon = "~"
-  $prompt = $null
-  
-  # Check if running as administrator
-  $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-  if ($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    $promptColor = "Red"
-    $promptIcon = "#"
-  }
-  
-  # Version-specific settings
-  if ($PSVersionTable.PSVersion.Major -ge 6) {
-    # Setup Git integration
-    function InitializeGit {
-      Import-Module posh-git
-      $GitPromptSettings.DefaultPromptPath = ''
-      $GitPromptSettings.DefaultPromptSuffix = ''
-      $GitPromptSettings.EnableFileStatus = $false
-    }
-    
-    # Ensure posh-git is installed and loaded
-    if (-not (Get-Module -Name "posh-git" -ListAvailable)) {
-      Write-Host "Installing posh-git module..."
-      PowerShellGet\Install-Module posh-git -Scope CurrentUser -AllowPrerelease -Force
-    }
-    
-    if (-not (Get-Module -Name "posh-git")) {
-      Import-Module posh-git
-      InitializeGit
-    }
-    
-    # Create prompt with current directory and git status
-    if ($(Split-Path (Get-Item -Path ".\").FullName -Leaf) -eq $env:USERNAME) {
-      $prompt = Write-Prompt `n$homeIcon -ForegroundColor $promptColor
-    }
-    else {
-      $prompt = Write-Prompt `n$(Split-Path (Get-Item -Path ".\").FullName -Leaf) -ForegroundColor $promptColor
-    }
-    
-    # Add git status if available
-    $prompt += & $GitPromptScriptBlock
-    $prompt += Write-Prompt " $($promptIcon * ($nestedPromptLevel + 1)) "
-  }
-  
-  # Fallback for PowerShell v5 or admin mode
-  if (-not $prompt) {
-    $prompt = "$(Write-Host `n$(Split-Path (Get-Item -Path '.\').FullName -Leaf) -NoNewline -ForegroundColor $promptColor) $($promptIcon * ($nestedPromptLevel + 1)) "
-  }
-  
-  return $prompt
+# Install Starship if not already installed
+if (-not (Get-Command starship -ErrorAction SilentlyContinue)) {
+  Write-Host "Installing Starship..."
+  winget install --id Starship.Starship
+  # Refresh PATH
+  $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
+
+# Initialize Starship
+Invoke-Expression (&starship init powershell)
 
 # =============================================================================
 #  Tool Initializations
@@ -71,12 +26,6 @@ Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
   winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
     [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
   }
-}
-
-# Chocolatey Integration
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-  Import-Module "$ChocolateyProfile"
 }
 
 # Terminal Icons
@@ -95,19 +44,6 @@ $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Core aliases
 $aliasList = @(
-  @{Name = 'adbIP'; TargetPath = "$curDir\functions\adbIP.ps1" },
-  @{Name = 'compile'; TargetPath = "$curDir\functions\compile.ps1" },
-  @{Name = 'fish'; TargetPath = "$curDir\functions\fish.ps1" },
-  @{Name = '~'; TargetPath = "$curDir\functions\home.ps1" },
-  @{Name = 'vi'; TargetPath = 'vim' },
-  @{Name = 'vim'; TargetPath = "$curDir\functions\vim.ps1" },
-  @{Name = 'nano'; TargetPath = "$curDir\functions\nano.ps1" },
-  @{Name = 'cd'; TargetPath = "$curDir\functions\cd.ps1"; Options = 'AllScope' },
-  @{Name = 'clera'; TargetPath = 'Clear-Host' },
-  @{Name = 'lsd'; TargetPath = "$curDir\functions\lsd.ps1" },
-  @{Name = 'mosh'; TargetPath = "$curDir\functions\mosh.ps1" },
-  @{Name = 'top'; TargetPath = 'btop' },
-  @{Name = 'htop'; TargetPath = 'btop' }
 )
 
 foreach ($alias in $aliasList) {
@@ -118,14 +54,6 @@ foreach ($alias in $aliasList) {
     Set-Alias -Name $alias.Name -Value $alias.TargetPath
   }
 }
-
-# =============================================================================
-#  Console Appearance
-# =============================================================================
-
-$host.UI.RawUI.ForegroundColor = "White"
-$host.UI.RawUI.BackgroundColor = "Black"
-Set-ItemProperty -Path HKCU:\console -Name WindowAlpha -Value 240
 
 # =============================================================================
 #  Greeting Function

@@ -12,122 +12,21 @@
 # CONFIGURATION
 # =============================================================================
 
-# Package lists - easy to update in the future
-$CHOCO_APPS = @(
-  "autohotkey"
-  "chocolateygui"
-  "cascadia-code-nerd-font"
-  "firacode"
-  "firacodenf"
-  "mingw"
-  "ffmpeg"
-  "gawk"
-  "patch"
-  "sed"
-  "bat"
-  "ventoy"
-  "waifu2x-caffe"
-  "yt-dlp"
-  "autoclicker"
-  "itch"
-)
-
+# Package lists - empty for now, to be populated later
 $WINGET_APPS = @(
-  "1password-cli"
-  "AgileBits.1Password"
-  "AltSnap.AltSnap"
-  "Audacity.Audacity"
-  "CodeSector.TeraCopy"
-  "CPUID.CPU-Z"
-  "CPUID.HWMonitor"
-  "DelugeTeam.DelugeBeta"
-  "EclipseAdoptium.Temurin.17"
-  "ElectronicArts.EADesktop"
-  "GIMP.GIMP"
+  "Microsoft.PowerShell"
+  "Microsoft.WindowsTerminal"
+  "Microsoft.Edge"
+  "Microsoft.PCManager"
+  "M2Team.NanaZip"
+  "Microsoft.OneDrive"
   "Git.Git"
-  "GitHub.cli"
-  "GitHub.GitLFS"
-  "GnuPG.Gpg4win"
-  "Google.AndroidStudio"
-  "HandBrake.HandBrake"
-  "Initex.YogaDNS"
-  "Insecure.Nmap"
-  "Jaquadro.NBTExplorer"
-  "KDE.Kdenlive"
-  "KDE.KDiff3"
-  "Kitware.CMake"
-  "LLVM.LLVM"
-  "Logitech.Options"
-  "Logitech.UnifyingSoftware"
-  "Malwarebytes.Malwarebytes"
-  "Microsoft.GitCredentialManagerCore"
-  "Microsoft.WindowsSDK"
-  "Obsidian.Obsidian"
-  "Ombrelin.PlexRichPresence"
-  "OpenJS.NodeJS"
-  "Plex.Plex"
-  "Plex.Plexamp"
-  "Plex.PlexMediaServer"
-  "Python.Python.3"
-  "QMK.QMKToolbox"
-  "RaspberryPiFoundation.RaspberryPiImager"
-  "REALiX.HWiNFO"
-  "Spotify.Spotify" # Specifically the non-store version for spicetify compatibility
-  "Telegram.TelegramDesktop"
-  "TimKosse.FileZilla.Client"
-  "Twitch.TwitchStudio"
-  "Ubisoft.Connect"
-  "Unchecky.Uncheck"
-  "Valve.Steam"
-  "vim.vim"
-  "Win32diskimager.win32diskimager"
-  "WindscribeLimited.Windscribe"
-  "WiresharkFoundation.Wireshark"
-  "Yarn.Yarn"
-  "9MT60QV066RP" # ModernFlyouts
-  "9MV0B5HZVK9Z" # Xbox
-  "9MWV79XLFQH7" # Fluent Screen Recorder
-  "9MZ1SNWT0N5D" # PowerShell
-  "9N0DX20HK701" # Windows Terminal
-  "9N1SV6841F0B" # Tubi TV
-  "9N1Z0JXB224X" # UUP Media Creator
-  "9N26S50LN705" # Windows File Recovery
-  "9N4P75DXL6FG" # WSATools
-  "9N8G7TSCL18R" # NanaZip
-  "9NBLGGGZ5QDQ" # Xbox Avatars
-  "9NBLGGH30XJ3" # Xbox Accessories
-  "9NBLGGH4V0R3" # Xbox Avatar Editor
-  "9NBLGGH5R558" # Microsoft To Do
-  "9NGHP3DX8HDX" # Files App
-  "9NH1HGNGHB0W" # App Packages Viewer
-  "9NJHK44TTKSX" # Amazon Appstore
-  "9NLVH2LL4P1Z" # Videotape
-  "9NV4BS3L1H4S" # QuickLook
-  "9NZKPSTSNW4P" # Xbox Game Bar
-  "9P6PMZTM93LR" # Microsoft Defender Preview
-  "9P7KNL5RWT25" # Sysinternals
-  "9P9TQF7MRM4R" # Windows Subsystem for Linux Preview
-  "9PC3H3V7Q9CH" # Rufus
-  "9PD9BHGLFC7H" # Inkscape
-  "9PDXGNCFSCZV" # Ubuntu WSL
-  "9PGCV4V3BK4W" # DevToys
-  "9PGW18NPBZV5" # Minecraft Launcher
-  "9PLDPG46G47Z" # Xbox Insider Hub
-  "9PNNWB4TQ5H0" # Free Duplicate Finder
-  "9WZDNCRF0083" # Messenger
-  "9WZDNCRFHWLH" # HP Smart
-  "9WZDNCRFHWQT" # Drawboard PDF
-  "9WZDNCRFJ3L1" # Hulu
-  "9WZDNCRFJ3PS" # Microsoft Remote Desktop
-  "9WZDNCRFJ3PV" # Windows Scan
-  "9WZDNCRFJ3TJ" # Netflix
-  "9WZDNCRFJBD8" # Xbox Console Companion
-  "XP89DCGQ3K6VLD" # Microsoft PowerToys
-  "XP8BX7ZFN357DS" # Playnite
-  "XP99VR1BPSBQJ2" # Epic Games
-  "XP9KHM4BK9FZ7Q" # Visual Studio Code
-  "XPDC2RH70K22MN" # Discord
-  "XPDCFJDKLZJLP8" # Visual Studio Community 2022
+  "Microsoft.PowerToys"
+  "Microsoft.VisualStudioCode"
+  "Python.Python3"
+  "Canonical.Ubuntu"
+  "Microsoft.DevHome"
+  "Starship.Starship"
 )
 
 # Git configuration
@@ -137,6 +36,7 @@ $GIT_USER_EMAIL = "git@thayn.me"
 # Paths
 $DOTFILES_DIR = Get-Location
 $POWERSHELL_PROFILE_DIR = Split-Path -Parent $PROFILE
+$CONFIG_DIR = "$env:USERPROFILE\.config"
 
 # =============================================================================
 # UTILITY FUNCTIONS
@@ -194,6 +94,47 @@ function Install-WingetApp {
   }
 }
 
+# Function to manage sudo functionality
+function Configure-SudoSupport {
+  Write-LogInfo "Configuring sudo functionality..."
+
+  # Check Windows version to see if built-in sudo is available
+  $WinVer = [System.Environment]::OSVersion.Version
+  $SupportsBuiltInSudo = ($WinVer.Major -eq 10 -and $WinVer.Build -ge 25300) -or ($WinVer.Major -ge 11 -and $WinVer.Build -ge 22631)
+
+  if ($SupportsBuiltInSudo) {
+    Write-LogInfo "Built-in sudo is supported on this system."
+    
+    # Check if gsudo is installed and uninstall it
+    if (Get-Command "gsudo" -ErrorAction SilentlyContinue) {
+      Write-LogInfo "Uninstalling gsudo..."
+      winget uninstall gsudo --silent
+    }
+
+    # Enable built-in sudo if not already enabled
+    $SudoEnabled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo" -Name "Enabled" -ErrorAction SilentlyContinue).Enabled
+    if ($SudoEnabled -ne 1) {
+      Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile -Command reg add 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo' /v 'Enabled' /t REG_DWORD /d 1 /f" -Wait
+      Write-LogSuccess "Enabled built-in sudo!"
+    }
+    else {
+      Write-LogInfo "Built-in sudo is already enabled."
+    }
+  }
+  else {
+    Write-LogInfo "Built-in sudo is NOT supported on this version of Windows. Falling back to gsudo."
+    if (-not (Get-Command "gsudo" -ErrorAction SilentlyContinue)) {
+      Write-LogInfo "Installing gsudo..."
+      winget install gerardog.gsudo --silent --accept-package-agreements --accept-source-agreements
+    }
+    else {
+      Write-LogInfo "gsudo is already installed."
+    }
+  }
+
+  Write-LogSuccess "Sudo configuration completed."
+}
+
 # =============================================================================
 # INSTALLATION FUNCTIONS
 # =============================================================================
@@ -201,16 +142,17 @@ function Install-WingetApp {
 function Test-SystemRequirements {
   Write-LogInfo "Checking system requirements..."
 
-  # Check if the script is running on Windows 10 or 11
-  if ([System.Environment]::OSVersion.Version.Major -lt 10) {
-    Write-LogError "This script is only compatible with Windows 10 or 11!"
+  # Check Windows version (Windows 11 or newer)
+  $osVersion = [System.Environment]::OSVersion.Version
+  if ($osVersion.Major -lt 10 -or ($osVersion.Major -eq 10 -and $osVersion.Build -lt 22000)) {
+    Write-LogError "This script requires Windows 11 or newer!"
     exit 1
   }
 
-  # Check if the script is running with administrative privileges
+  # Check if running without admin privileges (preferred)
   $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
   if ($isAdmin) {
-    Write-LogError "Script cannot be run as administrator!"
+    Write-LogError "Script should not be run as administrator!"
     exit 1
   }
 
@@ -246,16 +188,6 @@ function Update-System {
 function Install-PackageManagers {
   Write-LogInfo "Installing package managers..."
 
-  # Install Chocolatey
-  if (-not (Get-Command choco.exe -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Installing Chocolatey..."
-    Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" -Wait
-    refreshenv
-  }
-  else {
-    Write-LogInfo "Chocolatey is already installed."
-  }
-
   # Install Windows Package Manager
   if (-not (Get-Command winget.exe -ErrorAction SilentlyContinue)) {
     Write-LogInfo "Installing Windows Package Manager..."
@@ -271,11 +203,6 @@ function Install-PackageManagers {
 
 function Install-Applications {
   Write-LogInfo "Installing applications..."
-
-  # Install Chocolatey applications
-  Write-LogInfo "Installing Chocolatey applications..."
-  $chocoAppsString = $CHOCO_APPS -join " "
-  Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile choco upgrade -y $chocoAppsString" -Wait
 
   # Install Winget applications
   Write-LogInfo "Installing Windows Package Manager applications..."
@@ -296,35 +223,11 @@ function Install-Applications {
   Write-LogInfo "Installing Starship prompt..."
   Install-WingetApp -name "Starship.Starship"
 
-  # Install Flutter
-  Write-LogInfo "Installing Flutter SDK..."
-  $flutterPath = "C:\Users\cyan\AppData\Local\Android\flutter"
-  if (-not (Test-Path $flutterPath)) {
-    New-Item -Force -ItemType Directory -Path "C:\Users\cyan\AppData\Local\Android"
-    git clone https://github.com/flutter/flutter.git -b stable $flutterPath
-  }
-  else {
-    Write-LogInfo "Flutter is already installed. Updating..."
-    Push-Location $flutterPath
-    git pull
-    Pop-Location
-  }
-
   Write-LogSuccess "Applications installation completed."
 }
 
 function Install-PowerShellModules {
   Write-LogInfo "Installing PowerShell modules..."
-
-  # Install Oh-My-Posh
-  if (-not (Get-Command oh-my-posh.exe -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Installing Oh-My-Posh..."
-    winget install JanDeDobbeleer.OhMyPosh -s winget
-  }
-  else {
-    Write-LogInfo "Updating Oh-My-Posh..."
-    winget upgrade JanDeDobbeleer.OhMyPosh -s winget
-  }
 
   # Install PSReadLine
   if (-not (Get-Module -ListAvailable -Name PSReadLine)) {
@@ -340,44 +243,34 @@ function Install-PowerShellModules {
 
 function Install-StarshipPrompt {
   Write-LogInfo "Configuring Starship prompt..."
-  
-  # Create .config directory if it doesn't exist
-  $configDir = "$env:USERPROFILE\.config"
-  if (-not (Test-Path $configDir)) {
-    New-Item -ItemType Directory -Path $configDir -Force | Out-Null
-    Write-LogInfo "Created config directory at $configDir"
+    
+  # Create config directory if it doesn't exist
+  if (-not (Test-Path $CONFIG_DIR)) {
+    New-Item -ItemType Directory -Path $CONFIG_DIR -Force | Out-Null
+    Write-LogInfo "Created config directory at $CONFIG_DIR"
   }
-  
+    
   # Copy starship.toml from dotfiles repo
   $starshipConfigSource = Join-Path $DOTFILES_DIR "starship.toml"
-  $starshipConfigDest = Join-Path $configDir "starship.toml"
-  
+  $starshipConfigDest = Join-Path $CONFIG_DIR "starship.toml"
+    
   if (Test-Path $starshipConfigSource) {
     Copy-Item -Path $starshipConfigSource -Destination $starshipConfigDest -Force
-    Write-LogInfo "Copied starship.toml to $starshipConfigDest"
+    Write-LogSuccess "Copied starship.toml to $starshipConfigDest"
   }
   else {
     Write-LogError "starship.toml not found at $starshipConfigSource"
     Write-LogInfo "Creating fallback configuration..."
-    curl.exe -sS https://starship.rs/presets/toml/minimal.toml -o $starshipConfigDest
+    $url = "https://starship.rs/presets/toml/minimal.toml"
+    Invoke-WebRequest -Uri $url -OutFile $starshipConfigDest
   }
 
-  # Update PowerShell profile to initialize Starship
-  if (-not (Test-Path $PROFILE)) {
-    New-Item -Path $PROFILE -ItemType File -Force | Out-Null
-    Write-LogInfo "Created new PowerShell profile at $PROFILE"
+  # Ensure Starship is installed via winget
+  if (-not (Get-Command starship -ErrorAction SilentlyContinue)) {
+    Write-LogInfo "Installing Starship via winget..."
+    winget install --accept-source-agreements --accept-package-agreements -e Starship.Starship
   }
-  
-  # Check if Starship initialization is already in the profile
-  $profileContent = Get-Content -Path $PROFILE -ErrorAction SilentlyContinue
-  if (-not ($profileContent -match "Invoke-Expression .*starship init powershell.*")) {
-    Add-Content -Path $PROFILE -Value "`n# Initialize Starship prompt`nInvoke-Expression (&starship init powershell)" -Force
-    Write-LogInfo "Added Starship initialization to PowerShell profile"
-  }
-  else {
-    Write-LogInfo "Starship initialization already in PowerShell profile"
-  }
-  
+
   Write-LogSuccess "Starship prompt configured."
 }
 
@@ -389,18 +282,11 @@ function Install-DotfilesConfigs {
     New-Item -ItemType Directory -Path $POWERSHELL_PROFILE_DIR -Force | Out-Null
   }
 
-  # Copy PowerShell profile from Windows directory
+  # Copy PowerShell profile
   $sourcePSProfile = Join-Path $DOTFILES_DIR "Windows\Profile.ps1"
   if (Test-Path $sourcePSProfile) {
     Write-LogInfo "Installing PowerShell profile..."
     Copy-Item -Path $sourcePSProfile -Destination $PROFILE -Force
-    
-    # Ensure Starship initialization is in the profile
-    $profileContent = Get-Content -Path $PROFILE -ErrorAction SilentlyContinue
-    if (-not ($profileContent -match "Invoke-Expression .*starship init powershell.*")) {
-      Add-Content -Path $PROFILE -Value "`n# Initialize Starship prompt`nInvoke-Expression (&starship init powershell)" -Force
-      Write-LogInfo "Added Starship initialization to PowerShell profile"
-    }
   }
   else {
     Write-LogWarning "PowerShell profile not found at $sourcePSProfile"
@@ -417,17 +303,6 @@ function Install-DotfilesConfigs {
     Write-LogWarning "Windows Terminal settings not found at $terminalSettingsSource"
   }
 
-  # Copy Winget settings
-  $wingetSettingsSource = Join-Path $DOTFILES_DIR "Windows\winget\settings.json"
-  $wingetSettingsDestination = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.json"
-  if (Test-Path $wingetSettingsSource) {
-    Write-LogInfo "Installing Winget settings..."
-    Copy-Item -Path $wingetSettingsSource -Destination $wingetSettingsDestination -Force
-  }
-  else {
-    Write-LogWarning "Winget settings not found at $wingetSettingsSource"
-  }
-
   Write-LogSuccess "Dotfiles configurations installed."
 }
 
@@ -435,9 +310,9 @@ function Set-GitConfiguration {
   Write-LogInfo "Configuring Git..."
 
   if (Get-Command git -ErrorAction SilentlyContinue) {
-    # Choose appropriate editor based on environment
+    # Choose appropriate editor
     $editor = if (Get-Command code -ErrorAction SilentlyContinue) {
-      "code --wait -n"
+      "code --wait"
     }
     else {
       "vim"
@@ -489,6 +364,7 @@ function Start-Installation {
 
   # Run installation steps
   Test-SystemRequirements
+  Configure-SudoSupport
   Set-SystemConfiguration
   Update-System
   Install-PackageManagers
@@ -509,7 +385,7 @@ function Start-Installation {
   Write-Host "=====================================" -ForegroundColor Cyan
   Write-LogSuccess "Dotfiles installation complete!"
   Write-Host "=====================================" -ForegroundColor Cyan
-  
+    
   if (Confirm-Action "Would you like to restart your computer now to complete the setup?") {
     Write-LogInfo "Restarting system..."
     Restart-Computer

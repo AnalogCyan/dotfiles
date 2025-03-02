@@ -30,6 +30,7 @@ BREW_TAPS=(
 )
 
 BREW_FORMULAE=(
+  "antidote"                             # Plugin manager for zsh
   "aria2"                                # High speed download utility with multi-protocol support
   "autoconf-archive"                     # Collection of macros for GNU Autoconf
   "automake"                             # Tool for generating GNU Standards-compliant Makefiles
@@ -51,6 +52,7 @@ BREW_FORMULAE=(
   "gnu-sed"                              # GNU implementation of the sed utility
   "grep"                                 # GNU grep, egrep and fgrep
   "imagemagick"                          # Tools and libraries to manipulate images
+  "zsh"                                  # UNIX shell (Z-Shell)
   "lazygit"                              # Simple terminal UI for git commands
   "lolcat"                               # Rainbow coloring for text output
   "make"                                 # Utility for directing compilation
@@ -487,26 +489,6 @@ install_mas_apps() {
   log_success "Mac App Store applications installed."
 }
 
-# Helper function to install Antidote via git when Homebrew is unavailable
-install_antidote_git() {
-  log_info "Installing Antidote via git..."
-
-  # Create Antidote directory
-  mkdir -p ~/.antidote
-
-  # Clone Antidote repository
-  if [ ! -d "$HOME/.antidote" ]; then
-    log_info "Cloning Antidote repository..."
-    git clone --depth=1 https://github.com/mattmc3/antidote.git ~/.antidote || {
-      log_error "Failed to clone Antidote repository."
-      return 1
-    }
-  else
-    log_info "Antidote repository already exists. Updating..."
-    (cd ~/.antidote && git pull)
-  fi
-}
-
 configure_git() {
   log_info "Configuring git..."
 
@@ -530,6 +512,37 @@ configure_git() {
   log_success "Git configured."
 }
 
+configure_zsh() {
+  log_info "Configuring Homebrew zsh..."
+
+  # Get the path to Homebrew's zsh
+  BREW_ZSH="$(brew --prefix)/bin/zsh"
+
+  # Check if Homebrew's zsh is installed
+  if [ ! -f "$BREW_ZSH" ]; then
+    log_error "Homebrew zsh not found. Please ensure it's installed."
+    return 1
+  fi
+
+  # Add Homebrew's zsh to /etc/shells if it's not already there
+  if ! grep -q "$BREW_ZSH" /etc/shells; then
+    log_info "Adding Homebrew zsh to /etc/shells..."
+    echo "$BREW_ZSH" | sudo tee -a /etc/shells >/dev/null || {
+      log_error "Failed to add Homebrew zsh to /etc/shells."
+      return 1
+    }
+  fi
+
+  # Change the default shell to Homebrew's zsh
+  log_info "Changing default shell to Homebrew zsh..."
+  chsh -s "$BREW_ZSH" || {
+    log_error "Failed to change default shell."
+    return 1
+  }
+
+  log_success "Homebrew zsh configured as default shell."
+}
+
 # =============================================================================
 # MAIN EXECUTION
 # =============================================================================
@@ -547,6 +560,9 @@ main() {
   # Install Homebrew
   install_homebrew
 
+  # Configure zsh
+  configure_zsh
+
   # Install binary scripts
   install_binary_scripts
 
@@ -557,9 +573,6 @@ main() {
   install_homebrew_packages
   install_npm_packages
   install_mas_apps
-
-  # Shell setup
-  install_antidote_git
 
   # Configure git
   configure_git

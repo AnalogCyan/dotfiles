@@ -3,5 +3,4 @@ zdharma-continuum/fast-syntax-highlighting
 zsh-users/zsh-history-substring-search
 marlonrichert/zsh-autocomplete
 agkozak/zsh-z
-ohmyzsh/ohmyzsh
 MichaelAquilina/zsh-you-should-use
