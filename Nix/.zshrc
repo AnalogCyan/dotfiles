@@ -2,9 +2,26 @@
 #  Core Configuration
 # =============================================================================
 
+# Detect OS for platform-specific configurations
+if [[ "$(uname)" == "Darwin" ]]; then
+  export MACOS=true
+else
+  export MACOS=false
+fi
+
 # Environment Paths
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
+
+# Add VSCode to path based on platform
+if [[ "$MACOS" == true ]]; then
+  # macOS VSCode path
+  [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]] &&
+    export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
+else
+  # Linux VSCode path
+  [[ -d "$HOME/.vscode/bin" ]] && export PATH="$HOME/.vscode/bin:$PATH"
+fi
+
 # Use XDG_DATA_HOME for tool-specific paths when possible
 export PATH="${XDG_DATA_HOME:-$HOME/.local/share}/codeium/bin:$PATH"
 
@@ -32,16 +49,16 @@ setopt histignorespace
 # =============================================================================
 
 # Initialize modern tools
-eval $(thefuck --alias 2>/dev/null)
-eval "$(zoxide init zsh)"
+command -v thefuck >/dev/null && eval $(thefuck --alias 2>/dev/null)
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 # Load fzf if it exists
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Initialize Starship prompt
-eval "$(starship init zsh)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
 
-# iTerm2 Integration
+# iTerm2 Integration (enable whenever detected, including SSH connections)
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # Additional configurations
@@ -51,13 +68,28 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 #  Plugin Management (Antidote)
 # =============================================================================
 
-# Initialize Antidote
-source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
-antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh
-source ~/.zsh_plugins.zsh
+# Initialize Antidote based on platform
+if [[ -f "${ZDOTDIR:-$HOME}/.antidote/antidote.zsh" ]]; then
+  # Git installation of Antidote (Linux default)
+  source "${ZDOTDIR:-$HOME}/.antidote/antidote.zsh"
+elif [[ "$MACOS" == true && -f "/opt/homebrew/opt/antidote/share/antidote/antidote.zsh" ]]; then
+  # macOS Homebrew location
+  source "/opt/homebrew/opt/antidote/share/antidote/antidote.zsh"
+elif [[ -f "/usr/local/share/antidote/antidote.zsh" ]]; then
+  # Linux package manager or x86 Homebrew location
+  source "/usr/local/share/antidote/antidote.zsh"
+else
+  echo "Antidote not found. Install it for ZSH plugin management."
+fi
 
-# Plugin configuration
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
+# Only load plugins if Antidote was sourced
+if command -v antidote >/dev/null; then
+  antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh
+  source ~/.zsh_plugins.zsh
+
+  # Plugin configuration
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
+fi
 
 # Custom completion paths
 fpath=(~/.zsh.d/ $fpath)
@@ -71,8 +103,10 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 # =============================================================================
 
 # System monitoring
-alias top='btop'
-alias htop='btop'
+command -v btop >/dev/null && {
+  alias top='btop'
+  alias htop='btop'
+}
 
 # =============================================================================
 #  Custom Functions
@@ -84,4 +118,4 @@ for func in $HOME/.config/zsh/functions/*.zsh; do
 done
 
 # Display greeting on shell start
-zsh_greeting
+command -v zsh_greeting >/dev/null && zsh_greeting
