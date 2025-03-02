@@ -17,6 +17,7 @@ set -u # Treat unset variables as an error
 
 # Package lists - easy to update in the future
 APT_PACKAGES=(
+  "apt-transport-https"
   "bat"
   "ca-certificates"
   "curl"
@@ -36,8 +37,10 @@ APT_PACKAGES=(
   "nodejs"
   "npm"
   "screen"
+  "software-properties-common"
   "thefuck"
   "vim"
+  "wget"
   "xz-utils"
   "yt-dlp"
   "zsh"
@@ -232,7 +235,7 @@ install_1password_cli() {
 install_powershell() {
   log_info "Installing PowerShell..."
 
-  wget -q "https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb" || {
+  wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" || {
     log_error "Failed to download PowerShell package."
     return 1
   }
