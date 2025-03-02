@@ -232,35 +232,35 @@ install_1password_cli() {
   log_success "1Password CLI installed."
 }
 
-install_powershell() {
-  log_info "Installing PowerShell..."
-
-  # Get the version of Debian
-  source /etc/os-release
-
-  # Download the Microsoft repository GPG keys
-  wget -q "https://packages.microsoft.com/config/debian/$VERSION_ID/packages-microsoft-prod.deb" || {
-    log_error "Failed to download PowerShell package."
-    return 1
-  }
-
-  # Register the Microsoft repository GPG keys
-  sudo dpkg -i packages-microsoft-prod.deb
-
-  # Delete the Microsoft repository GPG keys file
-  rm packages-microsoft-prod.deb
-
-  # Update package lists after adding Microsoft repository
-  sudo apt update
-
-  # Install PowerShell
-  sudo apt install -y powershell || {
-    log_error "Failed to install PowerShell."
-    return 1
-  }
-
-  log_success "PowerShell installed."
-}
+#install_powershell() {
+#  log_info "Installing PowerShell..."
+#
+#  # Get the version of Debian
+#  source /etc/os-release
+#
+#  # Download the Microsoft repository GPG keys
+#  wget -q "https://packages.microsoft.com/config/debian/$VERSION_ID/packages-microsoft-prod.deb" || {
+#    log_error "Failed to download PowerShell package."
+#    return 1
+#  }
+#
+#  # Register the Microsoft repository GPG keys
+#  sudo dpkg -i packages-microsoft-prod.deb
+#
+#  # Delete the Microsoft repository GPG keys file
+#  rm packages-microsoft-prod.deb
+#
+#  # Update package lists after adding Microsoft repository
+#  sudo apt update
+#
+#  # Install PowerShell
+#  sudo apt install -y powershell || {
+#    log_error "Failed to install PowerShell."
+#    return 1
+#  }
+#
+#  log_success "PowerShell installed."
+#}
 
 install_starship() {
   log_info "Installing Starship prompt..."
@@ -671,7 +671,7 @@ main() {
   install_apt_packages
   install_logo_ls
   install_1password_cli
-  install_powershell
+  #install_powershell
   install_npm_packages
   install_starship
 
