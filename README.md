@@ -9,6 +9,7 @@ dotfiles/
 ├── install.ps1       # Windows installation script
 ├── install.sh        # Linux installation script
 ├── install.zsh       # macOS installation script
+├── install-min.zsh   # Minimal macOS installation script
 ├── starship.toml     # Cross-platform Starship prompt configuration
 ├── Nix/              # Shared Unix configurations
 │   ├── .zshrc        # ZSH configuration file
@@ -16,7 +17,7 @@ dotfiles/
 │   ├── bin/          # Custom scripts and utilities
 │   └── functions/    # ZSH function definitions
 └── Windows/          # Windows-specific configurations
-    ├── Profile.ps1   # PowerShell profile
+    ├── Microsoft.PowerShell_profile.ps1   # PowerShell profile
     ├── Terminal/     # Windows Terminal settings
     ├── winget/       # Windows Package Manager settings
     └── ...
@@ -34,10 +35,11 @@ This repository contains a straightforward installation script (`install.zsh`) f
   - Uses Antidote for plugin management (replacing Oh-My-Zsh)
   - Installs customized ZSH plugins including:
     - zsh-history-substring-search
-    - zsh-completions
-    - zsh-you-should-use
-    - zsh-syntax-highlighting
+    - fast-syntax-highlighting
     - zsh-autosuggestions
+    - zsh-autocomplete
+    - zsh-z
+    - zsh-you-should-use
     - fzf shell extensions
   - Configures Starship prompt for beautiful, informative terminal
 - **Configuration Files**: Replaces the current `.zshrc` file with my custom configuration.
@@ -48,7 +50,7 @@ This repository contains a straightforward installation script (`install.zsh`) f
 ### Installation
 
 ```bash
-$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 $ cd ~/dotfiles
 $ chmod +x install.zsh
 $ ./install.zsh
@@ -82,11 +84,13 @@ This repository includes an installation script (`install.sh`) for setting up a 
   - Docker with proper configuration
 - **Binary Scripts**: Installs pfetch and other custom utilities to `~/bin/`.
 - **Git Configuration**: Sets up git with personalized settings.
+- **1Password CLI**: Installs and configures the 1Password command-line interface.
+- **PowerShell**: Installs Microsoft PowerShell for cross-platform consistency.
 
 ### Installation
 
 ```bash
-$ git clone https://github.com/username/dotfiles.git ~/dotfiles
+$ git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 $ cd ~/dotfiles
 $ chmod +x install.sh
 $ ./install.sh
@@ -100,34 +104,30 @@ The Windows installation script (`install.ps1`) provides comprehensive setup for
 
 ### Features
 
-- **System Configuration**: Configures Windows features including WSL2, Hyper-V, and Windows Sandbox.
+- **System Configuration**: Ensures compatibility with Windows 11.
+- **Sudo Support**: Configures built-in Windows sudo functionality when available or installs gsudo as fallback.
 - **System Updates**: Ensures Windows is up-to-date using PowerShell modules.
-- **Package Managers**: Installs and configures:
-  - Chocolatey
-  - Windows Package Manager (winget)
-- **Applications**: Installs a wide range of applications using both package managers:
-  - Development tools (Git, Visual Studio, VSCode, etc.)
-  - System utilities (PowerToys, Terminal, etc.)
-  - Media applications (Plex, Spotify, etc.)
-  - Gaming platforms (Steam, Epic Games, etc.)
+- **Package Managers**: Installs and configures Windows Package Manager (winget).
+- **Applications**: Installs a wide range of applications using winget:
+  - Development tools (Git, VSCode, Python, etc.)
+  - System utilities (PowerToys, Terminal, NanaZip, etc.)
+  - Nerd Fonts for enhanced terminal experience
 - **PowerShell Environment**: Installs and configures:
-  - Oh-My-Posh
-  - PSReadLine
+  - Starship prompt (replacing Oh-My-Posh)
   - Terminal-Icons
+  - PSReadLine
 - **Configuration Files**: Installs custom configurations for:
   - PowerShell profile
   - Windows Terminal
   - Winget settings
-- **Development Environments**: Sets up Flutter SDK.
 - **Git Configuration**: Configures git with personalized settings.
 
 ### Installation
 
 ```powershell
 # Clone the repository
-git clone https://github.com/username/dotfiles.git ~\dotfiles
+git clone https://github.com/AnalogCyan/dotfiles.git ~\dotfiles
 cd ~\dotfiles
-
 # Run the installation script (requires non-admin PowerShell)
 .\install.ps1
 ```
@@ -140,25 +140,26 @@ After installation completes, you'll be prompted to restart your computer to app
 
 This repository uses [Starship](https://starship.rs/), a minimal, blazing-fast, and infinitely customizable cross-platform prompt. The `starship.toml` configuration provides:
 
-- Customized prompt symbol (arrow) with color-coding for success/failure
+- Customized prompt symbol (dot) with color-coding for success/failure
 - Git branch and status information displayed on the right
 - Directory path display with customizable truncation
 - Special indicators for SSH sessions
 - Vim mode indicators
+- Python environment detection
 
 ### Antidote Plugin Manager
 
-The repository has migrated from Oh-My-Zsh to [Antidote](https://getantidote.github.io/), a fast and flexible plugin manager for ZSH:
+The repository uses [Antidote](https://getantidote.github.io/), a fast and flexible plugin manager for ZSH:
 
 - Simpler, cleaner plugin management
 - Faster shell startup time
 - All plugins defined in a single `.zsh_plugins.txt` file
-- Continued support for popular plugins previously used with Oh-My-Zsh
+- Support for modern ZSH plugins and functionality
 
 ## ⚠️ Important Notes
 
 - Always review the scripts before running them to ensure they match your needs.
-- Replace the git configuration with your own information.
+- Replace the git configuration with your own information (`GIT_USER_NAME` and `GIT_USER_EMAIL` variables).
 - Some applications may require additional manual setup after installation.
 - These scripts are designed for personal use and may need adjustment for your specific environment.
 
@@ -169,10 +170,8 @@ These dotfiles are regularly updated as my workflow evolves. To update your exis
 ```bash
 # Navigate to your dotfiles directory
 cd ~/dotfiles
-
 # Pull the latest changes
 git pull
-
 # Run the appropriate installation script for your OS
 # macOS:
 ./install.zsh
