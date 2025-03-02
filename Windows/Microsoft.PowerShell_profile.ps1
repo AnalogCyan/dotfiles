@@ -24,20 +24,6 @@ catch {
   Write-Host "Falling back to default prompt." -ForegroundColor Yellow
 }
 
-# Configure sudo to use inline mode if available
-try {
-  $sudoRegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo"
-  if (Test-Path $sudoRegPath) {
-    if ((Get-ItemProperty -Path $sudoRegPath -Name "Enabled" -ErrorAction SilentlyContinue).Enabled -ne 3) {
-      Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile -Command reg add 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo' /v 'Enabled' /t REG_DWORD /d 3 /f" -Wait
-      Write-Host "Set built-in sudo to inline mode."
-    }
-  }
-}
-catch {
-  Write-Host "Error configuring sudo: $($_.Exception.Message)" -ForegroundColor Yellow
-}
-
 # =============================================================================
 #  Tool Initializations
 # =============================================================================

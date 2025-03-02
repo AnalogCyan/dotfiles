@@ -127,6 +127,17 @@ function Configure-SudoSupport {
     else {
       Write-LogInfo "Built-in sudo is already enabled."
     }
+    
+    # Set sudo to inline mode
+    $SudoMode = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo" -Name "Mode" -ErrorAction SilentlyContinue).Mode
+    if ($SudoMode -ne 0) {
+      # 0 is inline mode
+      Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile -Command reg add 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo' /v 'Mode' /t REG_DWORD /d 0 /f" -Wait
+      Write-LogSuccess "Set built-in sudo to inline mode!"
+    }
+    else {
+      Write-LogInfo "Built-in sudo is already in inline mode."
+    }
   }
   else {
     Write-LogInfo "Built-in sudo is NOT supported on this version of Windows. Falling back to gsudo."
