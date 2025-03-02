@@ -2,12 +2,26 @@
   "$schema": "https://aka.ms/winget-settings.schema.json",
 
   // For documentation on these settings, see: https://aka.ms/winget-settings
+  "source": {
+    "autoUpdateIntervalInMinutes": 15
+  },
+
   "visual": {
     "progressBar": "rainbow"
   },
+
   "installBehavior": {
     "preferences": {
-      "architectures": ["arm64"]
-    }
+      "architectures": ["arm64", "x64"]
+    },
+    "skipDependencies": false,
+    "disableInstallNotes": true,
+    "archiveExtractionMethod": "tar"
+  },
+
+  "experimentalFeatures": {
+    "dependencies": true,
+    "directMSI": true,
+    "zipInstall": true
   }
 }
