@@ -28,25 +28,6 @@ setopt histignorealldups
 setopt histignorespace
 
 # =============================================================================
-#  Plugin Management (Antidote)
-# =============================================================================
-
-# Initialize Antidote
-source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
-antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh
-source ~/.zsh_plugins.zsh
-
-# Plugin configuration
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
-
-# Custom completion paths
-fpath=(~/.zsh.d/ $fpath)
-
-# Set completion options after plugins are loaded
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-
-# =============================================================================
 #  Tool Initializations
 # =============================================================================
 
@@ -65,6 +46,25 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 # Additional configurations
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+
+# =============================================================================
+#  Plugin Management (Antidote)
+# =============================================================================
+
+# Initialize Antidote
+source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
+antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh
+source ~/.zsh_plugins.zsh
+
+# Plugin configuration
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
+
+# Custom completion paths
+fpath=(~/.zsh.d/ $fpath)
+
+# Set completion options after plugins are loaded
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # =============================================================================
 #  Aliases
