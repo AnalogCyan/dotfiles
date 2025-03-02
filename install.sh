@@ -394,9 +394,6 @@ EOF
 install_antidote_git() {
   log_info "Installing Antidote via git..."
 
-  # Create Antidote directory
-  mkdir -p ~/.antidote
-
   # Clone Antidote repository
   if [ ! -d "$HOME/.antidote" ]; then
     log_info "Cloning Antidote repository..."
