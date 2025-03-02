@@ -24,7 +24,8 @@ $WINGET_APPS = @(
   "Git.Git"
   "Microsoft.PowerToys"
   "Microsoft.VisualStudioCode"
-  "Python.Python"
+  "Python.Launcher"
+  "Python.Python.3.13"
   "Microsoft.DevHome"
   "Starship.Starship"
 )
