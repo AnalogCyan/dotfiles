@@ -24,8 +24,6 @@ $WINGET_APPS = @(
   "Microsoft.PowerToys"
   "Microsoft.VisualStudioCode"
   "Python.Python3"
-  "Microsoft.WSL"
-  "Canonical.Ubuntu"
   "Microsoft.DevHome"
   "Starship.Starship"
 )
@@ -170,15 +168,10 @@ function Test-SystemRequirements {
 function Set-SystemConfiguration {
   Write-LogInfo "Configuring system settings..."
 
-  # Virtualization enable check and WSL update
-  if ((Get-Command wsl.exe -ErrorAction SilentlyContinue) -and (Get-Command ubuntu.exe -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Configuring WSL..."
-    wsl --set-default-version 2
-    wsl -- ./install.sh
-  }
-  elseif (-not (Get-Command hvc.exe -ErrorAction SilentlyContinue) -or (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
-    Write-LogInfo "Enabling virtualization features (Hyper-V, Sandbox, WSL, etc.)..."
-    Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile wsl --enable; Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart | Out-Null; Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -All -NoRestart | Out-Null; Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All -NoRestart | Out-Null" -Wait
+  # Virtualization features
+  if (-not (Get-Command hvc.exe -ErrorAction SilentlyContinue)) {
+    Write-LogInfo "Enabling virtualization features (Hyper-V, Sandbox, etc.)..."
+    Start-Process powershell -Verb runAs -ArgumentList "-NoLogo -NoProfile Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart | Out-Null; Enable-WindowsOptionalFeature -Online -FeatureName HypervisorPlatform -All -NoRestart | Out-Null; Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All -NoRestart | Out-Null" -Wait
   }
 
   Write-LogSuccess "System configuration completed."
@@ -361,15 +354,22 @@ function Install-DotfilesConfigs {
     Write-LogWarning "PowerShell profile not found at $sourcePSProfile"
   }
 
-  # Copy Windows Terminal settings
-  $terminalSettingsSource = Join-Path $DOTFILES_DIR "Windows\Terminal\settings.json"
-  $terminalSettingsDestination = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-  if (Test-Path $terminalSettingsSource) {
-    Write-LogInfo "Installing Windows Terminal settings..."
-    Copy-Item -Path $terminalSettingsSource -Destination $terminalSettingsDestination -Force
+  # Copy winget settings
+  $wingetSettingsSource = Join-Path $DOTFILES_DIR "Windows\winget\settings.toml"
+  $wingetSettingsDestination = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.toml"
+  
+  if (Test-Path $wingetSettingsSource) {
+    Write-LogInfo "Installing winget settings..."
+    # Create destination directory if it doesn't exist
+    $wingetSettingsDir = Split-Path -Parent $wingetSettingsDestination
+    if (-not (Test-Path $wingetSettingsDir)) {
+      New-Item -ItemType Directory -Path $wingetSettingsDir -Force | Out-Null
+    }
+    Copy-Item -Path $wingetSettingsSource -Destination $wingetSettingsDestination -Force
+    Write-LogSuccess "Winget settings installed."
   }
   else {
-    Write-LogWarning "Windows Terminal settings not found at $terminalSettingsSource"
+    Write-LogWarning "Winget settings not found at $wingetSettingsSource"
   }
 
   Write-LogSuccess "Dotfiles configurations installed."
