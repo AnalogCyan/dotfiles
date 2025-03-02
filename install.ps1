@@ -415,6 +415,57 @@ function Install-SSHConfig {
   Write-LogSuccess "SSH configuration completed."
 }
 
+function Install-NerdFonts {
+  Write-LogInfo "Installing SFMono Nerd Font..."
+
+  $FontURL = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SFMono.zip"
+  $FontZip = "$env:TEMP\SFMono.zip"
+  $FontExtractPath = "$env:TEMP\SFMono"
+
+  # Download the font zip
+  Write-LogInfo "Downloading SFMono Nerd Font..."
+  Invoke-WebRequest -Uri $FontURL -OutFile $FontZip
+
+  # Create the extraction directory if it doesn't exist
+  if (!(Test-Path $FontExtractPath)) {
+    New-Item -ItemType Directory -Path $FontExtractPath | Out-Null
+  }
+
+  # Extract the font files
+  Write-LogInfo "Extracting font files..."
+  Expand-Archive -Path $FontZip -DestinationPath $FontExtractPath -Force
+
+  # Install the fonts
+  Write-LogInfo "Installing font files..."
+  $FontsFolder = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+  
+  # Ensure the fonts directory exists
+  if (!(Test-Path $FontsFolder)) {
+    New-Item -ItemType Directory -Path $FontsFolder | Out-Null
+  }
+
+  $Fonts = Get-ChildItem -Path $FontExtractPath -Filter "*.ttf"
+  foreach ($Font in $Fonts) {
+    $DestPath = Join-Path -Path $FontsFolder -ChildPath $Font.Name
+    Copy-Item -Path $Font.FullName -Destination $DestPath -Force
+    Write-Host "Installed: $($Font.Name)"
+  }
+
+  # Add the fonts to the Windows registry (so they appear in font lists)
+  $RegPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
+  foreach ($Font in $Fonts) {
+    $FontName = $Font.BaseName
+    $FontFile = Join-Path -Path $FontsFolder -ChildPath $Font.Name
+    Set-ItemProperty -Path $RegPath -Name "$FontName (TrueType)" -Value $FontFile
+  }
+
+  # Clean up
+  Remove-Item $FontZip -Force
+  Remove-Item $FontExtractPath -Force -Recurse
+
+  Write-LogSuccess "SFMono Nerd Font installed successfully! 🎉"
+}
+
 # =============================================================================
 # MAIN SCRIPT
 # =============================================================================
@@ -443,6 +494,7 @@ function Start-Installation {
   Install-DotfilesConfigs
   Set-GitConfiguration
   Install-SSHConfig
+  Install-NerdFonts
 
   # TODO: Additional tasks as noted in the original script
   # - Configure paths
