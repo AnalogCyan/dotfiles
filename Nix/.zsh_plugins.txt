@@ -4,3 +4,8 @@ zsh-users/zsh-history-substring-search
 marlonrichert/zsh-autocomplete
 agkozak/zsh-z
 MichaelAquilina/zsh-you-should-use
+joshskidmore/zsh-fzf-history-search
+Aloxaf/fzf-tab
+mollifier/cd-gitroot
+unixorn/fzf-zsh-plugin
+hlissner/zsh-autopair
