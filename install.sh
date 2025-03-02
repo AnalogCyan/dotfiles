@@ -162,15 +162,41 @@ install_apt_packages() {
 install_logo_ls() {
   log_info "Installing logo-ls..."
 
-  wget -q "https://github.com/Yash-Handa/logo-ls/releases/download/v1.3.7/logo-ls_amd64.deb" || {
-    log_error "Failed to download logo-ls."
+  # Determine system architecture
+  ARCH=$(dpkg --print-architecture)
+
+  # Map architecture to logo-ls naming convention
+  case "$ARCH" in
+  amd64) ARCH="amd64" ;;
+  i386) ARCH="i386" ;;
+  arm64) ARCH="arm64" ;;
+  armhf) ARCH="armV6" ;; # Adjust if needed based on actual naming conventions
+  *)
+    log_error "Unsupported architecture: $ARCH"
+    return 1
+    ;;
+  esac
+
+  # Fetch latest release tag
+  LATEST_TAG=$(wget -qO- "https://api.github.com/repos/Yash-Handa/logo-ls/releases/latest" | grep -oP '"tag_name": "\K(.*?)(?=")')
+  if [ -z "$LATEST_TAG" ]; then
+    log_error "Failed to fetch latest release."
+    return 1
+  fi
+
+  # Construct download URL
+  DEB_URL="https://github.com/Yash-Handa/logo-ls/releases/download/${LATEST_TAG}/logo-ls_${ARCH}.deb"
+
+  # Download and install
+  wget -q "$DEB_URL" -O "logo-ls_${ARCH}.deb" || {
+    log_error "Failed to download logo-ls package."
     return 1
   }
 
-  sudo dpkg -i logo-ls_amd64.deb
-  rm -f logo-ls_amd64.deb
+  sudo dpkg -i "logo-ls_${ARCH}.deb"
+  rm -f "logo-ls_${ARCH}.deb"
 
-  log_success "logo-ls installed."
+  log_success "logo-ls installed successfully."
 }
 
 install_1password_cli() {
