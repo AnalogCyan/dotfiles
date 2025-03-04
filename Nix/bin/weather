@@ -9,9 +9,13 @@ CACHE_DURATION=1800 # 30 minutes
 # Ensure configuration directory exists
 mkdir -p "${CONFIG_DIR}"
 
-# Check for the --no-cache flag
+# Check for flags
 NO_CACHE=false
+DEBUG=false
 if [[ "$1" == "--no-cache" ]]; then
+  NO_CACHE=true
+elif [[ "$1" == "--debug" ]]; then
+  DEBUG=true
   NO_CACHE=true
 fi
 
@@ -44,7 +48,7 @@ get_file_mtime() {
   fi
 }
 
-# Check if we have a cached result that's still valid
+# Use cached result if valid
 if [ -f "${CACHE_FILE}" ] && [ "$NO_CACHE" == "false" ]; then
   CACHE_TIME=$(get_file_mtime "${CACHE_FILE}")
   CURRENT_TIME=$(date +%s)
@@ -59,39 +63,85 @@ if ! command -v curl >/dev/null 2>&1; then
   exit 1
 fi
 
-# Fetch the weather.
-# We fetch the condition icon and the Celsius temperature, then convert Celsius to Fahrenheit.
-# Expected output format: <icon> <Fahrenheit>°F/<Celsius>°C
-fetch_weather() {
-  local max_retries=3
-  local retry_count=0
-  local weather_raw=""
-  local icon=""
-  local temp_c_str=""
-  local temp_c=0
-  local temp_f=0
+# Function to fetch weather using JSON API
+fetch_json_weather() {
+  local encoded_city
+  encoded_city=$(echo "$CITY" | sed 's/ /%20/g' | sed 's/,/%2C/g')
 
-  while [ ${retry_count} -lt ${max_retries} ]; do
-    # Fetch weather data with Celsius temperature (%t) and condition icon (%c)
-    weather_raw=$(curl -s -f -m 10 "https://wttr.in/${CITY}?format=%c+%t")
-    if [ $? -eq 0 ] && [ -n "$weather_raw" ] && [[ ! "$weather_raw" =~ "Unknown location" ]]; then
-      # Collapse any extra whitespace.
-      weather_raw=$(echo "$weather_raw" | awk '{$1=$1; print}')
-      # Expecting format: "<icon> <temp>" e.g. "⛅️ +0°C"
-      icon=$(echo "$weather_raw" | awk '{print $1}')
-      temp_c_str=$(echo "$weather_raw" | awk '{print $2}')
-      # Remove any non-digit and non-minus characters, so we get a clean Celsius value.
-      temp_c=$(echo "$temp_c_str" | sed -E 's/[^0-9-]//g')
-      # Convert Celsius to Fahrenheit using the formula: (C * 9/5) + 32
-      temp_f=$(((temp_c * 9) / 5 + 32))
-      echo "${icon} ${temp_f}°F/${temp_c}°C" | tee "${CACHE_FILE}"
-      return 0
+  [[ "$DEBUG" == "true" ]] && echo "Debug - Fetching JSON weather for: $CITY" >&2
+
+  local weather_json
+  weather_json=$(curl -s -f -m 15 "https://wttr.in/${encoded_city}?format=j1")
+  local curl_exit=$?
+  if [ $curl_exit -ne 0 ] || [ -z "$weather_json" ] || [[ "$weather_json" =~ "Unknown location" ]]; then
+    [[ "$DEBUG" == "true" ]] && {
+      echo "Debug - Failed to fetch JSON data (exit code: $curl_exit)" >&2
+      echo "Debug - Response: ${weather_json:0:100}..." >&2
+    }
+    return 1
+  fi
+
+  # Extract values using jq if available, else use grep/sed
+  local temp_c temp_f weather_desc local_obs_time
+  if command -v jq >/dev/null 2>&1; then
+    temp_c=$(echo "$weather_json" | jq -r '.current_condition[0].temp_C')
+    temp_f=$(echo "$weather_json" | jq -r '.current_condition[0].temp_F')
+    weather_desc=$(echo "$weather_json" | jq -r '.current_condition[0].weatherDesc[0].value')
+    local_obs_time=$(echo "$weather_json" | jq -r '.current_condition[0].localObsDateTime')
+  else
+    local current_condition
+    current_condition=$(echo "$weather_json" | grep -o '"current_condition":\[[^]]*\]' | sed 's/^"current_condition"://')
+    if [ -z "$current_condition" ]; then
+      [[ "$DEBUG" == "true" ]] && echo "Debug - Failed to extract current_condition array" >&2
+      return 1
     fi
-    ((retry_count++))
-    sleep 2
-  done
+    temp_c=$(echo "$current_condition" | grep -o '"temp_C":"[^"]*"' | head -1 | sed 's/"temp_C":"\([^"]*\)"/\1/')
+    temp_f=$(echo "$current_condition" | grep -o '"temp_F":"[^"]*"' | head -1 | sed 's/"temp_F":"\([^"]*\)"/\1/')
+    weather_desc=$(echo "$current_condition" | grep -o '"weatherDesc":\[\{"value":"[^"]*"\}\]' | sed 's/.*"value":"\([^"]*\)".*/\1/')
+    local_obs_time=$(echo "$current_condition" | grep -o '"localObsDateTime":"[^"]*"' | head -1 | sed 's/"localObsDateTime":"\([^"]*\)"/\1/')
+  fi
 
-  return 1
+  if [[ -z "$temp_c" || -z "$temp_f" ]]; then
+    [[ "$DEBUG" == "true" ]] && echo "Debug - Missing temperature values" >&2
+    return 1
+  fi
+
+  # Determine day/night using localObsDateTime ("YYYY-MM-DD HH:MM AM/PM")
+  local hour period
+  hour=$(echo "$local_obs_time" | awk '{print $2}' | cut -d: -f1)
+  period=$(echo "$local_obs_time" | awk '{print $3}')
+  if [[ "$period" == "PM" && "$hour" -ne 12 ]]; then
+    hour=$((hour + 12))
+  elif [[ "$period" == "AM" && "$hour" -eq 12 ]]; then
+    hour=0
+  fi
+  local is_day="no"
+  if ((hour >= 6 && hour < 18)); then
+    is_day="yes"
+  fi
+
+  # Choose an emoji based on weather description
+  local icon
+  case "${weather_desc,,}" in
+  *"sunny"* | *"clear"*)
+    if [[ "${is_day,,}" == "yes" ]]; then
+      icon="☀️"
+    else
+      icon="🌙"
+    fi
+    ;;
+  *"cloud"* | *"overcast"*) icon="☁️" ;;
+  *"fog"* | *"mist"*) icon="🌫️" ;;
+  *"rain"* | *"drizzle"* | *"shower"*) icon="🌧️" ;;
+  *"thunder"* | *"lightning"*) icon="⚡️" ;;
+  *"snow"* | *"sleet"* | *"blizzard"* | *"ice"*) icon="❄️" ;;
+  *) icon="🌤️" ;;
+  esac
+
+  [[ "$DEBUG" == "true" ]] && echo "Debug - Extracted from JSON - Icon: $icon, C: $temp_c, F: $temp_f, Description: $weather_desc, Local Time: $local_obs_time" >&2
+
+  echo "${icon} ${temp_f}°F/${temp_c}°C" | tee "${CACHE_FILE}"
+  return 0
 }
 
 if [ -z "$CITY" ]; then
@@ -99,15 +149,9 @@ if [ -z "$CITY" ]; then
   exit 1
 fi
 
-if [ "$NO_CACHE" == "true" ]; then
-  rm -f "${CACHE_FILE}"
-fi
+[ "$NO_CACHE" == "true" ] && rm -f "${CACHE_FILE}"
 
-if ! fetch_weather; then
-  if [ -f "${CACHE_FILE}" ]; then
-    cat "${CACHE_FILE}"
-    exit 0
-  fi
-  echo "Error: Unable to fetch weather data after multiple attempts" >&2
+if ! fetch_json_weather; then
+  echo "Error: Unable to fetch weather data" >&2
   exit 1
 fi
