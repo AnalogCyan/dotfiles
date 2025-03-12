@@ -102,10 +102,30 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 #  Aliases
 # =============================================================================
 
+# zoxide alias
+function cd() {
+  if [ -d "$1" ]; then
+    builtin cd "$1"
+  else
+    z "$1"
+  fi
+}
+
 # System monitoring
 command -v btop >/dev/null && {
   alias top='btop'
   alias htop='btop'
+}
+
+# File management
+command -v trash >/dev/null && {
+  alias rm='trash'
+} || {
+  alias rm='rm -i'
+}
+command -v bat >/dev/null && {
+  alias cat='bat'
+  alias less='bat'
 }
 
 # =============================================================================
