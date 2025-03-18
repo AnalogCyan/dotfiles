@@ -9,6 +9,15 @@ else
   export MACOS=false
 fi
 
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
+# Ensure directories exist
+mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
+
 # Environment Paths
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -23,7 +32,7 @@ else
 fi
 
 # Use XDG_DATA_HOME for tool-specific paths when possible
-export PATH="${XDG_DATA_HOME:-$HOME/.local/share}/codeium/bin:$PATH"
+export PATH="${XDG_DATA_HOME}/codeium/bin:$PATH"
 
 # Session Editor
 export EDITOR='vim'
@@ -34,15 +43,22 @@ export EDITOR='vim'
 
 # Initialize completion system before Antidote
 autoload -Uz compinit
-compinit -d ~/.zcompdump
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
 
 # History configuration
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTFILE="$XDG_STATE_HOME/zsh/history"
+HISTSIZE=50000
+SAVEHIST=50000
 setopt appendhistory
 setopt histignorealldups
 setopt histignorespace
+setopt sharehistory
+setopt incappendhistory
+setopt extendedhistory
+
+# Ensure history directory exists
+[[ -d "$XDG_STATE_HOME/zsh" ]] || mkdir -p "$XDG_STATE_HOME/zsh"
+[[ -d "$XDG_CACHE_HOME/zsh" ]] || mkdir -p "$XDG_CACHE_HOME/zsh"
 
 # =============================================================================
 #  Tool Initializations
@@ -68,18 +84,21 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 #  Plugin Management (Antidote)
 # =============================================================================
 
-# Initialize Antidote based on platform
+# Initialize Antidote from git installation
+if [[ ! -f "${ZDOTDIR:-$HOME}/.antidote/antidote.zsh" ]]; then
+  echo "Antidote not found. Installing it from GitHub..."
+  if command -v git >/dev/null; then
+    git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"
+  else
+    echo "Git not found. Please install git and then Antidote manually."
+  fi
+fi
+
+# Source Antidote if installed
 if [[ -f "${ZDOTDIR:-$HOME}/.antidote/antidote.zsh" ]]; then
-  # Git installation of Antidote (Linux default)
   source "${ZDOTDIR:-$HOME}/.antidote/antidote.zsh"
-elif [[ "$MACOS" == true && -f "/opt/homebrew/opt/antidote/share/antidote/antidote.zsh" ]]; then
-  # macOS Homebrew location
-  source "/opt/homebrew/opt/antidote/share/antidote/antidote.zsh"
-elif [[ -f "/usr/local/share/antidote/antidote.zsh" ]]; then
-  # Linux package manager or x86 Homebrew location
-  source "/usr/local/share/antidote/antidote.zsh"
 else
-  echo "Antidote not found. Install it for ZSH plugin management."
+  echo "Antidote not available. Plugin management disabled."
 fi
 
 # Only load plugins if Antidote was sourced
