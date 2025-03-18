@@ -1,11 +1,16 @@
-zsh-users/zsh-autosuggestions
-zdharma-continuum/fast-syntax-highlighting
-zsh-users/zsh-history-substring-search
-marlonrichert/zsh-autocomplete
-agkozak/zsh-z
-MichaelAquilina/zsh-you-should-use
-joshskidmore/zsh-fzf-history-search
-Aloxaf/fzf-tab
-mollifier/cd-gitroot
-unixorn/fzf-zsh-plugin
-hlissner/zsh-autopair
+# FZF plugins (highest priority)
+unixorn/fzf-zsh-plugin                    # Collection of fzf-powered functions
+Aloxaf/fzf-tab                            # Replace completion menu with fzf
+joshskidmore/zsh-fzf-history-search       # Fuzzy search through command history
+zsh-users/zsh-autosuggestions             # Fish-like autosuggestions for zsh
+
+# Navigation plugins
+agkozak/zsh-z                             # Quick navigation to frequently visited directories
+mollifier/cd-gitroot                      # Command to change to git repository root
+
+# Syntax and text editing plugins
+zdharma-continuum/fast-syntax-highlighting # Real-time command syntax highlighting
+hlissner/zsh-autopair                      # Auto-close and delete matching quotes, brackets
+
+# Utility plugins
+MichaelAquilina/zsh-you-should-use        # Reminds you of aliases you've defined
