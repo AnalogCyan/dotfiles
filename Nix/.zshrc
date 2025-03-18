@@ -108,6 +108,9 @@ if command -v antidote >/dev/null; then
 
   # Plugin configuration
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
+  # Enable history substring search key bindings
+  bindkey '^[[A' history-substring-search-up   # Up Arrow
+  bindkey '^[[B' history-substring-search-down # Down Arrow
 fi
 
 # Custom completion paths
