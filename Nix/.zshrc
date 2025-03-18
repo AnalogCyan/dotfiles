@@ -133,18 +133,39 @@ function cd() {
   fi
 }
 
-# System monitoring
+# btop alias
 command -v btop >/dev/null && {
   alias top='btop'
   alias htop='btop'
 }
 
-# File management
-command -v trash >/dev/null && {
-  alias rm='trash'
-} || {
-  alias rm='rm -i'
+# safer rm alias
+rm() {
+  if command -v trash >/dev/null; then
+    local non_flag_args=()
+    for arg in "$@"; do
+      if [[ "$arg" != -* ]]; then
+        non_flag_args+=("$arg")
+      fi
+    done
+    trash "${non_flag_args[@]}"
+  else
+    local has_interactive=0
+    local args=()
+    for arg in "$@"; do
+      if [[ "$arg" == -* && "$arg" == *i* ]]; then
+        has_interactive=1
+      fi
+      args+=("$arg")
+    done
+    if [[ $has_interactive -eq 0 ]]; then
+      args=("-i" "${args[@]}")
+    fi
+    command rm "${args[@]}"
+  fi
 }
+
+# bat alias
 command -v bat >/dev/null && {
   alias cat='bat'
   alias less='bat'
