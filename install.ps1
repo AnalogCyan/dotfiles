@@ -25,7 +25,7 @@ $WINGET_APPS = @(
   "Python.Python.3.13"
   "Python.Launcher"
   "Microsoft.DevHome"
-  "Microsoft.SysInternals"
+  "Microsoft.Sysinternals"
   "Microsoft.WinDbg"
 
   # --- Shell Enhancements & Fonts ---
@@ -142,7 +142,7 @@ function Install-WingetApp {
 }
 
 # Function to manage sudo functionality
-function Configure-SudoSupport {
+function Set-SudoSupport {
   Write-LogInfo "Configuring sudo functionality..."
 
   # Check Windows version to see if built-in sudo is available
@@ -228,58 +228,76 @@ function Update-System {
     
     # Create a script block with the update commands
     $updateScript = {
-      # Force an update scan
-      Write-Output "Starting Windows update scan..."
-      Start-Process -FilePath "UsoClient.exe" -ArgumentList "StartScan" -NoNewWindow -Wait
-      
       # Install PSWindowsUpdate if needed
-      if (-not(Get-Command Install-WindowsUpdate -ErrorAction SilentlyContinue)) {
+      if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
         Write-Output "Installing PSWindowsUpdate module..."
-        Install-Module -Name PSWindowsUpdate -Scope AllUsers -Force
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Install-Module -Name PSWindowsUpdate -Force -AllowClobber -Scope AllUsers
       }
+
+      # Import the module
       Import-Module PSWindowsUpdate
-      
-      # Install updates
-      try {
-        Write-Output "Installing Windows updates (excluding drivers)..."
-        Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2
+
+      # Check for updates first
+      Write-Output "Checking for Windows updates..."
+      $updates = Get-WindowsUpdate -MicrosoftUpdate -NotCategory "Drivers" -ErrorAction Stop
+
+      if ($updates.Count -eq 0) {
+        Write-Output "No updates found."
+        return
       }
-      catch {
-        Write-Output "Error installing updates: $_"
+
+      Write-Output "Found $($updates.Count) updates to install:"
+      $updates | ForEach-Object {
+        Write-Output "- $($_.Title)"
+      }
+
+      # Install updates with progress reporting
+      Write-Output "`nInstalling updates..."
+      Get-WindowsUpdate -AcceptAll -Install -MicrosoftUpdate -NotCategory "Drivers" -IgnoreReboot -ErrorAction Stop | ForEach-Object {
+        Write-Output "$($_.Title): $($_.Status)"
       }
     }
     
-    # Convert the script block to a string command
+    # Convert the script block to a Base64 string for elevation
     $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($updateScript.ToString()))
     
-    # Use Start-Process to run the command elevated
+    # Execute the commands with elevation
     Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile", "-EncodedCommand", $encodedCommand -Wait
   }
   else {
     # Already running as admin, execute directly
-    # Force an update scan
-    Write-LogInfo "Starting Windows update scan..."
-    Start-Process -FilePath "UsoClient.exe" -ArgumentList "StartScan" -NoNewWindow -Wait
-    
-    # Ensure PSWindowsUpdate is installed system-wide
-    if (-not(Get-Command Install-WindowsUpdate -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
       Write-LogInfo "Installing PSWindowsUpdate module..."
-      Install-Module -Name PSWindowsUpdate -Scope AllUsers -Force
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+      Install-Module -Name PSWindowsUpdate -Force -AllowClobber -Scope AllUsers
     }
+
     Import-Module PSWindowsUpdate
-    
-    # Install updates
-    try {
-      Write-LogInfo "Installing Windows updates (excluding drivers)..."
-      Install-WindowsUpdate -AcceptAll -IgnoreReboot -MicrosoftUpdate -NotCategory "Drivers" -RecurseCycle 2 -ErrorAction Stop
+
+    # Check for updates first
+    Write-LogInfo "Checking for Windows updates..."
+    $updates = Get-WindowsUpdate -MicrosoftUpdate -NotCategory "Drivers" -ErrorAction Stop
+
+    if ($updates.Count -eq 0) {
+      Write-LogInfo "No updates found."
+      return
     }
-    catch {
-      Write-LogError "Failed to install updates: $_"
+
+    Write-LogInfo "Found $($updates.Count) updates to install:"
+    $updates | ForEach-Object {
+      Write-LogInfo "- $($_.Title)"
+    }
+
+    # Install updates with progress reporting
+    Write-LogInfo "Installing updates..."
+    Get-WindowsUpdate -AcceptAll -Install -MicrosoftUpdate -NotCategory "Drivers" -IgnoreReboot -ErrorAction Stop | ForEach-Object {
+      Write-LogInfo "$($_.Title): $($_.Status)"
     }
   }
   
   # Check if a reboot is needed
-  if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
+  if (Get-WURebootStatus -Silent) {
     Write-LogWarning "A reboot is required to complete updates."
   }
   
@@ -293,7 +311,6 @@ function Install-PackageManagers {
   if (-not (Get-Command winget.exe -ErrorAction SilentlyContinue)) {
     Write-LogInfo "Windows Package Manager (Winget) not found. Installing..."
     
-    # Try to install from Microsoft Store first (preferred method)
     try {
       # Use ms-windows-store URI to open Microsoft Store to the App Installer page
       Start-Process "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1"
@@ -337,7 +354,7 @@ function Install-PackageManagers {
         }
       }
       catch {
-        Write-LogError "Failed to install Winget: $_"
+        Write-LogError "Failed to install Winget: $($_.Exception.Message)"
         Write-LogWarning "Please install Winget manually from the Microsoft Store."
       }
     }
@@ -586,7 +603,7 @@ function Start-Installation {
 
   # Run installation steps
   Test-SystemRequirements
-  Configure-SudoSupport
+  Set-SudoSupport
   Update-System
   Set-WindowsOptionalFeatures
   Install-PackageManagers
