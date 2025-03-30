@@ -217,93 +217,6 @@ function Test-SystemRequirements {
   Write-LogSuccess "System requirements check passed."
 }
 
-function Update-System {
-  Write-LogInfo "Updating Windows system..."
-
-  # Check if running as admin
-  $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
-  
-  if (-not $isAdmin) {
-    Write-LogInfo "Elevation required for system updates. Requesting admin privileges..."
-    
-    # Create a script block with the update commands
-    $updateScript = {
-      # Install PSWindowsUpdate if needed
-      if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-        Write-Output "Installing PSWindowsUpdate module..."
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Install-Module -Name PSWindowsUpdate -Force -AllowClobber -Scope AllUsers
-      }
-
-      # Import the module
-      Import-Module PSWindowsUpdate
-
-      # Check for updates first
-      Write-Output "Checking for Windows updates..."
-      $updates = Get-WindowsUpdate -MicrosoftUpdate -NotCategory "Drivers" -ErrorAction Stop
-
-      if ($updates.Count -eq 0) {
-        Write-Output "No updates found."
-        return
-      }
-
-      Write-Output "Found $($updates.Count) updates to install:"
-      $updates | ForEach-Object {
-        Write-Output "- $($_.Title)"
-      }
-
-      # Install updates with progress reporting
-      Write-Output "`nInstalling updates..."
-      Get-WindowsUpdate -AcceptAll -Install -MicrosoftUpdate -NotCategory "Drivers" -IgnoreReboot -ErrorAction Stop | ForEach-Object {
-        Write-Output "$($_.Title): $($_.Status)"
-      }
-    }
-    
-    # Convert the script block to a Base64 string for elevation
-    $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($updateScript.ToString()))
-    
-    # Execute the commands with elevation
-    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile", "-EncodedCommand", $encodedCommand -Wait
-  }
-  else {
-    # Already running as admin, execute directly
-    if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-      Write-LogInfo "Installing PSWindowsUpdate module..."
-      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-      Install-Module -Name PSWindowsUpdate -Force -AllowClobber -Scope AllUsers
-    }
-
-    Import-Module PSWindowsUpdate
-
-    # Check for updates first
-    Write-LogInfo "Checking for Windows updates..."
-    $updates = Get-WindowsUpdate -MicrosoftUpdate -NotCategory "Drivers" -ErrorAction Stop
-
-    if ($updates.Count -eq 0) {
-      Write-LogInfo "No updates found."
-      return
-    }
-
-    Write-LogInfo "Found $($updates.Count) updates to install:"
-    $updates | ForEach-Object {
-      Write-LogInfo "- $($_.Title)"
-    }
-
-    # Install updates with progress reporting
-    Write-LogInfo "Installing updates..."
-    Get-WindowsUpdate -AcceptAll -Install -MicrosoftUpdate -NotCategory "Drivers" -IgnoreReboot -ErrorAction Stop | ForEach-Object {
-      Write-LogInfo "$($_.Title): $($_.Status)"
-    }
-  }
-  
-  # Check if a reboot is needed
-  if (Get-WURebootStatus -Silent) {
-    Write-LogWarning "A reboot is required to complete updates."
-  }
-  
-  Write-LogSuccess "System update process completed."
-}
-
 function Install-PackageManagers {
   Write-LogInfo "Installing package managers..."
 
@@ -604,7 +517,6 @@ function Start-Installation {
   # Run installation steps
   Test-SystemRequirements
   Set-SudoSupport
-  Update-System
   Set-WindowsOptionalFeatures
   Install-PackageManagers
   Install-Applications
