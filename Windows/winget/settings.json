@@ -11,9 +11,6 @@
   },
 
   "installBehavior": {
-    "preferences": {
-      "architectures": ["arm64", "x64"]
-    },
     "skipDependencies": false,
     "disableInstallNotes": true,
     "archiveExtractionMethod": "tar"
