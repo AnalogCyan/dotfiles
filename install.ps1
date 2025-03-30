@@ -498,15 +498,41 @@ function Set-WindowsOptionalFeatures {
   # Create a script block with the commands that need elevation
   $featureScript = {
     # Features to disable
-    Write-Output "Disabling unnecessary features..."
-    Disable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart
-    Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2" -NoRestart
-    Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2Root" -NoRestart
+    Write-Output "Checking features to disable..."
+    $featuresToDisable = @(
+      "WindowsMediaPlayer",
+      "MicrosoftWindowsPowerShellV2",
+      "MicrosoftWindowsPowerShellV2Root"
+    )
+    
+    foreach ($feature in $featuresToDisable) {
+      $state = Get-WindowsOptionalFeature -Online -FeatureName $feature
+      if ($state.State -eq "Enabled") {
+        Write-Output "Disabling $feature..."
+        Disable-WindowsOptionalFeature -Online -FeatureName $feature -NoRestart
+      }
+      else {
+        Write-Output "$feature is already disabled."
+      }
+    }
 
     # Features to enable
-    Write-Output "Enabling required features..."
-    Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -NoRestart
-    Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -NoRestart
+    Write-Output "Checking features to enable..."
+    $featuresToEnable = @(
+      "VirtualMachinePlatform",
+      "HypervisorPlatform"
+    )
+    
+    foreach ($feature in $featuresToEnable) {
+      $state = Get-WindowsOptionalFeature -Online -FeatureName $feature
+      if ($state.State -eq "Disabled") {
+        Write-Output "Enabling $feature..."
+        Enable-WindowsOptionalFeature -Online -FeatureName $feature -NoRestart
+      }
+      else {
+        Write-Output "$feature is already enabled."
+      }
+    }
   }
 
   # Convert the script block to a Base64 string for elevation
