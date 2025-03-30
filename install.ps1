@@ -30,6 +30,10 @@ $WINGET_APPS = @(
   "Starship.Starship"
   "junegunn.fzf"
   "ajeetdsouza.zoxide"
+  "TheBrowserCompany.Arc"
+  "AgileBits.1Password"
+  "AgileBits.1PasswordCLI"
+  
 )
 
 # Git configuration
@@ -506,6 +510,33 @@ function Install-SSHConfig {
   Write-LogSuccess "SSH configuration completed."
 }
 
+function Set-WindowsOptionalFeatures {
+  Write-LogInfo "Configuring Windows Optional Features..."
+
+  # Create a script block with the commands that need elevation
+  $featureScript = {
+    # Features to disable
+    Write-Output "Disabling unnecessary features..."
+    Disable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart
+    Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2" -NoRestart
+    Disable-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2Root" -NoRestart
+
+    # Features to enable
+    Write-Output "Enabling required features..."
+    Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -NoRestart
+    Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -NoRestart
+  }
+
+  # Convert the script block to a Base64 string for elevation
+  $encodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($featureScript.ToString()))
+  
+  # Execute the commands with elevation
+  Write-LogInfo "Requesting elevation to modify Windows features..."
+  Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile", "-EncodedCommand", $encodedCommand -Wait
+
+  Write-LogSuccess "Windows Optional Features configuration completed."
+}
+
 # =============================================================================
 # MAIN SCRIPT
 # =============================================================================
@@ -526,6 +557,7 @@ function Start-Installation {
   Test-SystemRequirements
   Configure-SudoSupport
   Update-System
+  Set-WindowsOptionalFeatures
   Install-PackageManagers
   Install-Applications
   Install-PowerShellModules
