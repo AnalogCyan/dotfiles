@@ -15,7 +15,15 @@ dotfiles/
 │   ├── .zshrc        # ZSH configuration file
 │   ├── .zsh_plugins.txt # Antidote plugin definitions
 │   ├── bin/          # Custom scripts and utilities
-│   └── functions/    # ZSH function definitions
+│   │   ├── pfetch    # System information display script
+│   │   └── weather   # Weather display script
+│   ├── functions/    # ZSH function definitions
+│   ├── miniNAS/      # Docker compose setup for NAS
+│   │   ├── compose.yml
+│   │   └── preseed.cfg
+│   └── Valkyrie/     # Docker compose setup for Valkyrie
+│       ├── compose.yml
+│       └── preseed.cfg
 └── Windows/          # Windows-specific configurations
     ├── Microsoft.PowerShell_profile.ps1   # PowerShell profile
     ├── Terminal/     # Windows Terminal settings
@@ -25,102 +33,126 @@ dotfiles/
 
 ## 🍎 macOS
 
-This repository contains a straightforward installation script (`install.zsh`) for setting up a new macOS environment according to my preferred configurations.
+The macOS installation script (`install.zsh`) provides a comprehensive setup for macOS environments with modern development tools and shell configurations.
 
 ### Features
 
-- **Package Managers**: Installs and configures Homebrew with various formulae, casks, and fonts. Also configures npm for JavaScript packages.
-- **Applications**: Installs essential applications via Homebrew casks and Mac App Store (using `mas`).
+- **System Updates**: Ensures system is up-to-date before installation
+- **Package Managers**:
+  - Homebrew with various formulae, casks, and fonts (auto-installs if missing)
+  - npm for JavaScript packages
+- **Applications**:
+  - Essential applications via Homebrew casks
+  - Mac App Store applications via `mas`
+  - Direct downloads for apps not available through package managers
 - **Shell Environment**:
-  - Uses Antidote for plugin management (replacing Oh-My-Zsh)
-  - Installs customized ZSH plugins including:
+  - Uses Antidote for plugin management
+  - Installs essential ZSH plugins:
     - zsh-history-substring-search
     - fast-syntax-highlighting
     - zsh-autosuggestions
     - zsh-autocomplete
     - zsh-z
     - zsh-you-should-use
-    - fzf shell extensions
-  - Configures Starship prompt for beautiful, informative terminal
-- **Configuration Files**: Replaces the current `.zshrc` file with my custom configuration.
-- **Binary Scripts**: Installs various custom utilities and tools to `~/bin/`.
-- **iCloud Integration**: Creates symbolic links to iCloud Drive folders.
-- **Git Configuration**: Sets up git with personalized configurations.
+    - fzf extensions
+  - Starship prompt for a modern terminal experience
+- **Development Tools**:
+  - Git with personalized configurations
+  - Modern command-line tools (bat, fzf, logo-ls, etc.)
+  - Development essentials (gcc, cmake, python, etc.)
+- **System Integration**:
+  - iCloud Drive symbolic links
+  - Custom binary scripts in ~/bin
+  - Automated backup of existing configurations
 
 ### Installation
 
 ```bash
-$ git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
-$ cd ~/dotfiles
-$ chmod +x install.zsh
-$ ./install.zsh
+git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+chmod +x install.zsh
+./install.zsh
 ```
-
-After installation completes, you'll be prompted to restart your terminal to see the changes.
 
 ## 🐧 Linux & Homelab Server
 
-This repository includes an installation script (`install.sh`) for setting up a new Linux environment on Debian-based distributions, with optional homelab server configurations.
+The Linux installation script (`install.sh`) is designed for Debian-based systems with special considerations for server environments.
 
 ### Features
 
-- **System Compatibility**: Ensures the script runs only on compatible Debian-based systems.
-- **System Updates**: Updates system packages and fixes any broken installations.
-- **Software Installation**: Installs essential packages:
-  - Development tools (gcc, g++, git)
-  - System utilities (vim, htop, screen)
-  - Shell enhancements (zsh, fortune, mosh)
-  - Media tools (ffmpeg, mpv, yt-dlp)
-  - Additional utilities (bat, fzf, thefuck, etc.)
+- **System Compatibility**:
+  - Debian-based systems only
+  - Optional server-specific configurations
+- **Package Management**:
+  - APT package installation with error handling
+  - NPM packages for development
+  - Modern CLI tools (logo-ls, bat, fzf, etc.)
 - **Shell Environment**:
-  - Changes default shell to zsh
-  - Uses Antidote for plugin management
-  - Installs the Starship prompt for a consistent cross-platform experience
-- **Configuration Files**: Installs custom zsh configurations and functions.
-- **Server-Specific Features**: When set up as a server, additionally installs:
-  - iTerm2 shell integration
-  - NextDNS
-  - Plex Media Server
+  - ZSH as default shell
+  - Antidote for plugin management
+  - Starship prompt configuration
+  - Custom ZSH functions and configurations
+- **Development Tools**:
+  - Git configuration
+  - 1Password CLI integration
+  - Development essentials (gcc, g++, make, etc.)
+- **Server Features** (when enabled):
   - Docker with proper configuration
-- **Binary Scripts**: Installs pfetch and other custom utilities to `~/bin/`.
-- **Git Configuration**: Sets up git with personalized settings.
-- **1Password CLI**: Installs and configures the 1Password command-line interface.
-- **PowerShell**: Installs Microsoft PowerShell for cross-platform consistency.
+  - Plex Media Server
+  - NextDNS integration
+  - iTerm2 shell integration
+  - Docker Compose configurations for:
+    - miniNAS setup
+    - Valkyrie server
+- **Security & Monitoring**:
+  - System monitoring tools (htop, btop)
+  - SSH configuration
+  - Secure shell access (mosh)
 
 ### Installation
 
 ```bash
-$ git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
-$ cd ~/dotfiles
-$ chmod +x install.sh
-$ ./install.sh
+git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+chmod +x install.sh
+./install.sh
 ```
-
-During installation, you'll be asked if you're setting up a server environment. Based on your response, additional configurations will be applied.
 
 ## 🪟 Windows
 
-The Windows installation script (`install.ps1`) provides comprehensive setup for Windows 10 and 11 environments.
+The Windows installation script (`install.ps1`) provides a modern development environment setup for Windows 11.
 
 ### Features
 
-- **System Configuration**: Ensures compatibility with Windows 11.
-- **Sudo Support**: Configures built-in Windows sudo functionality when available or installs gsudo as fallback.
-- **System Updates**: Ensures Windows is up-to-date using PowerShell modules.
-- **Package Managers**: Installs and configures Windows Package Manager (winget).
-- **Applications**: Installs a wide range of applications using winget:
+- **System Requirements**:
+  - Windows 11 compatibility check
+  - Non-admin installation with elevated commands when needed
+  - Sudo functionality (native or gsudo fallback)
+- **Package Management**:
+  - Winget (Windows Package Manager) with automatic installation
+  - PowerShell module management
+- **Applications**:
   - Development tools (Git, VSCode, Python, etc.)
-  - System utilities (PowerToys, Terminal, NanaZip, etc.)
-  - Nerd Fonts for enhanced terminal experience
-- **PowerShell Environment**: Installs and configures:
-  - Starship prompt (replacing Oh-My-Posh)
-  - Terminal-Icons
-  - PSReadLine
-- **Configuration Files**: Installs custom configurations for:
-  - PowerShell profile
-  - Windows Terminal
-  - Winget settings
-- **Git Configuration**: Configures git with personalized settings.
+  - System utilities (PowerToys, Terminal, NanaZip)
+  - Productivity apps and browsers
+  - Security tools (1Password)
+- **Shell Environment**:
+  - PowerShell profile configuration
+  - Modern PowerShell modules:
+    - PSReadLine
+    - Terminal-Icons
+    - PSFzf
+    - posh-git
+  - Starship prompt integration
+- **Development Environment**:
+  - Git configuration
+  - SSH setup
+  - Development essentials
+  - Nerd Fonts installation
+- **System Configuration**:
+  - Windows Optional Features management
+  - System PATH updates
+  - Windows Terminal settings
 
 ### Installation
 
@@ -128,55 +160,38 @@ The Windows installation script (`install.ps1`) provides comprehensive setup for
 # Clone the repository
 git clone https://github.com/AnalogCyan/dotfiles.git ~\dotfiles
 cd ~\dotfiles
+
 # Run the installation script (requires non-admin PowerShell)
 .\install.ps1
 ```
-
-After installation completes, you'll be prompted to restart your computer to apply all changes.
 
 ## 🌟 Key Components
 
 ### Starship Prompt
 
-This repository uses [Starship](https://starship.rs/), a minimal, blazing-fast, and infinitely customizable cross-platform prompt. The `starship.toml` configuration provides:
+The repository uses [Starship](https://starship.rs/), consistently configured across all platforms:
 
-- Customized prompt symbol (dot) with color-coding for success/failure
-- Git branch and status information displayed on the right
-- Directory path display with customizable truncation
-- Special indicators for SSH sessions
-- Vim mode indicators
-- Python environment detection
+- Minimal and performant design
+- Git integration with status indicators
+- Directory path with smart truncation
+- Custom prompt symbol with status coloring
+- Platform-specific optimizations
+- Extensible configuration in starship.toml
 
 ### Antidote Plugin Manager
 
-The repository uses [Antidote](https://getantidote.github.io/), a fast and flexible plugin manager for ZSH:
+[Antidote](https://getantidote.github.io/) provides modern plugin management for Unix systems:
 
-- Simpler, cleaner plugin management
-- Faster shell startup time
-- All plugins defined in a single `.zsh_plugins.txt` file
-- Support for modern ZSH plugins and functionality
+- Fast plugin loading
+- Simple plugin definition format
+- Compatible with popular ZSH plugins
+- Automatic plugin updates
+- Cross-platform compatibility
 
 ## ⚠️ Important Notes
 
-- Always review the scripts before running them to ensure they match your needs.
-- Replace the git configuration with your own information (`GIT_USER_NAME` and `GIT_USER_EMAIL` variables).
-- Some applications may require additional manual setup after installation.
-- These scripts are designed for personal use and may need adjustment for your specific environment.
-
-## 🔄 Updates and Maintenance
-
-These dotfiles are regularly updated as my workflow evolves. To update your existing installation:
-
-```bash
-# Navigate to your dotfiles directory
-cd ~/dotfiles
-# Pull the latest changes
-git pull
-# Run the appropriate installation script for your OS
-# macOS:
-./install.zsh
-# Linux:
-./install.sh
-# Windows:
-./install.ps1
-```
+- All scripts include comprehensive error handling and status reporting
+- Backups are automatically created for existing configurations
+- Windows installation requires Windows 11 or newer
+- Server installations include additional tools and configurations
+- Some features may require manual intervention or confirmation
