@@ -60,8 +60,8 @@ $starshipInitBlock = {
   # Check if the starship command is available.
   if (Get-Command starship -ErrorAction SilentlyContinue) {
     try {
-      # Initialize Starship for PowerShell.
-      Invoke-Expression (&starship init powershell --print-full-init)
+      # Initialize Starship for PowerShell, capturing output as a single string.
+      Invoke-Expression (&starship init powershell --print-full-init | Out-String)
     }
     catch {
       Write-Warning "Failed to initialize Starship: $($_.Exception.Message)"
@@ -98,7 +98,7 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
     if ($script:ZoxideInitialized -ne $true) {
       try {
         # Execute the zoxide initialization script.
-        Invoke-Expression (&zoxide init powershell --no-aliases --hook prompt) # Adjust flags as needed
+        Invoke-Expression (&zoxide init powershell --no-aliases --hook prompt | Out-String)
         $script:ZoxideInitialized = $true
 
         # After initialization, zoxide replaces this function.
@@ -172,7 +172,7 @@ if (Get-Module -Name PSReadLine) {
   Set-PSReadLineKeyHandler -Key 'Ctrl+t' -ScriptBlock {
     # Initialize FZF if needed, then invoke its function.
     if (Initialize-Fzf) {
-      Invoke-PSFzf
+      [void](Invoke-PSFzf)
     }
   }
 
@@ -180,7 +180,7 @@ if (Get-Module -Name PSReadLine) {
   Set-PSReadLineKeyHandler -Key 'Ctrl+r' -ScriptBlock {
     # Initialize FZF if needed, then invoke its function.
     if (Initialize-Fzf) {
-      Invoke-PSFzfReverseHistorySearch
+      [void](Invoke-PSFzfReverseHistorySearch)
     }
   }
 
@@ -190,7 +190,7 @@ if (Get-Module -Name PSReadLine) {
     Set-PSReadLineKeyHandler -Key Tab -ScriptBlock {
       param($ast, $tokens)
       # Initialize FZF (which enables TabExpansion via Set-PsFzfOption).
-      Initialize-Fzf
+      [void](Initialize-Fzf)
       # Call the standard PSReadLine Tab completion function.
       [Microsoft.PowerShell.PSConsoleReadLine]::MenuComplete()
     }
