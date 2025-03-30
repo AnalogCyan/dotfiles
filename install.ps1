@@ -14,25 +14,59 @@
 
 # Package lists - empty for now, to be populated later
 $WINGET_APPS = @(
-  "DEVCOM.JetBrainsMonoNerdFont"
+  # --- Core System & Shell ---
   "Microsoft.PowerShell"
   "Microsoft.WindowsTerminal"
-  "Microsoft.Edge"
-  "Microsoft.PCManager"
-  "M2Team.NanaZip"
-  "Microsoft.OneDrive"
+
+  # --- Developer Essentials ---
   "Git.Git"
-  "Microsoft.PowerToys"
+  "vim.vim"
   "Microsoft.VisualStudioCode"
-  "Python.Launcher"
   "Python.Python.3.13"
+  "Python.Launcher"
   "Microsoft.DevHome"
+  "Microsoft.SysInternals"
+  "Microsoft.WinDbg"
+
+  # --- Shell Enhancements & Fonts ---
+  "DEVCOM.JetBrainsMonoNerdFont"
   "Starship.Starship"
   "junegunn.fzf"
   "ajeetdsouza.zoxide"
+
+  # --- Essential Utilities ---
+  "Microsoft.PowerToys"
+  "M2Team.NanaZip"
+  "Microsoft.PCManager"
+  "Microsoft.OneDrive"
+
+  # --- Browsers ---
+  "Microsoft.Edge"
   "TheBrowserCompany.Arc"
+
+  # --- Productivity & Notes ---
+  "LukiLabs.Craft"
+
+  # --- Security ---
   "AgileBits.1Password"
   "AgileBits.1Password.CLI"
+
+  # --- Communication ---
+  "Discord.Discord"
+)
+
+# PowerShell module list
+$POWERSHELL_MODULES = @(
+  # --- Shell Experience ---
+  "PSReadLine"
+  "Terminal-Icons"
+  "PSFzf"
+  "posh-git"
+
+  # --- Extended Functionality ---
+  "PowerShellForGitHub"
+  "PSWindowsUpdate"
+  "BurntToast"
 )
 
 # Git configuration
@@ -356,17 +390,15 @@ function Install-Applications {
 
 function Install-PowerShellModules {
   Write-LogInfo "Installing additional PowerShell modules..."
-  $modules = @(
-    "PSReadLine", 
-    "Terminal-Icons",
-    "PSFzf",
-    "posh-git", 
-    "PowerShellForGitHub", 
-    "PSWindowsUpdate", 
-    "BurntToast"
-  )
+
+  # Update PowerShellGet and trust PSGallery
+  Write-LogInfo "Updating PowerShellGet and setting up PSGallery..."
+  if (Get-PSRepository -Name "PSGallery" -ErrorAction SilentlyContinue) {
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+  }
+  Install-Module -Name PowerShellGet -Force -AllowClobber -SkipPublisherCheck
   
-  foreach ($module in $modules) {
+  foreach ($module in $POWERSHELL_MODULES) {
     if (-not (Get-Module -ListAvailable -Name $module)) {
       Write-LogInfo "Installing $module module..."
       Install-Module -Name $module -Scope CurrentUser -Force
