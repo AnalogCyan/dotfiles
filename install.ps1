@@ -32,8 +32,7 @@ $WINGET_APPS = @(
   "ajeetdsouza.zoxide"
   "TheBrowserCompany.Arc"
   "AgileBits.1Password"
-  "AgileBits.1PasswordCLI"
-  
+  "AgileBits.1Password.CLI"
 )
 
 # Git configuration
