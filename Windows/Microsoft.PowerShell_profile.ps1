@@ -1,7 +1,7 @@
 # =============================================================================
-#  Optimized PowerShell Profile (Configuration Only)
+#  PowerShell Profile - Standard Initialization
 # =============================================================================
-# Goal: Fast loading. Assumes tools/modules are installed separately.
+# Goal: Reliable setup using standard tool initializations.
 
 # Define script directory early for use in subsequent paths.
 $curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
@@ -28,14 +28,15 @@ function Import-ModuleIfExists {
     }
   }
   else {
+    # Write-Warning "Module '$Name' not found." # Optional: Uncomment if you want this warning
     return $false
   }
 }
 
 # =============================================================================
-#  Essential Module Imports (PSReadLine)
+#  Core Module Imports & Configuration (PSReadLine)
 # =============================================================================
-# PSReadLine is loaded immediately due to its core functionality integration.
+# PSReadLine is essential and loaded immediately.
 if (Import-ModuleIfExists 'PSReadLine') {
   # Configure PSReadLine options for prediction and editing.
   Set-PSReadLineOption -PredictionSource History
@@ -50,223 +51,89 @@ else {
 }
 
 # =============================================================================
-#  Deferred External Tool Initialization
+#  Standard Tool Initialization
 # =============================================================================
 
 # --- Starship Prompt ---
-# Deferred initialization until the first prompt rendering.
-$env:STARSHIP_CACHE = Join-Path -Path $env:TEMP -ChildPath "starship"
-$starshipInitBlock = {
-  # Check if the starship command is available.
-  if (Get-Command starship -ErrorAction SilentlyContinue) {
-    try {
-      # Initialize Starship for PowerShell, capturing output as a single string.
-      Invoke-Expression (&starship init powershell --print-full-init | Out-String)
-    }
-    catch {
-      Write-Warning "Failed to initialize Starship: $($_.Exception.Message)"
-    }
+# Initialize Starship if the command exists.
+if (Get-Command starship -ErrorAction SilentlyContinue) {
+  try {
+    # Standard Starship initialization for PowerShell.
+    Invoke-Expression (&starship init powershell --print-full-init | Out-String)
   }
-}
-
-# Register a PreCommandLookupAction hook to initialize Starship once.
-$ExecutionContext.SessionState.InvokeCommand.PreCommandLookupAction = {
-  param($CommandName)
-  # Check the initialization flag using script scope.
-  if ($script:StarshipInitialized -ne $true) {
-    . $starshipInitBlock
-    $script:StarshipInitialized = $true
-    # Remove the hook after successful initialization.
-    $ExecutionContext.SessionState.InvokeCommand.PreCommandLookupAction = $null
+  catch {
+    Write-Warning "Failed to initialize Starship: $($_.Exception.Message)"
   }
 }
 
 # --- Zoxide ---
-# Deferred initialization until the 'z' command is first used.
+# Initialize Zoxide if the command exists.
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-  # Set the data directory (optional, often handled by zoxide).
-  $env:_ZO_DATA_DIR = Join-Path -Path $env:LOCALAPPDATA -ChildPath "zoxide"
-
-  # Define a proxy function 'z' to handle initialization.
-  function z {
-    param(
-      [Parameter(ValueFromRemainingArguments = $true)]
-      $arguments
-    )
-
-    # Check if Zoxide has been initialized in this session.
-    if ($script:ZoxideInitialized -ne $true) {
-      try {
-        # Execute the zoxide initialization script.
-        Invoke-Expression (&zoxide init powershell --no-aliases --hook prompt | Out-String)
-        $script:ZoxideInitialized = $true
-
-        # After initialization, zoxide replaces this function.
-        # Get the newly defined zoxide command (function or alias).
-        $zoxideCmd = Get-Command z -ErrorAction SilentlyContinue
-        if ($zoxideCmd) {
-          # Execute the actual zoxide command with the original arguments.
-          & $zoxideCmd @arguments
-        }
-        else {
-          Write-Warning "Zoxide initialization ran, but the 'z' command is not available."
-        }
-      }
-      catch {
-        Write-Warning "Failed to initialize Zoxide: $($_.Exception.Message)"
-      }
-    }
-    else {
-      # If already initialized, directly call the zoxide command.
-      $zoxideCmd = Get-Command z
-      & $zoxideCmd @arguments
-    }
+  try {
+    # Standard Zoxide initialization for PowerShell.
+    # This typically defines the 'z' function/alias and other helpers.
+    Invoke-Expression (&zoxide init powershell --hook prompt | Out-String) # Adjust flags as needed (e.g., --no-aliases)
+  }
+  catch {
+    Write-Warning "Failed to initialize Zoxide: $($_.Exception.Message)"
   }
 }
 
-# =============================================================================
-#  PSFzf Configuration (Lazy Load via Keybindings)
-# =============================================================================
-
-# Function to initialize PSFzf module and configure options on first use.
-function Initialize-Fzf {
-  # Prevent redundant initialization.
-  if ($script:FzfConfigured -ne $true) {
-    if (Import-ModuleIfExists 'PSFzf') {
-      try {
-        # Configure core PSFzf keybindings.
-        Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
-
-        # Check PSReadLine version for Tab completion support.
-        $psrlVersion = (Get-Module PSReadLine -ErrorAction SilentlyContinue)?.Version
-        if ($psrlVersion -ge [Version]"2.2.0") {
-          Set-PsFzfOption -TabExpansion # Enable FZF for Tab completion
-        }
-
-        $script:FzfConfigured = $true # Mark as configured.
-        return $true # Indicate success
-
-      }
-      catch {
-        Write-Warning "Failed to configure PSFzf options: $($_.Exception.Message)"
-        # Mark as configured even on failure to prevent repeated attempts.
-        $script:FzfConfigured = $true
-        return $false # Indicate failure
-      }
-    }
-    else {
-      # Module not found or failed to load.
-      Write-Warning "PSFzf module not found or failed to load. FZF keybindings will not be functional."
-      $script:FzfConfigured = $true # Mark as configured to prevent repeated attempts.
-      return $false # Indicate failure
-    }
-  }
-  # Return true if already configured.
-  return $true
-}
-
-# --- Set up Keybindings to Trigger FZF Initialization ---
-# Requires PSReadLine to be loaded.
-if (Get-Module -Name PSReadLine) {
-  # Ctrl+T - File/Directory Search
-  Set-PSReadLineKeyHandler -Key 'Ctrl+t' -ScriptBlock {
-    # Initialize FZF if needed, then invoke its function.
-    if (Initialize-Fzf) {
-      [void](Invoke-PSFzf)
-    }
-  }
-
-  # Ctrl+R - History Search
-  Set-PSReadLineKeyHandler -Key 'Ctrl+r' -ScriptBlock {
-    # Initialize FZF if needed, then invoke its function.
-    if (Initialize-Fzf) {
-      [void](Invoke-PSFzfReverseHistorySearch)
-    }
-  }
-
-  # Tab Completion (if PSReadLine version is sufficient)
-  $psrlVersion = (Get-Module PSReadLine -ErrorAction SilentlyContinue)?.Version
-  if ($psrlVersion -ge [Version]"2.2.0") {
-    Set-PSReadLineKeyHandler -Key Tab -ScriptBlock {
-      param($ast, $tokens)
-      # Initialize FZF (which enables TabExpansion via Set-PsFzfOption).
-      [void](Initialize-Fzf)
-      # Call the standard PSReadLine Tab completion function.
-      [Microsoft.PowerShell.PSConsoleReadLine]::MenuComplete()
-    }
-  }
-}
-
-# =============================================================================
-#  Argument Completers (Deferred - Winget Example)
-# =============================================================================
-
-# Check if winget command exists.
-if (Get-Command winget -ErrorAction SilentlyContinue) {
-  # Define a proxy function for 'winget' to register completer on first use.
-  function winget {
-    param(
-      [Parameter(ValueFromRemainingArguments = $true)]
-      $arguments
-    )
-
-    # Register the completer only once per session.
-    if ($script:WingetCompleterRegistered -ne $true) {
-      try {
-        Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
-          param($wordToComplete, $commandAst, $cursorPosition)
-          # Ensure UTF8 encoding for winget completion compatibility.
-          $previousInputEncoding = [Console]::InputEncoding
-          $previousOutputEncoding = [Console]::OutputEncoding
-          [Console]::InputEncoding = [Console]::OutputEncoding = [System.Text.Utf8Encoding]::new()
-          # Escape quotes for arguments passed to winget complete.
-          $Local:word = $wordToComplete.Replace('"', '""')
-          $Local:ast = $commandAst.ToString().Replace('"', '""')
-          # Call winget's built-in completer.
-          winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition
-          # Restore previous console encoding.
-          [Console]::InputEncoding = $previousInputEncoding
-          [Console]::OutputEncoding = $previousOutputEncoding
-        }
-        $script:WingetCompleterRegistered = $true
-      }
-      catch {
-        Write-Warning "Failed to register Winget argument completer: $($_.Exception.Message)"
-      }
-    }
-
-    # Execute the actual winget command.
-    $wingetCmd = Get-Command winget -CommandType Application
-    & $wingetCmd @arguments
-  }
-}
-
-# =============================================================================
-#  Standard Module Imports (Posh-Git, Terminal-Icons)
-# =============================================================================
-# These modules are imported directly as lazy-loading provides diminishing returns
-# relative to the complexity involved in deferring prompt/formatting hooks.
-
+# --- Posh-Git ---
+# Import Posh-Git for Git status integration in the prompt.
 Import-ModuleIfExists 'posh-git'
+
+# --- Terminal-Icons ---
+# Import Terminal-Icons for enhanced file/folder icons in listings.
 Import-ModuleIfExists 'Terminal-Icons'
 
-# =============================================================================
-#  Load Custom Functions
-# =============================================================================
-$functionDir = Join-Path -Path $curDir -ChildPath "functions"
-if (Test-Path $functionDir -PathType Container) {
-  # Dot-source all .ps1 files found in the functions directory.
-  Get-ChildItem -Path $functionDir -Filter "*.ps1" -File | ForEach-Object {
-    try {
-      . $_.FullName
+# --- PSFzf ---
+# Import and configure PSFzf if available.
+if (Import-ModuleIfExists 'PSFzf') {
+  try {
+    # Configure PSFzf keybindings and options.
+    # PSFzf typically hooks into PSReadLine upon import/configuration.
+    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+
+    # Enable Tab completion if PSReadLine version supports it.
+    $psrlVersion = (Get-Module PSReadLine -ErrorAction SilentlyContinue)?.Version
+    if ($psrlVersion -ge [Version]"2.2.0") {
+      Set-PsFzfOption -TabExpansion
     }
-    catch {
-      Write-Warning "Failed to load custom function '$($_.Name)': $($_.Exception.Message)"
+  }
+  catch {
+    Write-Warning "Failed to configure PSFzf options: $($_.Exception.Message)"
+  }
+}
+
+# --- Winget Argument Completer ---
+# Register Winget's native argument completer if winget exists.
+if (Get-Command winget -CommandType Application -ErrorAction SilentlyContinue) {
+  try {
+    Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
+      param($wordToComplete, $commandAst, $cursorPosition)
+      # Ensure UTF8 encoding for winget completion compatibility.
+      $previousInputEncoding = [Console]::InputEncoding
+      $previousOutputEncoding = [Console]::OutputEncoding
+      [Console]::InputEncoding = [Console]::OutputEncoding = [System.Text.Utf8Encoding]::new()
+      # Escape quotes for arguments passed to winget complete.
+      $Local:word = $wordToComplete.Replace('"', '""')
+      $Local:ast = $commandAst.ToString().Replace('"', '""')
+      # Call winget's built-in completer.
+      winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition
+      # Restore previous console encoding.
+      [Console]::InputEncoding = $previousInputEncoding
+      [Console]::OutputEncoding = $previousOutputEncoding
     }
+  }
+  catch {
+    Write-Warning "Failed to register Winget argument completer: $($_.Exception.Message)"
   }
 }
 
 # =============================================================================
 #  Profile Loading Complete
 # =============================================================================
-# End of profile script.
+Write-Verbose "PowerShell profile loading complete."
+# You can add a Write-Host message here if you like.
+# Write-Host "Profile loaded." -ForegroundColor Green
