@@ -402,19 +402,24 @@ function Install-DotfilesConfigs {
     Write-LogWarning "Windows Terminal settings not found at $terminalSettingsSource"
   }
 
-  # Copy winget settings
+  # Copy winget settings to both possible locations
   $wingetSettingsSource = Join-Path $DOTFILES_DIR "Windows\winget\settings.json"
-  $wingetSettingsDestination = Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Settings\settings.json"
+  $wingetSettingsDestinations = @(
+    (Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Settings\settings.json"),
+    (Join-Path $env:LOCALAPPDATA "Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.json")
+  )
   
   if (Test-Path $wingetSettingsSource) {
     Write-LogInfo "Installing winget settings..."
-    # Create destination directory if it doesn't exist
-    $wingetSettingsDir = Split-Path -Parent $wingetSettingsDestination
-    if (-not (Test-Path $wingetSettingsDir)) {
-      New-Item -ItemType Directory -Path $wingetSettingsDir -Force | Out-Null
+    foreach ($destination in $wingetSettingsDestinations) {
+      # Create destination directory if it doesn't exist
+      $wingetSettingsDir = Split-Path -Parent $destination
+      if (-not (Test-Path $wingetSettingsDir)) {
+        New-Item -ItemType Directory -Path $wingetSettingsDir -Force | Out-Null
+      }
+      Copy-Item -Path $wingetSettingsSource -Destination $destination -Force
+      Write-LogSuccess "Winget settings installed to $destination"
     }
-    Copy-Item -Path $wingetSettingsSource -Destination $wingetSettingsDestination -Force
-    Write-LogSuccess "Winget settings installed."
   }
   else {
     Write-LogWarning "Winget settings not found at $wingetSettingsSource"
