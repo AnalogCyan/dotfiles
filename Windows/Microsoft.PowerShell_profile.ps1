@@ -81,11 +81,11 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 
 # --- Posh-Git ---
 # Import Posh-Git for Git status integration in the prompt.
-Import-ModuleIfExists 'posh-git'
+[void](Import-ModuleIfExists 'posh-git')
 
 # --- Terminal-Icons ---
 # Import Terminal-Icons for enhanced file/folder icons in listings.
-Import-ModuleIfExists 'Terminal-Icons'
+[void](Import-ModuleIfExists 'Terminal-Icons')
 
 # --- PSFzf ---
 # Import and configure PSFzf if available.
