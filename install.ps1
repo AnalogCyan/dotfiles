@@ -69,6 +69,11 @@ $POWERSHELL_MODULES = @(
   "BurntToast"
 )
 
+# System paths to add
+$SYSTEM_PATHS = @(
+  "C:\Program Files\Vim\vim91"
+)
+
 # Git configuration
 $GIT_USER_NAME = "AnalogCyan"
 $GIT_USER_EMAIL = "git@thayn.me"
@@ -471,6 +476,30 @@ function Install-SSHConfig {
   Write-LogSuccess "SSH configuration completed."
 }
 
+function Set-SystemPaths {
+  Write-LogInfo "Configuring system paths..."
+
+  foreach ($path in $SYSTEM_PATHS) {
+    if (Test-Path $path) {
+      $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+      if ($currentPath -notlike "*$path*") {
+        Write-LogInfo "Adding $path to system PATH..."
+        $newPath = $currentPath + ";" + $path
+        Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -Command [Environment]::SetEnvironmentVariable('Path', '$newPath', 'Machine')" -Wait
+        Write-LogSuccess "Added $path to system PATH"
+      }
+      else {
+        Write-LogInfo "$path is already in system PATH"
+      }
+    }
+    else {
+      Write-LogWarning "Path $path does not exist, skipping..."
+    }
+  }
+
+  Write-LogSuccess "System paths configuration completed."
+}
+
 function Set-WindowsOptionalFeatures {
   Write-LogInfo "Configuring Windows Optional Features..."
 
@@ -521,6 +550,7 @@ function Start-Installation {
   Install-PackageManagers
   Install-Applications
   Install-PowerShellModules
+  Set-SystemPaths
   Install-StarshipPrompt
   Install-DotfilesConfigs
   Set-GitConfiguration
