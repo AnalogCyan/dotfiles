@@ -131,6 +131,10 @@ if (Get-Command winget -CommandType Application -ErrorAction SilentlyContinue) {
   }
 }
 
+# --- Command Not Found ---
+# Register PowerToy's Command Not Found handler.
+[void](Import-ModuleIfExists -Name Microsoft.WinGet.CommandNotFound)
+
 # =============================================================================
 #  Profile Loading Complete
 # =============================================================================
