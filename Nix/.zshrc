@@ -124,15 +124,6 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 #  Aliases
 # =============================================================================
 
-# zoxide alias
-function cd() {
-  if [ -d "$1" ]; then
-    builtin cd "$1"
-  else
-    z "$1"
-  fi
-}
-
 # btop alias
 command -v btop >/dev/null && {
   alias top='btop'
