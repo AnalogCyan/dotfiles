@@ -18,6 +18,9 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 # Ensure directories exist
 mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
 
+# Node.js cache
+export NODE_COMPILE_CACHE=~/.cache/nodejs-compile-cache
+
 # Environment Paths
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
