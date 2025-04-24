@@ -80,6 +80,9 @@ command -v starship >/dev/null && eval "$(starship init zsh)"
 # iTerm2 Integration (enable whenever detected, including SSH connections)
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
+# 1Password CLI plugins
+source ~/.config/op/plugins.sh
+
 # Additional configurations
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
