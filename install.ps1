@@ -39,6 +39,7 @@ $WINGET_APPS = @(
   "M2Team.NanaZip"
   "Microsoft.PCManager"
   "Microsoft.OneDrive"
+  "yt-dlp.yt-dlp"
 
   # --- Browsers ---
   "Microsoft.Edge"

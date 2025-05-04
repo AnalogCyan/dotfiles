@@ -172,7 +172,7 @@ command -v bat >/dev/null && {
 #  Custom Functions
 # =============================================================================
 
-# Load all custom functions
+# Load all custom ZSH functions
 for func in $HOME/.config/zsh/functions/*.zsh; do
   source "$func"
 done
