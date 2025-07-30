@@ -316,7 +316,7 @@ EOF
 
   # Create iCloud symlink
   log_info "Creating symbolic links for iCloud and Downloads..."
-  ln -snfv "$HOME/Library/Mobile Documents/com~apple~CloudDocs/iCloud" "$HOME/iCloud" || {
+  ln -snfv "$HOME/Library/Mobile Documents/com~apple~CloudDocs" "$HOME/iCloud" || {
     log_warning "Failed to create iCloud symlink."
   }
 
