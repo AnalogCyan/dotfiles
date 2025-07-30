@@ -40,28 +40,40 @@ done
 
 # Homebrew package lists
 BREW_FORMULAE=(
-  "antidote"                             # Plugin manager for zsh
-  "bat"                                  # Cat clone with syntax highlighting and Git integration
-  "btop"                                 # Resource monitor with CPU, memory, disk, and network usage
-  "fortune"                              # Random quotations program
-  "fzf"                                  # Command-line fuzzy finder
-  "lazygit"                              # Simple terminal UI for git commands
-  "starship"                             # Cross-shell prompt customization
-  "thefuck"                              # Magnificent app which corrects your previous console command
-  "xz"                                   # General-purpose data compression tool
-  "yt-dlp"                               # Fork of youtube-dl with additional features
-  "zoxide"                               # Smarter cd command with learning abilities
-  "zsh"                                  # Z shell, a powerful shell with scripting capabilities
-  "eza"                                  # A modern replacement for 'ls'
+  "antidote"                              # Plugin manager for zsh
+  "bat"                                   # Cat clone with syntax highlighting and Git integration
+  "btop"                                  # Resource monitor with CPU, memory, disk, and network usage
+  "fortune"                               # Random quotations program
+  "fzf"                                   # Command-line fuzzy finder
+  "lazygit"                               # Simple terminal UI for git commands
+  "starship"                              # Cross-shell prompt customization
+  "thefuck"                               # Magnificent app which corrects your previous console command
+  "xz"                                    # General-purpose data compression tool
+  "yt-dlp"                                # Fork of youtube-dl with additional features
+  "zoxide"                                # Smarter cd command with learning abilities
+  "zsh"                                   # Z shell, a powerful shell with scripting capabilities
+  "eza"                                   # A modern replacement for 'ls'
 )
 
 BREW_CASKS=(
-  "1password"                            # 1Password app for password management
-  "1password-cli"                        # 1Password CLI for command-line access
-  "tailscale-app"                        # Tailscale app for secure networking
-  "chatgpt"                              # ChatGPT app for conversational AI
-  "font-fira-code-nerd-font"             # FiraCode patched with Nerd Font icons
-  "font-hack-nerd-font"                  # Hack Nerd Font for additional glyph coverage
+  "1password"                             # 1Password app for password management
+  "1password-cli"                         # 1Password CLI for command-line access
+  "tailscale-app"                         # Tailscale app for secure networking
+  "chatgpt"                               # ChatGPT app for conversational AI
+  "font-fira-code-nerd-font"              # FiraCode patched with Nerd Font icons
+  "font-hack-nerd-font"                   # Hack Nerd Font for additional glyph coverage
+  "setapp"                                # Setapp for accessing a suite of Mac apps
+  "balenaetcher"                          # Balena Etcher for flashing OS images to USB drives
+  "crystalfetch"                          # CrystalFetch for downloading Windows ISO files
+  "iina"                                  # IINA media player
+  "mactracker"                            # MacTracker for tracking Apple hardware
+  "modrinth"                              # Modrinth Minecraft app
+  "raspberry-pi-imager"                   # Raspberry Pi Imager for flashing Raspberry Pi OS
+  "transmission"                          # Transmission BitTorrent client
+  "utm"                                   # UTM for running virtual machines
+  "xcodes-app"                            # Xcodes for managing Xcode versions
+  "xiv-on-mac"                            # FFXIV launcher for macOS
+  "visual-studio-code"                    # Visual Studio Code editor
 )
 
 # Git configuration
