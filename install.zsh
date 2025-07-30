@@ -334,7 +334,7 @@ EOF
 
   # Create Downloads symlink
   if [ -e "$HOME/Downloads" ] && [ ! -L "$HOME/Downloads" ]; then
-    rm -rf "$HOME/Downloads"
+    sudo rm -rf "$HOME/Downloads"
   fi
   ln -snfv "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads" "$HOME/Downloads" || {
     log_warning "Failed to create Downloads symlink."
