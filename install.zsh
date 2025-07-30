@@ -8,133 +8,60 @@
 #
 # =============================================================================
 
-set -e # Exit immediately if a command exits with a non-zero status
-set -u # Treat unset variables as an error
+set -euo pipefail
+IFS=$'\n\t'
+
+usage() {
+  echo "Usage: $0 [options]"
+  echo
+  echo "Options:"
+  echo "  -h, --help    Show this help message and exit"
+  echo
+  echo "This script installs dotfiles and configures your macOS environment."
+}
+
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "ERROR: Unknown option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
 
 # Homebrew package lists
-BREW_TAPS=(
-  "1password/tap"
-  "epk/epk"
-  "gromgit/fuse"
-  "homebrew-ffmpeg/ffmpeg"
-  "homebrew/cask"
-  "homebrew/cask-fonts"
-  "homebrew/services"
-  "imxieyi/waifu2x"
-  "nextfire/tap"
-  "yt-dlp/taps"
-)
-
 BREW_FORMULAE=(
   "antidote"                             # Plugin manager for zsh
-  "aria2"                                # High speed download utility with multi-protocol support
-  "autoconf-archive"                     # Collection of macros for GNU Autoconf
-  "automake"                             # Tool for generating GNU Standards-compliant Makefiles
   "bat"                                  # Cat clone with syntax highlighting and Git integration
   "btop"                                 # Resource monitor with CPU, memory, disk, and network usage
-  "ccache"                               # Compiler cache for faster recompilation
-  "cmake"                                # Cross-platform build system generator
-  "colordiff"                            # Tool to colorize diff output
-  "curl"                                 # Command line tool for transferring data with URLs
-  "docutils"                             # Text processing system for converting plaintext to various formats
-  "ffmpeg"                               # Play, record, convert, and stream audio and video
-  "findutils"                            # Collection of GNU find, xargs, and locate
   "fortune"                              # Random quotations program
   "fzf"                                  # Command-line fuzzy finder
-  "gawk"                                 # GNU awk utility
-  "gh"                                   # GitHub's official command line tool
-  "git"                                  # Distributed version control system
-  "glow"                                 # Markdown reader for the terminal
-  "gnu-sed"                              # GNU implementation of the sed utility
-  "grep"                                 # GNU grep, egrep and fgrep
-  "imagemagick"                          # Tools and libraries to manipulate images
-  "zsh"                                  # UNIX shell (Z-Shell)
   "lazygit"                              # Simple terminal UI for git commands
-  "lolcat"                               # Rainbow coloring for text output
-  "make"                                 # Utility for directing compilation
-  "mas"                                  # Mac App Store command line interface
-  "mosh"                                 # Mobile shell with roaming and intelligent local echo
-  "ncdu"                                 # NCurses disk usage viewer
-  "nerdfetch"                            # Clean system information tool
-  "nextfire/tap/apple-music-discord-rpc" # Discord Rich Presence for Apple Music
-  "ninja"                                # Small build system with focus on speed
-  "node"                                 # JavaScript runtime environment
-  "p7zip"                                # 7-Zip file archiver with high compression ratio
-  "pandoc"                               # Universal document converter
-  "prettier"                             # Code formatter for multiple languages
-  "pv"                                   # Monitor the progress of data through a pipeline
-  "rclone"                               # Rsync for cloud storage services
-  "sherlock"                             # Hunt down social media accounts by username
   "starship"                             # Cross-shell prompt customization
   "thefuck"                              # Magnificent app which corrects your previous console command
-  "toilet"                               # Display large colorful characters
-  "tokei"                                # Display statistics about your code
-  "viu"                                  # Terminal image viewer with Unicode support
-  "wallpaper"                            # Manage the desktop wallpaper
-  "watch"                                # Executes a program periodically, showing output fullscreen
-  "wget"                                 # Internet file retriever
   "xz"                                   # General-purpose data compression tool
   "yt-dlp"                               # Fork of youtube-dl with additional features
   "zoxide"                               # Smarter cd command with learning abilities
+  "zsh"                                  # Z shell, a powerful shell with scripting capabilities
+  "eza"                                  # A modern replacement for 'ls'
 )
 
 BREW_CASKS=(
-  "1password/tap/1password-cli"
-  "crunch"
-  "font-fira-code"
-  "font-hack-nerd-font"
-  "font-sf-mono-nerd-font"
-  "powershell"
-  "raycast"
-  "etcher"
-)
-
-NPM_PACKAGES=(
-  "prettier"
-  "prettier-plugin-sh"
-  "prettier-plugin-toml"
-  "prettier-plugin-tailwind"
-)
-
-MAS_APPS=(
-  "1219074514" # Curve (FKA Vectornator)
-  "1320666476" # Wipr
-  "1412716242" # Tally
-  "1432182561" # Cascadea
-  "1452453066" # Hidden Bar
-  "1453273600" # Data Jar
-  "1463298887" # Userscripts
-  "1474276998" # HP Smart
-  "1480068668" # Messenger
-  "1482920575" # DuckDuckGo Privacy for Safari
-  "1544743900" # Hush
-  "1568262835" # Super Agent
-  "1569813296" # 1Password for Safari
-  "1573461917" # SponsorBlock for YouTube - Skip Sponsorships
-  "1577761052" # Malwarebytes Browser Guard
-  "1586435171" # Actions
-  "1589151155" # Rerouter
-  "1591303229" # Vinegar
-  "1591366129" # Convusic
-  "1592917505" # Noir
-  "1594183810" # Shortery
-  "1596706466" # Speediness
-  "1601151613" # Baking Soda
-  "409183694"  # Keynote
-  "409201541"  # Pages
-  "409203825"  # Numbers
-  "417375580"  # BetterSnapTool
-  "425424353"  # The Unarchiver
-  "430255202"  # Mactracker
-  "640199958"  # Developer
-  "747648890"  # Telegram
-  "803453959"  # Slack
-  "899247664"  # TestFlight
-  "937984704"  # Amphetamine
+  "1password"                            # 1Password app for password management
+  "1password-cli"                        # 1Password CLI for command-line access
+  "tailscale-app"                        # Tailscale app for secure networking
+  "chatgpt"                              # ChatGPT app for conversational AI
+  "font-fira-code-nerd-font"             # FiraCode patched with Nerd Font icons
+  "font-hack-nerd-font"                  # Hack Nerd Font for additional glyph coverage
 )
 
 # Git configuration
@@ -142,7 +69,7 @@ GIT_USER_NAME="AnalogCyan"
 GIT_USER_EMAIL="git@thayn.me"
 
 # Paths
-DOTFILES_DIR="$(pwd)"
+DOTFILES_DIR="${0:A:h}"
 
 # =============================================================================
 # UTILITY FUNCTIONS
@@ -172,14 +99,10 @@ log_error() {
 }
 
 confirm() {
-  read -r "REPLY?$1 (y/n) "
+  read "REPLY?${1:-Continue?} (y/n) "
   case "$REPLY" in
-  [yY][eE][sS] | [yY])
-    return 0
-    ;;
-  *)
-    return 1
-    ;;
+    [yY]*) return 0 ;;
+    *)     return 1 ;;
   esac
 }
 
@@ -237,6 +160,8 @@ install_homebrew() {
     brew update || {
       log_warning "Failed to update Homebrew."
     }
+    # Load Homebrew environment into the current session
+    eval "$($(brew --prefix)/bin/brew shellenv)"
   else
     log_info "🍺 Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
@@ -389,12 +314,17 @@ EOF
     log_error "Could not find functions directory in the dotfiles repo."
   fi
 
-  # Create iCloud & Downloads symlinks
+  # Create iCloud symlink
   log_info "Creating symbolic links for iCloud and Downloads..."
-  ln -sf "$HOME/Library/Mobile Documents/com~apple~CloudDocs/iCloud" "$HOME/iCloud" || {
+  ln -snfv "$HOME/Library/Mobile Documents/com~apple~CloudDocs/iCloud" "$HOME/iCloud" || {
     log_warning "Failed to create iCloud symlink."
   }
-  ln -sf "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads" "$HOME/Downloads" || {
+
+  # Create Downloads symlink
+  if [ -e "$HOME/Downloads" ] && [ ! -L "$HOME/Downloads" ]; then
+    rm -rf "$HOME/Downloads"
+  fi
+  ln -snfv "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads" "$HOME/Downloads" || {
     log_warning "Failed to create Downloads symlink."
   }
 
@@ -429,15 +359,6 @@ install_starship_prompt() {
 install_homebrew_packages() {
   log_info "Installing Homebrew packages..."
 
-  # Install Homebrew taps
-  log_info "Installing Homebrew taps..."
-  for tap in "${BREW_TAPS[@]}"; do
-    log_info "Tapping $tap..."
-    brew tap "$tap" || {
-      log_warning "Failed to tap $tap."
-    }
-  done
-
   # Install Homebrew formulae
   log_info "Installing Homebrew formulae..."
   for formula in "${BREW_FORMULAE[@]}"; do
@@ -456,67 +377,7 @@ install_homebrew_packages() {
     }
   done
 
-  # Install Nerd Fonts
-  log_info "Installing Nerd Fonts..."
-  nfonts=$(brew search "Nerd Font")
-  for item in ${nfonts}; do
-    if [[ "$item" == *"nerd-font"* ]]; then
-      brew install --cask "$item" || {
-        log_warning "Failed to install $item."
-      }
-    fi
-  done
-
   log_success "Homebrew packages installed."
-}
-
-install_npm_packages() {
-  log_info "Installing NPM packages..."
-
-  # Check if npm is installed
-  if ! command -v npm &>/dev/null; then
-    log_error "npm is not installed. Skipping NPM packages."
-    return 1
-  fi
-
-  # Install NPM packages
-  for package in "${NPM_PACKAGES[@]}"; do
-    log_info "Installing $package..."
-    npm i -g "$package" || {
-      log_warning "Failed to install $package."
-    }
-  done
-
-  log_success "NPM packages installed."
-}
-
-install_mas_apps() {
-  log_info "Installing Mac App Store applications..."
-
-  # Check if mas is installed
-  if ! command -v mas &>/dev/null; then
-    log_error "mas is not installed. Skipping Mac App Store applications."
-    return 1
-  fi
-
-  # Check if user is signed in to the App Store
-  mas account &>/dev/null
-  if [ $? -ne 0 ]; then
-    log_warning "You are not signed in to the App Store. Please sign in and try again."
-    return 1
-  fi
-
-  # Install Mac App Store applications
-  for app in "${MAS_APPS[@]}"; do
-    app_id=$(echo "$app" | awk '{print $1}')
-    app_name=$(echo "$app" | awk '{for(i=2;i<=NF;++i)print $i}' | sed 's/# //')
-    log_info "Installing $app_name..."
-    mas install "$app_id" || {
-      log_warning "Failed to install $app_name."
-    }
-  done
-
-  log_success "Mac App Store applications installed."
 }
 
 configure_git() {
@@ -547,6 +408,12 @@ configure_zsh() {
 
   # Get the path to Homebrew's zsh
   BREW_ZSH="$(brew --prefix)/bin/zsh"
+
+  # Ensure Homebrew zsh formula is installed
+  if ! brew list zsh &>/dev/null; then
+    log_info "Homebrew zsh not found; installing..."
+    brew install zsh || { log_error "Failed to install Homebrew zsh"; exit 1; }
+  fi
 
   # Check if Homebrew's zsh is installed
   if [ ! -f "$BREW_ZSH" ]; then
@@ -593,6 +460,9 @@ main() {
   # Install Homebrew
   install_homebrew
 
+  # Install package managers and packages
+  install_homebrew_packages
+
   # Configure zsh
   configure_zsh
 
@@ -601,11 +471,6 @@ main() {
 
   # Install configuration files
   install_config_files
-
-  # Install package managers and packages
-  install_homebrew_packages
-  install_npm_packages
-  install_mas_apps
 
   # Configure git
   configure_git

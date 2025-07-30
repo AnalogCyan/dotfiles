@@ -8,7 +8,7 @@ zsh-users/zsh-history-substring-search    # Fish-like history search with up/dow
 zsh-users/zsh-autosuggestions             # Fish-like autosuggestions for zsh
 
 # Navigation plugins
-agkozak/zsh-z                             # Quick navigation to frequently visited directories
+ajeetdsouza/zoxide                     # Faster, smarter directory jumping
 mollifier/cd-gitroot                      # Command to change to git repository root
 
 # Syntax and text editing plugins
@@ -17,3 +17,4 @@ hlissner/zsh-autopair                      # Auto-close and delete matching quot
 
 # Utility plugins
 MichaelAquilina/zsh-you-should-use        # Reminds you of aliases you've defined
+z-shell/zsh-eza                            # Full-featured EZA plugin for Zsh

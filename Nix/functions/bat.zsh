@@ -1,34 +1,28 @@
-function bat() {
-  # No arguments: if no file provided, read from standard input using batcat.
-  if [ $# -eq 0 ]; then
-    if command -v batcat >/dev/null 2>&1; then
-      batcat
-    else
-      builtin cat
-    fi
-    return $?
-  fi
+### bat wrapper & aliases for macOS only ###
+if command -v bat >/dev/null 2>&1; then
 
-  # For each file given, ensure it exists.
-  for file in "$@"; do
-    if [ ! -f "$file" ]; then
-      echo "Error: File '$file' not found." >&2
-      return 1
+  # Wrapper function to call the real bat binary, with sensible fallbacks
+  bat() {
+    # If no args, read from stdin (always use pager)
+    if [[ $# -eq 0 ]]; then
+      command bat --paging=always
+      return $?
     fi
-  done
 
-  # If batcat is available, try to display the files.
-  if command -v batcat >/dev/null 2>&1; then
-    if ! batcat "$@"; then
-      echo "Warning: 'batcat' encountered an error, falling back to 'cat'." >&2
+    # Verify each file exists
+    for f in "$@"; do
+      [[ -f $f ]] || { echo "bat: file '$f' not found." >&2; return 1; }
+    done
+
+    # Try bat, fall back to builtin cat on error
+    if ! command bat "$@"; then
+      echo "⚠️ bat encountered an error; falling back to builtin cat" >&2
       builtin cat "$@"
     fi
-  else
-    # Fall back to the built-in cat if batcat is not found.
-    builtin cat "$@"
-  fi
-}
+  }
 
-# Aliases to override common commands with our enhanced function
-alias cat='bat'
-alias less='bat'
+  # Override the classics
+  alias cat='bat'
+  alias less='bat --paging=always'
+
+fi
