@@ -75,7 +75,7 @@ BREW_CASKS=(
   "xiv-on-mac"                            # FFXIV launcher for macOS
   "visual-studio-code"                    # Visual Studio Code editor
   "iterm2"
-  "messenger"∏
+  "messenger"
 )
 
 # Git configuration
