@@ -154,17 +154,6 @@ install_updates() {
   log_success "System update process completed."
 }
 
-check_system_compatibility() {
-  log_info "Checking system compatibility..."
-
-  if [[ "$(uname)" != "Darwin" ]]; then
-    log_error "This script is only designed for macOS. Aborting."
-    exit 1
-  fi
-
-  log_success "System compatibility check passed."
-}
-
 install_homebrew() {
   log_info "Installing Homebrew..."
 
