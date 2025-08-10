@@ -1,197 +1,136 @@
 # ⚙ Dotfiles
 
-These are the base dotfiles that I start with when I set up a new environment. They are stored in this repository for convenience and are broken down into macOS, Linux, and Windows sections for easy access and installation.
+Base dotfiles and setup scripts for macOS, Debian (workstation), and Windows. This README reflects the current state of the repository and the features actually implemented by the scripts.
 
 ## 🔧 Repository Structure
 
 ```
 dotfiles/
-├── install.ps1       # Windows installation script
-├── install.sh        # Linux installation script
-├── install.zsh       # macOS installation script
-├── install-min.zsh   # Minimal macOS installation script
-├── starship.toml     # Cross-platform Starship prompt configuration
-├── Nix/              # Shared Unix configurations
-│   ├── .zshrc        # ZSH configuration file
-│   ├── .zsh_plugins.txt # Antidote plugin definitions
-│   ├── bin/          # Custom scripts and utilities
-│   │   ├── pfetch    # System information display script
-│   │   └── weather   # Weather display script
-│   ├── functions/    # ZSH function definitions
-│   ├── miniNAS/      # Docker compose setup for NAS
-│   │   ├── compose.yml
-│   │   └── preseed.cfg
-│   └── Valkyrie/     # Docker compose setup for Valkyrie
-│       ├── compose.yml
-│       └── preseed.cfg
-└── Windows/          # Windows-specific configurations
+├── macOS.zsh          # macOS installation script
+├── Debian.sh          # Debian (Trixie-tuned) installation script
+├── Windows.ps1        # Windows installation script
+├── starship.toml      # Cross-platform Starship prompt configuration
+├── Code/
+│   └── settings.json  # VS Code user settings (macOS-oriented)
+├── Nix/               # Shared Unix bits
+│   ├── bin/           # Custom scripts (copied to ~/bin)
+│   │   ├── pfetch
+│   │   └── weather
+│   └── functions/     # ZSH functions (copied to ~/.config/zsh/functions)
+│       ├── bat.zsh
+│       ├── btop.zsh
+│       ├── cd.zsh
+│       ├── rm.zsh
+│       └── zsh_greeting.zsh
+└── Windows/
     ├── Microsoft.PowerShell_profile.ps1   # PowerShell profile
-    ├── Terminal/     # Windows Terminal settings
-    ├── winget/       # Windows Package Manager settings
-    └── ...
+    ├── Terminal/settings.json             # Windows Terminal settings
+    └── winget/settings.json               # Winget settings
 ```
 
 ## 🍎 macOS
 
-The macOS installation script (`install.zsh`) provides a comprehensive setup for macOS environments with modern development tools and shell configurations.
+The macOS installer is `macOS.zsh`.
 
-### Features
+### What it does
 
-- **System Updates**: Ensures system is up-to-date before installation
-- **Package Managers**:
-  - Homebrew with various formulae, casks, and fonts (auto-installs if missing)
-  - npm for JavaScript packages
-- **Applications**:
-  - Essential applications via Homebrew casks
-  - Mac App Store applications via `mas`
-  - Direct downloads for apps not available through package managers
-- **Shell Environment**:
-  - Uses Antidote for plugin management
-  - Installs essential ZSH plugins:
-    - zsh-history-substring-search
-    - fast-syntax-highlighting
-    - zsh-autosuggestions
-    - zsh-autocomplete
-    - zsh-z
-    - zsh-you-should-use
-    - fzf extensions
-  - Starship prompt for a modern terminal experience
-- **Development Tools**:
-  - Git with personalized configurations
-  - Modern command-line tools (bat, fzf, logo-ls, etc.)
-  - Development essentials (gcc, cmake, python, etc.)
-- **System Integration**:
-  - iCloud Drive symbolic links
-  - Custom binary scripts in ~/bin
-  - Automated backup of existing configurations
+- System updates via `softwareupdate`
+- Installs Homebrew if missing and updates it if present
+- Installs Homebrew formulae: antidote, bat, btop, fortune, fzf, lazygit, starship, thefuck, xz, yt-dlp, zoxide, zsh, eza
+- Installs Homebrew casks: 1password, 1password-cli, tailscale-app, chatgpt, FiraCode/Hack Nerd Fonts, setapp, balenaetcher, crystalfetch, iina, mactracker, modrinth, raspberry-pi-imager, transmission, utm, xcodes-app, xiv-on-mac, visual-studio-code, iterm2, messenger
+- Sets Homebrew `zsh` as the default shell
+- Installs `~/bin` tools and clones `pfetch`
+- Copies ZSH functions to `~/.config/zsh/functions`
+- Creates a minimal `~/.zshrc` if none is provided in the repo
+- Creates iCloud and Downloads symlinks (`~/iCloud`, `~/Downloads`)
+- Copies `starship.toml` to `~/.config/starship.toml`
+- Configures Git (name/email/editor)
 
-### Installation
+### Install
 
 ```bash
 git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-chmod +x install.zsh
-./install.zsh
+chmod +x macOS.zsh
+./macOS.zsh
 ```
 
-## 🐧 Linux & Homelab Server
+Note: The script references optional files like `Nix/.zshrc` and `Nix/.zsh_plugins.txt`. If they are absent (as in this repo), a sensible minimal `~/.zshrc` is generated.
 
-The Linux installation script (`install.sh`) is designed for Debian-based systems with special considerations for server environments.
+## 🐧 Linux (Debian)
 
-### Features
+The Linux installer is `Debian.sh` and targets Debian (tuned for Trixie), but should work on derivatives with minor adjustments.
 
-- **System Compatibility**:
-  - Debian-based systems only
-  - Optional server-specific configurations
-- **Package Management**:
-  - APT package installation with error handling
-  - NPM packages for development
-  - Modern CLI tools (logo-ls, bat, fzf, etc.)
-- **Shell Environment**:
-  - ZSH as default shell
-  - Antidote for plugin management
-  - Starship prompt configuration
-  - Custom ZSH functions and configurations
-- **Development Tools**:
-  - Git configuration
-  - 1Password CLI integration
-  - Development essentials (gcc, g++, make, etc.)
-- **Server Features** (when enabled):
-  - Docker with proper configuration
-  - Plex Media Server
-  - NextDNS integration
-  - iTerm2 shell integration
-  - Docker Compose configurations for:
-    - miniNAS setup
-    - Valkyrie server
-- **Security & Monitoring**:
-  - System monitoring tools (htop, btop)
-  - SSH configuration
-  - Secure shell access (mosh)
+### What it does
 
-### Installation
+- Apt system update/upgrade and cleanup
+- Installs core packages: bat, btop, fortune-mod, fzf, lazygit, starship, thefuck, xz-utils, yt-dlp, zoxide, zsh, eza, git, curl, ca-certificates
+- Installs Antidote (ZSH plugin manager) from git
+- Installs `~/bin` tools and clones `pfetch`
+- Copies ZSH functions to `~/.config/zsh/functions`
+- Copies `starship.toml` to `~/.config/starship.toml`
+- Creates a minimal `~/.zshrc` when needed
+- Sets `zsh` as the default shell
+- Configures Git (name/email/editor)
+
+No server-specific stacks (Docker, Plex, NextDNS, etc.) are installed by this script currently.
+
+### Install
 
 ```bash
 git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-chmod +x install.sh
-./install.sh
+chmod +x Debian.sh
+./Debian.sh
 ```
 
 ## 🪟 Windows
 
-The Windows installation script (`install.ps1`) provides a modern development environment setup for Windows 11.
+The Windows installer is `Windows.ps1` and is intended for Windows 11.
 
-### Features
+### What it does
 
-- **System Requirements**:
-  - Windows 11 compatibility check
-  - Non-admin installation with elevated commands when needed
-  - Sudo functionality (native or gsudo fallback)
-- **Package Management**:
-  - Winget (Windows Package Manager) with automatic installation
-  - PowerShell module management
-- **Applications**:
-  - Development tools (Git, VSCode, Python, etc.)
-  - System utilities (PowerToys, Terminal, NanaZip)
-  - Productivity apps and browsers
-  - Security tools (1Password)
-- **Shell Environment**:
-  - PowerShell profile configuration
-  - Modern PowerShell modules:
-    - PSReadLine
-    - Terminal-Icons
-    - PSFzf
-    - posh-git
-  - Starship prompt integration
-- **Development Environment**:
-  - Git configuration
-  - SSH setup
-  - Development essentials
-  - Nerd Fonts installation
-- **System Configuration**:
-  - Windows Optional Features management
-  - System PATH updates
-  - Windows Terminal settings
+- Verifies Windows 11 and enforces running as non-admin
+- Configures sudo support: uses built-in sudo if available, otherwise installs `gsudo`
+- Enables/disables optional features (enables: VirtualMachinePlatform, HypervisorPlatform; disables: WindowsMediaPlayer, PowerShell v2)
+- Installs apps via Winget (PowerShell, Windows Terminal, Git, Vim, VS Code, Python, Sysinternals, Starship, fzf, zoxide, PowerToys, NanaZip, OneDrive, yt-dlp, Edge, Arc, Craft, 1Password, Discord)
+- Installs PowerShell modules (PSReadLine, Terminal-Icons, PSFzf, posh-git, PowerShellForGitHub, PSWindowsUpdate, BurntToast)
+- Sets system PATH additions (e.g., Vim)
+- Copies `starship.toml` to `%USERPROFILE%\.config\starship.toml`
+- Installs PowerShell profile and Windows Terminal/Winget settings
+- Configures Git (name/email/editor)
+- Prepares `.ssh` directory (key generation is a TODO)
 
-### Installation
+### Install
+
+Run from a non-admin PowerShell:
 
 ```powershell
-# Clone the repository
-git clone https://github.com/AnalogCyan/dotfiles.git ~\dotfiles
-cd ~\dotfiles
-
-# Run the installation script (requires non-admin PowerShell)
-.\install.ps1
+git clone https://github.com/AnalogCyan/dotfiles.git $HOME\dotfiles
+cd $HOME\dotfiles
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+./Windows.ps1
 ```
+
+The script can open Microsoft Store to install Winget if it isn't present and may request elevation when enabling Windows features.
 
 ## 🌟 Key Components
 
 ### Starship Prompt
 
-The repository uses [Starship](https://starship.rs/), consistently configured across all platforms:
+Used across all platforms with a minimal, performant configuration (`starship.toml`).
 
-- Minimal and performant design
-- Git integration with status indicators
-- Directory path with smart truncation
-- Custom prompt symbol with status coloring
-- Platform-specific optimizations
-- Extensible configuration in starship.toml
+### Antidote (ZSH) on Unix
 
-### Antidote Plugin Manager
+Antidote is used for plugin management on macOS/Debian when available. If repo-level `Nix/.zshrc` or `Nix/.zsh_plugins.txt` are missing, the installers create a minimal `~/.zshrc` that initializes Antidote and common tools.
 
-[Antidote](https://getantidote.github.io/) provides modern plugin management for Unix systems:
+### VS Code settings
 
-- Fast plugin loading
-- Simple plugin definition format
-- Compatible with popular ZSH plugins
-- Automatic plugin updates
-- Cross-platform compatibility
+Opinionated defaults live in `Code/settings.json`. Apply them manually or sync as you prefer.
 
-## ⚠️ Important Notes
+## ⚠️ Notes
 
-- All scripts include comprehensive error handling and status reporting
-- Backups are automatically created for existing configurations
-- Windows installation requires Windows 11 or newer
-- Server installations include additional tools and configurations
-- Some features may require manual intervention or confirmation
+- Scripts include basic error handling and status output
+- Existing `~/.zshrc` is backed up to `~/.zshrc.dotbak` on Unix
+- Windows install requires Windows 11 or newer and should be run as non-admin; it elevates only when needed
+- Some steps may require confirmation or user interaction (e.g., installing Winget from the Store)
