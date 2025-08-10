@@ -1,6 +1,6 @@
 {
   // ──────────────────────────────
-  // Window Settings
+  // Window / Workbench
   // ──────────────────────────────
   "window.restoreWindows": "none",
   "window.commandCenter": true,
@@ -11,14 +11,19 @@
   "workbench.startupEditor": "none",
   "workbench.editor.tabActionLocation": "left",
   "workbench.colorTheme": "Rouge 2",
-  "workbench.commandPalette.experimental.suggestCommands": true,
   "workbench.list.smoothScrolling": true,
 
   // ──────────────────────────────
-  // Editor (Global) Settings
+  // Editor (global)
   // ──────────────────────────────
   "editor.guides.bracketPairs": "active",
   "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always",
+    "source.fixAll": "always"
+  },
   "editor.foldingImportsByDefault": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.stickyScroll.enabled": true,
@@ -26,78 +31,73 @@
   "editor.fontLigatures": true,
   "editor.tabSize": 2,
   "editor.inlineSuggest.enabled": true,
-  "editor.formatOnPaste": true,
   "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
-  "editor.experimentalGpuAcceleration": "on",
   "editor.linkedEditing": true,
   "editor.smoothScrolling": true,
   "editor.cursorBlinking": "smooth",
   "editor.cursorSmoothCaretAnimation": "on",
-  "editor.formatOnType": true,
   "editor.wordWrap": "off",
   "editor.scrollBeyondLastColumn": 5,
   "editor.scrollbar.horizontal": "auto",
 
   // ──────────────────────────────
-  // Explorer Settings
+  // Explorer
   // ──────────────────────────────
   "explorer.incrementalNaming": "smart",
   "explorer.confirmDragAndDrop": false,
   "explorer.excludeGitIgnore": true,
 
   // ──────────────────────────────
-  // File Settings
+  // Files
   // ──────────────────────────────
   "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1500,
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "files.simpleDialog.enable": true,
 
   // ──────────────────────────────
-  // Search Settings
+  // Search
   // ──────────────────────────────
   "search.showLineNumbers": true,
 
   // ──────────────────────────────
-  // Project & Git Base Folders
+  // Project Manager (mac-specific path; consider per-OS file)
   // ──────────────────────────────
+  // On macOS/iCloud:
   "projectManager.git.baseFolders": [
     "/Users/cyan/Library/Mobile Documents/com~apple~CloudDocs/Projects"
   ],
 
   // ──────────────────────────────
-  // Git & SCM Settings
+  // Git & SCM
   // ──────────────────────────────
   "git.confirmSync": false,
   "git.openRepositoryInParentFolders": "always",
   "git.autofetch": true,
   "git.ignoreRebaseWarning": true,
-  "scm.diffDecorationsGutterPattern": {
-    "added": true
-  },
+  "scm.diffDecorationsGutterPattern": { "added": true },
   "scm.diffDecorationsIgnoreTrimWhitespace": "inherit",
 
   // ──────────────────────────────
-  // Terminal Settings
+  // Terminal
   // ──────────────────────────────
   "terminal.integrated.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+  "terminal.integrated.fontLigatures": true,
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.cursorBlinking": true,
-  "terminal.external.osxExec": "iTerm.app",
   "terminal.integrated.cursorStyle": "line",
   "terminal.integrated.cursorStyleInactive": "line",
+  "terminal.integrated.enableImages": true,
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.profiles.osx": {
-    "zsh": {
-      "path": "/opt/homebrew/bin/zsh",
-      "args": ["--no-rcs"]
-    }
+    "zsh": { "path": "zsh", "args": ["--no-rcs"] }
   },
-  "terminal.integrated.enableImages": true,
+  "terminal.external.osxExec": "iTerm.app",
 
   // ──────────────────────────────
-  // Shell / PowerShell Settings
+  // Languages / Extensions
   // ──────────────────────────────
   "powershell.promptToUpdatePowerShell": false,
   "python.languageServer": "Pylance",
@@ -106,28 +106,19 @@
   "python.terminal.shellIntegration.enabled": true,
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
-
-  // ──────────────────────────────
-  // Prettier Settings
-  // ──────────────────────────────
   "prettier.resolveGlobalModules": true,
 
   // ──────────────────────────────
-  // LLDB Settings
+  // LLDB (mac-only; comment out or split per-OS)
   // ──────────────────────────────
   "lldb.suppressUpdateNotifications": true,
   "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
   "lldb.launch.expressions": "native",
 
   // ──────────────────────────────
-  // GitHub & Copilot Settings
+  // GitHub / Copilot / Chat
   // ──────────────────────────────
   "githubPullRequests.createOnPublishBranch": "never",
-  "github.copilot.nextEditSuggestions.enabled": true,
-  "github.copilot.chat.newWorkspaceCreation.enabled": true,
-  "github.copilot.chat.editor.temporalContext.enabled": true,
-  "github.copilot.chat.edits.temporalContext.enabled": true,
-  "github.copilot.chat.search.semanticTextResults": true,
   "github.copilot.enable": {
     "*": true,
     "plaintext": false,
@@ -135,20 +126,9 @@
     "scminput": false
   },
   "github.copilot.chat.scopeSelection": true,
-  "github.copilot.chat.codesearch.enabled": true,
-  "github.copilot.chat.agent.thinkingTool": true,
-  "githubPullRequests.experimental.chat": true,
-  "githubPullRequests.experimental.notificationsView": true,
-  "githubPullRequests.experimental.useQuickChat": true,
 
   // ──────────────────────────────
-  // Chat Settings
-  // ──────────────────────────────
-  "chat.renderRelatedFiles": true,
-  "chat.agent.enabled": true,
-
-  // ──────────────────────────────
-  // Remote Settings
+  // Remote
   // ──────────────────────────────
   "remote.defaultExtensionsIfInstalledLocally": [
     "GitHub.copilot",
@@ -157,13 +137,9 @@
   ],
 
   // ──────────────────────────────
-  // Security Settings
+  // Security / App
   // ──────────────────────────────
   "security.workspace.trust.untrustedFiles": "open",
-
-  // ──────────────────────────────
-  // Application Settings
-  // ──────────────────────────────
   "application.shellEnvironmentResolutionTimeout": 30,
 
   // ──────────────────────────────
@@ -172,26 +148,15 @@
   "vsicons.dontShowNewVersionMessage": true,
 
   // ──────────────────────────────
-  // Language-Specific Editor Overrides
+  // Language overrides
   // ──────────────────────────────
-  "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  },
-  "[ignore]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  },
-  "[toml]": {
-    "editor.defaultFormatter": "tamasfe.even-better-toml"
-  },
-  "[powershell]": {
-    "editor.defaultFormatter": "ms-vscode.powershell"
-  },
-  "[properties]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  },
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
+  "[shellscript]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[ignore]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[properties]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[dotenv]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
+  "[powershell]": { "editor.defaultFormatter": "ms-vscode.powershell" },
+  "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
   "[dart]": {
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
@@ -200,12 +165,5 @@
     "editor.suggestSelection": "first",
     "editor.tabCompletion": "onlySnippets",
     "editor.wordBasedSuggestions": "off"
-  },
-  "[dotenv]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
   }
-
-  // ──────────────────────────────
-  // Miscellaneous Settings
-  // ──────────────────────────────
 }
