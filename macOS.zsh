@@ -53,6 +53,7 @@ BREW_FORMULAE=(
   "zoxide"                                # Smarter cd command with learning abilities
   "zsh"                                   # Z shell, a powerful shell with scripting capabilities
   "eza"                                   # A modern replacement for 'ls'
+  "ctop"                                  # A top-like interface for container metrics
 )
 
 BREW_CASKS=(
