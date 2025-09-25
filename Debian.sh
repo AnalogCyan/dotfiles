@@ -68,11 +68,6 @@ declare -a APT_PACKAGES=(
   ca-certificates
 )
 
-# Optional desktop apps (uncomment/adjust as desired)
-# declare -a APT_DESKTOP_APPS=(
-#   transmission-gtk
-# )
-
 # Git configuration
 GIT_USER_NAME="AnalogCyan"
 GIT_USER_EMAIL="git@thayn.me"
@@ -172,14 +167,6 @@ install_apt_packages() {
   sudo apt-get install -y --no-install-recommends "${pkgs[@]}" || {
     log_warning "Some apt packages failed to install."
   }
-
-  # If you want optional desktop apps, uncomment APT_DESKTOP_APPS above
-  if [[ "${#APT_DESKTOP_APPS[@]:-0}" -gt 0 ]]; then
-    log_info "Installing optional desktop apps..."
-    sudo apt-get install -y --no-install-recommends "${APT_DESKTOP_APPS[@]}" || {
-      log_warning "Some optional desktop apps failed to install."
-    }
-  fi
 
   log_success "apt package installation completed."
 }
