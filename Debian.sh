@@ -147,10 +147,10 @@ check_system_compatibility() {
 
 install_updates() {
   log_info "Ensuring system is up-to-date (apt)..."
-  sudo apt-get update -y || { log_warning "apt update failed"; }
-  sudo apt-get -y full-upgrade || { log_warning "apt full-upgrade had issues"; }
-  sudo apt-get -y autoremove || true
-  sudo apt-get -y autoclean || true
+  sudo apt update || { log_warning "apt update failed"; }
+  sudo apt -y full-upgrade || { log_warning "apt full-upgrade had issues"; }
+  sudo apt -y autoremove || true
+  sudo apt -y autoclean || true
   log_success "System update process completed."
 }
 
@@ -163,8 +163,8 @@ install_apt_packages() {
     pkgs+=("$p")
   done
 
-  sudo apt-get update -y
-  sudo apt-get install -y --no-install-recommends "${pkgs[@]}" || {
+  sudo apt update
+  sudo apt install -y --no-install-recommends "${pkgs[@]}" || {
     log_warning "Some apt packages failed to install."
   }
 
@@ -186,13 +186,13 @@ install_antidote() {
 }
 
 install_ctop() {
-  sudo apt-get install ca-certificates curl gnupg lsb-release
+  sudo apt install -y ca-certificates curl gnupg lsb-release
   curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg
   echo \
     "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/azlux-archive-keyring.gpg] http://packages.azlux.fr/debian \
     $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azlux.list >/dev/null
-  sudo apt-get update
-  sudo apt-get install docker-ctop
+  sudo apt update
+  sudo apt install -y docker-ctop
 }
 
 install_binary_scripts() {
