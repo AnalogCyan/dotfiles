@@ -108,6 +108,45 @@ require_cmd() {
   }
 }
 
+# Ensure the given directory exists and is owned by the invoking user
+ensure_user_dir() {
+  local dir="$1"
+  [[ -n "${dir}" ]] || return 0
+
+  if [[ ! -d "${dir}" ]]; then
+    if ! mkdir -p "${dir}" 2>/dev/null; then
+      log_warning "Could not create ${dir}; retrying with sudo."
+      sudo mkdir -p "${dir}" || {
+        log_error "Failed to create ${dir}."
+        return 1
+      }
+    fi
+  fi
+
+  local uid gid owner
+  uid="$(id -u)"
+  gid="$(id -g)"
+  owner="$(stat -c '%u' "${dir}" 2>/dev/null || echo '')"
+  if [[ "${owner}" != "${uid}" || ! -w "${dir}" ]]; then
+    log_info "Fixing ownership of ${dir}..."
+    sudo chown -R "${uid}:${gid}" "${dir}" || {
+      log_error "Failed to adjust ownership on ${dir}."
+      return 1
+    }
+  fi
+}
+
+prepare_user_environment() {
+  ensure_user_dir "${HOME}/.cache"
+  ensure_user_dir "${HOME}/.cache/zsh"
+  ensure_user_dir "${HOME}/.cache/starship"
+  ensure_user_dir "${HOME}/.cache/antidote"
+  ensure_user_dir "${HOME}/.config"
+  ensure_user_dir "${HOME}/.config/zsh"
+  ensure_user_dir "${HOME}/.config/op"
+  ensure_user_dir "${HOME}/bin"
+}
+
 # =============================================================================
 # SYSTEM CHECKS
 # =============================================================================
@@ -116,6 +155,17 @@ check_system_compatibility() {
   require_cmd awk
   require_cmd grep
   require_cmd sudo
+  require_cmd stat
+
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    log_error "Do not run this script with sudo. Invoke it as your normal user; it will escalate only when required."
+    exit 1
+  fi
+
+  if [[ "${EUID}" -eq 0 ]]; then
+    log_error "Running as root is not supported; please rerun as a regular user."
+    exit 1
+  fi
 
   if [[ -r /etc/os-release ]]; then
     # shellcheck disable=SC1091
@@ -136,9 +186,6 @@ check_system_compatibility() {
     log_warning "/etc/os-release not found; proceeding blindly."
   fi
 
-  if [[ "${EUID}" -eq 0 ]]; then
-    log_warning "Running as root is not recommended. Continuing, but prefer using sudo."
-  fi
 }
 
 # =============================================================================
@@ -206,9 +253,9 @@ install_binary_scripts() {
   # Copy bin scripts if present
   if [[ -d "${DOTFILES_DIR}/Nix/bin" ]]; then
     log_info "Copying bin scripts from dotfiles..."
-    # shellcheck disable=SC2045
-    for f in $(ls -1 "${DOTFILES_DIR}/Nix/bin" 2>/dev/null || true); do
-      cp -f "${DOTFILES_DIR}/Nix/bin/${f}" "${HOME}/bin/" || log_warning "Failed to copy ${f}"
+    for f in "${DOTFILES_DIR}/Nix/bin"/*; do
+      [[ -e "${f}" ]] || continue
+      cp -f "${f}" "${HOME}/bin/" || log_warning "Failed to copy ${f##*/}"
     done
   else
     log_warning "Bin scripts directory not found at ${DOTFILES_DIR}/Nix/bin"
@@ -235,9 +282,8 @@ install_binary_scripts() {
 install_config_files() {
   log_info "Installing configuration files..."
 
-  mkdir -pv "${HOME}/.config/zsh/functions" "${HOME}/.zsh.d" || {
-    log_warning "Failed to create zsh directories."
-  }
+  ensure_user_dir "${HOME}/.config/zsh/functions"
+  ensure_user_dir "${HOME}/.zsh.d"
 
   # Backup existing zshrc if it exists
   if [[ -f "${HOME}/.zshrc" ]]; then
@@ -308,6 +354,22 @@ EOF
 
   # Starship prompt config
   install_starship_prompt
+
+  # Ensure optional integrations don't break shell startup
+  local op_plugins="${HOME}/.config/op/plugins.sh"
+  if [[ ! -f "${op_plugins}" ]]; then
+    ensure_user_dir "${HOME}/.config/op"
+    cat >"${op_plugins}" <<'EOF'
+# Placeholder for 1Password plugins; populated only when 1Password CLI is installed.
+EOF
+  fi
+
+  local functions_dir="${HOME}/.config/zsh/functions"
+  if ! compgen -G "${functions_dir}/"*.zsh >/dev/null 2>&1; then
+    cat >"${functions_dir}/00-placeholder.zsh" <<'EOF'
+# Placeholder so zsh globs in .zshrc do not error when no custom functions exist.
+EOF
+  fi
 
   log_success "Configuration files installed."
 }
@@ -393,6 +455,7 @@ main() {
   echo
 
   check_system_compatibility
+  prepare_user_environment
   install_updates
   install_apt_packages
   install_antidote
