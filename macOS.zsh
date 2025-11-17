@@ -456,9 +456,6 @@ main() {
   echo "====================================="
   echo
 
-  # Basic system checks
-  check_system_compatibility
-
   # Update system
   install_updates
 
