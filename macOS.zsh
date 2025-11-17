@@ -77,6 +77,7 @@ BREW_CASKS=(
   "visual-studio-code"                    # Visual Studio Code editor
   "iterm2"
   "messenger"
+  "affinity"
 )
 
 # Git configuration
