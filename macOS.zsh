@@ -122,6 +122,26 @@ confirm() {
   esac
 }
 
+check_system_compatibility() {
+  log_info "Checking system compatibility..."
+
+  local os arch
+  os="$(uname -s)"
+  arch="$(uname -m)"
+
+  if [[ "$os" != "Darwin" ]]; then
+    log_error "This installer only supports macOS."
+    exit 1
+  fi
+
+  if [[ "$arch" != "arm64" ]]; then
+    log_error "Apple Silicon (arm64) Mac required. Detected architecture: $arch"
+    exit 1
+  fi
+
+  log_success "Apple Silicon macOS detected."
+}
+
 # =============================================================================
 # INSTALLATION FUNCTIONS
 # =============================================================================
@@ -326,12 +346,31 @@ EOF
   }
 
   # Create Downloads symlink
-  if [ -e "$HOME/Downloads" ] && [ ! -L "$HOME/Downloads" ]; then
-    sudo rm -rf "$HOME/Downloads"
+  local downloads_dir="$HOME/Downloads"
+  local downloads_target="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
+  local should_link_downloads="true"
+
+  if [ -e "$downloads_dir" ] && [ ! -L "$downloads_dir" ]; then
+    if [ -z "$(ls -A "$downloads_dir")" ]; then
+      log_info "Existing Downloads directory is empty; removing before linking..."
+      sudo rm -rf "$downloads_dir"
+    else
+      log_warning "Existing Downloads directory contains files."
+      if confirm "Downloads is not empty. Remove it and replace with an iCloud symlink?"; then
+        log_info "Removing existing Downloads directory..."
+        sudo rm -rf "$downloads_dir"
+      else
+        log_warning "Skipped replacing Downloads directory to preserve existing files."
+        should_link_downloads="false"
+      fi
+    fi
   fi
-  ln -snfv "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Downloads" "$HOME/Downloads" || {
-    log_warning "Failed to create Downloads symlink."
-  }
+
+  if [ "$should_link_downloads" = "true" ]; then
+    ln -snfv "$downloads_target" "$downloads_dir" || {
+      log_warning "Failed to create Downloads symlink."
+    }
+  fi
 
   # Install and configure Starship prompt
   install_starship_prompt
@@ -455,6 +494,9 @@ main() {
   echo "  macOS Dotfiles Installation Script"
   echo "====================================="
   echo
+
+  # Basic system checks
+  check_system_compatibility
 
   # Update system
   install_updates
