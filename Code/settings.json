@@ -115,7 +115,6 @@
     "scminput": false
   },
   "github.copilot.chat.scopeSelection": true,
-  "github.copilot.chat.welcomeMessage": "never",
   "workbench.editor.empty.hint": "hidden",
 
   // ──────────────────────────────
