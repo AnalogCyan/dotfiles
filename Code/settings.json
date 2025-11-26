@@ -10,7 +10,7 @@
   "workbench.iconTheme": "symbols",
   "workbench.startupEditor": "none",
   "workbench.editor.tabActionLocation": "left",
-  "workbench.colorTheme": "Rouge 2",
+  "workbench.colorTheme": "Monokai Pro (Filter Ristretto)",
   "workbench.list.smoothScrolling": true,
 
   // ──────────────────────────────
@@ -63,21 +63,15 @@
   "search.showLineNumbers": true,
 
   // ──────────────────────────────
-  // Project Manager (mac-specific path; consider per-OS file)
-  // ──────────────────────────────
-  // On macOS/iCloud:
-  "projectManager.git.baseFolders": [
-    "/Users/cyan/Library/Mobile Documents/com~apple~CloudDocs/Projects"
-  ],
-
-  // ──────────────────────────────
   // Git & SCM
   // ──────────────────────────────
   "git.confirmSync": false,
   "git.openRepositoryInParentFolders": "always",
   "git.autofetch": true,
   "git.ignoreRebaseWarning": true,
-  "scm.diffDecorationsGutterPattern": { "added": true },
+  "scm.diffDecorationsGutterPattern": {
+    "added": true
+  },
   "scm.diffDecorationsIgnoreTrimWhitespace": "inherit",
 
   // ──────────────────────────────
@@ -92,14 +86,16 @@
   "terminal.integrated.enableImages": true,
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.profiles.osx": {
-    "zsh": { "path": "zsh", "args": ["--no-rcs"] }
+    "zsh": {
+      "path": "zsh",
+      "args": ["--no-rcs"]
+    }
   },
   "terminal.external.osxExec": "iTerm.app",
 
   // ──────────────────────────────
   // Languages / Extensions
   // ──────────────────────────────
-  "powershell.promptToUpdatePowerShell": false,
   "python.languageServer": "Pylance",
   "python.terminal.activateEnvInCurrentTerminal": true,
   "python.terminal.focusAfterLaunch": true,
@@ -107,13 +103,6 @@
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
   "prettier.resolveGlobalModules": true,
-
-  // ──────────────────────────────
-  // LLDB (mac-only; comment out or split per-OS)
-  // ──────────────────────────────
-  "lldb.suppressUpdateNotifications": true,
-  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
-  "lldb.launch.expressions": "native",
 
   // ──────────────────────────────
   // GitHub / Copilot / Chat
@@ -126,15 +115,8 @@
     "scminput": false
   },
   "github.copilot.chat.scopeSelection": true,
-
-  // ──────────────────────────────
-  // Remote
-  // ──────────────────────────────
-  "remote.defaultExtensionsIfInstalledLocally": [
-    "GitHub.copilot",
-    "GitHub.copilot-chat",
-    "GitHub.vscode-pull-request-github"
-  ],
+  "github.copilot.chat.welcomeMessage": "never",
+  "workbench.editor.empty.hint": "hidden",
 
   // ──────────────────────────────
   // Security / App
@@ -143,27 +125,30 @@
   "application.shellEnvironmentResolutionTimeout": 30,
 
   // ──────────────────────────────
-  // VS Icons
-  // ──────────────────────────────
-  "vsicons.dontShowNewVersionMessage": true,
-
-  // ──────────────────────────────
   // Language overrides
   // ──────────────────────────────
-  "[shellscript]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[ignore]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[properties]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[dotenv]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
-  "[powershell]": { "editor.defaultFormatter": "ms-vscode.powershell" },
-  "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
-  "[dart]": {
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
-    "editor.rulers": [80],
-    "editor.selectionHighlight": false,
-    "editor.suggestSelection": "first",
-    "editor.tabCompletion": "onlySnippets",
-    "editor.wordBasedSuggestions": "off"
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
