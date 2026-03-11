@@ -161,13 +161,18 @@ install_vscode() {
 
 install_ctop() {
   log_info "Installing ctop..."
-  sudo apt install -y ca-certificates curl gnupg lsb-release
-  curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg
-  echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/azlux-archive-keyring.gpg] http://packages.azlux.fr/debian \
-    $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azlux.list >/dev/null
-  sudo apt update
-  sudo apt install -y docker-ctop || log_warning "Failed to install ctop."
+  local arch latest
+  arch=$(dpkg --print-architecture)
+  latest=$(curl -fsSL "https://api.github.com/repos/bcicen/ctop/releases/latest" | grep '"tag_name"' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
+  if [[ -z "${latest}" ]]; then
+    log_warning "Could not determine ctop version; skipping."
+    return
+  fi
+  curl -fsSL "https://github.com/bcicen/ctop/releases/download/${latest}/ctop-${latest#v}-linux-${arch}" \
+    -o /tmp/ctop && \
+    sudo install -m 755 /tmp/ctop /usr/local/bin/ctop && \
+    rm /tmp/ctop || log_warning "Failed to install ctop."
+  log_success "ctop installed."
 }
 
 deploy_dotfiles() {
