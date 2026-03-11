@@ -56,9 +56,7 @@ BREW_FORMULAE=(
 
 BREW_CASKS=(
   "1password"
-  "1password-cli"
   "tailscale-app"
-  "chatgpt"
   "font-fira-code-nerd-font"
   "font-hack-nerd-font"
   "setapp"
@@ -66,16 +64,12 @@ BREW_CASKS=(
   "crystalfetch"
   "iina"
   "mactracker"
-  "modrinth"
   "raspberry-pi-imager"
-  "transmission"
   "utm"
   "xcodes-app"
   "xiv-on-mac"
   "visual-studio-code@insiders"
   "iterm2"
-  "messenger"
-  "affinity"
 )
 
 DOTFILES_DIR="${0:A:h}"
