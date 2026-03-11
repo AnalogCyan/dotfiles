@@ -1,136 +1,99 @@
-# ⚙ Dotfiles
+# Dotfiles
 
-Base dotfiles and setup scripts for macOS, Debian (workstation), and Windows. This README reflects the current state of the repository and the features actually implemented by the scripts.
+Dotfiles and setup scripts for macOS, Debian (workstation), and Windows.
 
-## 🔧 Repository Structure
+## Repository Structure
 
 ```
 dotfiles/
-├── macOS.zsh          # macOS installation script
-├── Debian.sh          # Debian (Trixie-tuned) installation script
-├── Windows.ps1        # Windows installation script
-├── starship.toml      # Cross-platform Starship prompt configuration
-├── Code/
-│   └── settings.json  # VS Code user settings (macOS-oriented)
-├── Nix/               # Shared Unix bits
-│   ├── bin/           # Custom scripts (copied to ~/bin)
-│   │   ├── pfetch
-│   │   └── weather
-│   └── functions/     # ZSH functions (copied to ~/.config/zsh/functions)
-│       ├── bat.zsh
-│       ├── btop.zsh
-│       ├── cd.zsh
-│       ├── rm.zsh
-│       └── zsh_greeting.zsh
-└── Windows/
-    ├── Microsoft.PowerShell_profile.ps1   # PowerShell profile
-    ├── Terminal/settings.json             # Windows Terminal settings
-    └── winget/settings.json               # Winget settings
+├── macos/
+│   └── home/                          # rsync'd to ~/
+│       ├── .zshrc
+│       ├── .zlogin
+│       ├── .zsh_plugins.txt
+│       ├── .gitconfig
+│       └── .config/
+│           ├── starship.toml
+│           ├── Code - Insiders/User/settings.json
+│           └── zsh/functions/
+│               └── zsh_greeting.zsh
+├── debian/
+│   └── home/                          # rsync'd to ~/
+│       ├── .zshrc
+│       ├── .zlogin
+│       ├── .zsh_plugins.txt
+│       ├── .gitconfig
+│       └── .config/
+│           ├── starship.toml
+│           ├── Code - Insiders/User/settings.json
+│           └── zsh/functions/
+│               └── zsh_greeting.zsh
+├── windows/
+│   ├── home/                          # copied to %USERPROFILE%
+│   │   ├── .gitconfig
+│   │   ├── .config/starship.toml
+│   │   └── Documents/PowerShell/
+│   │       └── Microsoft.PowerShell_profile.ps1
+│   └── appdata/                       # deployed to %LOCALAPPDATA%
+│       ├── Packages/.../settings.json # Windows Terminal
+│       └── Microsoft/WinGet/Settings/ # WinGet settings
+├── install-macos.zsh
+├── install-debian.sh
+└── install-windows.ps1
 ```
 
-## 🍎 macOS
+Each platform directory mirrors the filesystem layout of a live system.
+Install scripts use `rsync` (macOS/Linux) or `Copy-Item` (Windows) to deploy
+dotfiles onto the system in one operation.
 
-The macOS installer is `macOS.zsh`.
-
-### What it does
-
-- System updates via `softwareupdate`
-- Installs Homebrew if missing and updates it if present
-- Installs Homebrew formulae: antidote, bat, btop, fortune, fzf, lazygit, starship, thefuck, xz, yt-dlp, zoxide, zsh, eza
-- Installs Homebrew casks: 1password, 1password-cli, tailscale-app, chatgpt, FiraCode/Hack Nerd Fonts, setapp, balenaetcher, crystalfetch, iina, mactracker, modrinth, raspberry-pi-imager, transmission, utm, xcodes-app, xiv-on-mac, visual-studio-code, iterm2, messenger
-- Sets Homebrew `zsh` as the default shell
-- Installs `~/bin` tools and clones `pfetch`
-- Copies ZSH functions to `~/.config/zsh/functions`
-- Creates a minimal `~/.zshrc` if none is provided in the repo
-- Creates iCloud and Downloads symlinks (`~/iCloud`, `~/Downloads`)
-- Copies `starship.toml` to `~/.config/starship.toml`
-- Configures Git (name/email/editor)
-
-### Install
+## macOS
 
 ```bash
 git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-chmod +x macOS.zsh
-./macOS.zsh
+chmod +x install-macos.zsh
+./install-macos.zsh
 ```
 
-Note: The script references optional files like `Nix/.zshrc` and `Nix/.zsh_plugins.txt`. If they are absent (as in this repo), a sensible minimal `~/.zshrc` is generated.
+The installer handles: system updates, Homebrew setup, package/cask
+installation, VS Code Insiders, zsh configuration, dotfile deployment via rsync,
+iCloud symlinks, and pfetch installed to `/usr/local/bin`.
 
-## 🐧 Linux (Debian)
-
-The Linux installer is `Debian.sh` and targets Debian (tuned for Trixie), but should work on derivatives with minor adjustments.
-
-### What it does
-
-- Apt system update/upgrade and cleanup
-- Installs core packages: bat, btop, fortune-mod, fzf, lazygit, starship, thefuck, xz-utils, yt-dlp, zoxide, zsh, eza, git, curl, ca-certificates
-- Installs Antidote (ZSH plugin manager) from git
-- Installs `~/bin` tools and clones `pfetch`
-- Copies ZSH functions to `~/.config/zsh/functions`
-- Copies `starship.toml` to `~/.config/starship.toml`
-- Creates a minimal `~/.zshrc` when needed
-- Sets `zsh` as the default shell
-- Configures Git (name/email/editor)
-
-No server-specific stacks (Docker, Plex, NextDNS, etc.) are installed by this script currently.
-
-### Install
+## Debian
 
 ```bash
 git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-chmod +x Debian.sh
-./Debian.sh
+chmod +x install-debian.sh
+./install-debian.sh
 ```
 
-## 🪟 Windows
+The installer handles: apt updates, package installation (ripgrep, fd, hx, bat,
+eza, btop, fzf, zoxide, yt-dlp and more), VS Code Insiders via Microsoft apt
+repo, Antidote (zsh plugin manager), ctop, dotfile deployment via rsync, pfetch
+installed to `/usr/local/bin`, and zsh as default shell.
 
-The Windows installer is `Windows.ps1` and is intended for Windows 11.
-
-### What it does
-
-- Verifies Windows 11 and enforces running as non-admin
-- Configures sudo support: uses built-in sudo if available, otherwise installs `gsudo`
-- Enables/disables optional features (enables: VirtualMachinePlatform, HypervisorPlatform; disables: WindowsMediaPlayer, PowerShell v2)
-- Installs apps via Winget (PowerShell, Windows Terminal, Git, Vim, VS Code, Python, Sysinternals, Starship, fzf, zoxide, PowerToys, NanaZip, OneDrive, yt-dlp, Edge, Arc, Craft, 1Password, Discord)
-- Installs PowerShell modules (PSReadLine, Terminal-Icons, PSFzf, posh-git, PowerShellForGitHub, PSWindowsUpdate, BurntToast)
-- Sets system PATH additions (e.g., Vim)
-- Copies `starship.toml` to `%USERPROFILE%\.config\starship.toml`
-- Installs PowerShell profile and Windows Terminal/Winget settings
-- Configures Git (name/email/editor)
-- Prepares `.ssh` directory (key generation is a TODO)
-
-### Install
-
-Run from a non-admin PowerShell:
+## Windows
 
 ```powershell
 git clone https://github.com/AnalogCyan/dotfiles.git $HOME\dotfiles
 cd $HOME\dotfiles
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-./Windows.ps1
+.\install-windows.ps1
 ```
 
-The script can open Microsoft Store to install Winget if it isn't present and may request elevation when enabling Windows features.
+If running from Windows PowerShell 5.x the script will install winget and pwsh,
+then relaunch itself in pwsh automatically.
 
-## 🌟 Key Components
+The installer handles: winget app installation, PowerShell modules, sudo
+configuration, Windows features, disabling AI features (Copilot, Recall, Bing
+search, telemetry), and dotfile deployment.
 
-### Starship Prompt
+## Key Components
 
-Used across all platforms with a minimal, performant configuration (`starship.toml`).
-
-### Antidote (ZSH) on Unix
-
-Antidote is used for plugin management on macOS/Debian when available. If repo-level `Nix/.zshrc` or `Nix/.zsh_plugins.txt` are missing, the installers create a minimal `~/.zshrc` that initializes Antidote and common tools.
-
-### VS Code settings
-
-Opinionated defaults live in `Code/settings.json`. Apply them manually or sync as you prefer.
-
-## ⚠️ Notes
-
-- Scripts include basic error handling and status output
-- Existing `~/.zshrc` is backed up to `~/.zshrc.dotbak` on Unix
-- Windows install requires Windows 11 or newer and should be run as non-admin; it elevates only when needed
-- Some steps may require confirmation or user interaction (e.g., installing Winget from the Store)
+- **Starship** cross-platform prompt (all platforms)
+- **Antidote** zsh plugin manager (macOS/Linux)
+- **VS Code Insiders** installed on all platforms; `code` aliased to `code-insiders`
+- **Editor fallback chain** resolved at shell startup: `code-insiders → code → hx → vim`; exported as `EDITOR`, `VISUAL`, `GIT_EDITOR`
+- **Modern tool aliases** eza, bat, ripgrep, fd, btop, helix
+- **zsh_greeting** available as a command on all platforms; auto-runs on interactive login shells (macOS and Linux via `.zlogin`)
+- **pfetch** installed to `/usr/local/bin` on macOS and Linux
