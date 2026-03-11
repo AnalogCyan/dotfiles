@@ -1,10 +1,15 @@
+# AI agent files
+AGENTS.md
+CLAUDE.md
+CODEX.md
+
 # macOS system files
 .DS_Store
 .AppleDouble
 .LSOverride
 ._*
 
-# VS Code files
+# VS Code workspace files
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

@@ -1,0 +1,60 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = false
+format = """
+$directory$character"""
+
+right_format = """$python$git_branch $git_status"""
+
+[username]
+style_user = "bold yellow"
+style_root = "bold red"
+show_always = true
+
+[character]
+success_symbol = "[●](bold yellow)"
+error_symbol = "[○](bold red)"
+vicmd_symbol = "[●](bold green)"
+
+[directory]
+style = "bold yellow"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = false
+
+[python]
+symbol = " "
+style = "bold blue"
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+detect_extensions = ["py"]
+detect_files = [
+  "requirements.txt",
+  "pyproject.toml",
+  "setup.py",
+  "Pipfile",
+  ".python-version",
+]
+detect_folders = [".venv", "venv", "env", ".tox"]
+
+[git_branch]
+symbol = " "
+style = "bold yellow"
+format = '[$symbol$branch]($style)'
+
+[git_status]
+style = "bold yellow"
+format = '[$all_status$ahead_behind]($style)'
+modified = " "
+staged = " "
+untracked = " "
+stashed = " "
+deleted = " "
+renamed = " "
+ahead = "⇡ "
+behind = "⇣ "
+diverged = "⇕ "
+
+[hostname]
+ssh_only = true
+format = "[󰒋 $hostname](bold cyan) "
