@@ -84,15 +84,13 @@ $WINGET_APPS = @(
   "yt-dlp.yt-dlp"
 
   # --- Browsers ---
-  "Microsoft.Edge"
-  "TheBrowserCompany.Arc"
+  "Mozilla.Firefox.Nightly.MSIX"
 
   # --- Productivity & Notes ---
-  "LukiLabs.Craft"
+  "Obsidian.Obsidian"
 
   # --- Security ---
   "AgileBits.1Password"
-  "AgileBits.1Password.CLI"
 
   # --- Communication ---
   "Discord.Discord"
