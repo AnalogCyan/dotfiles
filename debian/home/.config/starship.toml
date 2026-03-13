@@ -12,9 +12,9 @@ style_root = "bold red"
 show_always = true
 
 [character]
-success_symbol = "[●](bold yellow)"
-error_symbol = "[○](bold red)"
-vicmd_symbol = "[●](bold green)"
+success_symbol = "[](bold yellow)"
+error_symbol = "[](bold red)"
+vicmd_symbol = "[](bold green)"
 
 [directory]
 style = "bold yellow"
@@ -24,7 +24,7 @@ truncation_symbol = "…/"
 truncate_to_repo = false
 
 [python]
-symbol = " "
+symbol = " "
 style = "bold blue"
 format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
 detect_extensions = ["py"]
@@ -38,22 +38,22 @@ detect_files = [
 detect_folders = [".venv", "venv", "env", ".tox"]
 
 [git_branch]
-symbol = " "
+symbol = " "
 style = "bold yellow"
 format = '[$symbol$branch]($style)'
 
 [git_status]
 style = "bold yellow"
 format = '[$all_status$ahead_behind]($style)'
-modified = " "
-staged = " "
-untracked = " "
-stashed = " "
-deleted = " "
-renamed = " "
-ahead = "⇡ "
-behind = "⇣ "
-diverged = "⇕ "
+modified = " "
+staged = " "
+untracked = " "
+stashed = " "
+deleted = " "
+renamed = " "
+ahead = " "
+behind = " "
+diverged = " "
 
 [hostname]
 ssh_only = true
