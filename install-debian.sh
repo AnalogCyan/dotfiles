@@ -120,6 +120,7 @@ check_system_compatibility() {
 
 install_updates() {
   log_info "Updating system..."
+  sudo rm -f /usr/share/keyrings/microsoft.gpg
   sudo apt update || log_warning "apt update failed"
   sudo apt -y full-upgrade || log_warning "apt full-upgrade had issues"
   sudo apt -y autoremove || true
@@ -150,7 +151,6 @@ install_antidote() {
 
 install_vscode() {
   log_info "Installing VS Code Insiders..."
-  sudo rm -f /usr/share/keyrings/microsoft.gpg
   curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
     sudo gpg --yes --dearmor -o /usr/share/keyrings/packages-microsoft-com.gpg
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/packages-microsoft-com.gpg] \
