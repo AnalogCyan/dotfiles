@@ -28,7 +28,8 @@
   "editor.foldingImportsByDefault": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.stickyScroll.enabled": true,
-  "editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace'",
+  "editor.fontFamily": "'MonaspiceAr NF', 'Droid Sans Mono', 'monospace'",
+  "editor.fontSize": 13,
   "editor.fontLigatures": true,
   "editor.tabSize": 2,
   "editor.inlineSuggest.enabled": true,
@@ -78,7 +79,7 @@
   // ──────────────────────────────
   // Terminal
   // ──────────────────────────────
-  "terminal.integrated.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace'",
+  "terminal.integrated.fontFamily": "'MonaspiceAr NF', 'Droid Sans Mono', 'monospace'",
   "terminal.integrated.fontLigatures": true,
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.cursorBlinking": true,

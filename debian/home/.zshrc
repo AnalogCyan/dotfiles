@@ -150,8 +150,6 @@ if command -v z >/dev/null 2>&1; then
   alias cd='z'
 fi
 
-alias cp='cp -i'
-alias mv='mv -i'
 alias mkdir='mkdir -pv'
 
 # bat -> cat/less

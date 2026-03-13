@@ -49,6 +49,7 @@ declare -a APT_PACKAGES=(
   zoxide
   zsh
   eza
+  tmux
   git
   curl
   ca-certificates
@@ -175,6 +176,20 @@ install_ctop() {
   log_success "ctop installed."
 }
 
+install_nerd_fonts() {
+  log_info "Installing Monaspace Nerd Font..."
+  local font_dir="${HOME}/.fonts/Monaspace"
+  local zip_path="/tmp/Monaspace.zip"
+
+  mkdir -p "${font_dir}"
+  curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Monaspace.zip" \
+    -o "${zip_path}" || { log_warning "Failed to download Monaspace Nerd Font."; return; }
+  unzip -o "${zip_path}" -d "${font_dir}" || log_warning "Failed to extract Monaspace Nerd Font."
+  rm -f "${zip_path}"
+  fc-cache -fv || log_warning "Failed to refresh font cache."
+  log_success "Monaspace Nerd Font installed."
+}
+
 deploy_dotfiles() {
   log_info "Deploying dotfiles..."
 
@@ -245,6 +260,7 @@ main() {
   install_antidote
   install_vscode
   install_ctop
+  install_nerd_fonts
   deploy_dotfiles
   configure_zsh
 

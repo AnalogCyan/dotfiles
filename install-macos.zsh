@@ -52,13 +52,12 @@ BREW_FORMULAE=(
   "eza"
   "ctop"
   "git"
+  "tmux"
 )
 
 BREW_CASKS=(
   "1password"
   "tailscale-app"
-  "font-fira-code-nerd-font"
-  "font-hack-nerd-font"
   "setapp"
   "balenaetcher"
   "crystalfetch"
@@ -191,6 +190,19 @@ deploy_dotfiles() {
   log_success "Dotfiles deployed."
 }
 
+install_nerd_fonts() {
+  log_info "Installing Monaspace Nerd Font..."
+  local font_dir="${HOME}/Library/Fonts/Monaspace"
+  local zip_path="/tmp/Monaspace.zip"
+
+  mkdir -p "${font_dir}"
+  curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Monaspace.zip" \
+    -o "${zip_path}" || { log_warning "Failed to download Monaspace Nerd Font."; return; }
+  unzip -o "${zip_path}" -d "${font_dir}" || log_warning "Failed to extract Monaspace Nerd Font."
+  rm -f "${zip_path}"
+  log_success "Monaspace Nerd Font installed."
+}
+
 setup_icloud_links() {
   log_info "Creating iCloud symlinks..."
   ln -snf "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" "${HOME}/iCloud" || {
@@ -257,6 +269,7 @@ main() {
   install_updates
   install_homebrew
   install_homebrew_packages
+  install_nerd_fonts
   configure_zsh
   deploy_dotfiles
   setup_icloud_links

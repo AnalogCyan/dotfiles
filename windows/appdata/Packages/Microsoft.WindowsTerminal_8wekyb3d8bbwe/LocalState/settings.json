@@ -65,7 +65,8 @@
           "experimental.repositionCursorWithMouse": true,
           "font":
           {
-              "face": "JetBrainsMono Nerd Font"
+              "face": "MonaspiceAr NF",
+              "size": 13
           },
           "opacity": 95,
           "useAcrylic": true

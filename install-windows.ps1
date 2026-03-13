@@ -65,8 +65,7 @@ $WINGET_APPS = @(
   "Microsoft.Sysinternals"
   "Microsoft.WinDbg"
 
-  # --- Shell Enhancements & Fonts ---
-  "DEVCOM.JetBrainsMonoNerdFont"
+  # --- Shell Enhancements ---
   "Starship.Starship"
   "junegunn.fzf"
   "ajeetdsouza.zoxide"
@@ -291,6 +290,44 @@ function Install-PowerShellModules {
   Write-LogSuccess "PowerShell modules installed."
 }
 
+function Install-NerdFonts {
+  Write-LogInfo "Installing Monaspace Nerd Font..."
+
+  $FontUrl      = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Monaspace.zip"
+  $TempDir      = Join-Path $env:TEMP "NerdFonts_$(Get-Random)"
+  $ZipPath      = Join-Path $TempDir "Monaspace.zip"
+  $ExtractPath  = Join-Path $TempDir "Monaspace"
+  $UserFontsPath = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
+
+  try {
+    New-Item -Path $TempDir -ItemType Directory -Force | Out-Null
+    if (-not (Test-Path $UserFontsPath)) {
+      New-Item -Path $UserFontsPath -ItemType Directory -Force | Out-Null
+    }
+
+    $ProgressPreference = 'SilentlyContinue'
+    Invoke-WebRequest -Uri $FontUrl -OutFile $ZipPath -UseBasicParsing
+    Expand-Archive -Path $ZipPath -DestinationPath $ExtractPath -Force
+
+    $FontFiles = Get-ChildItem -Path $ExtractPath -Include "*.ttf", "*.otf" -Recurse
+    foreach ($FontFile in $FontFiles) {
+      Copy-Item -Path $FontFile.FullName -Destination (Join-Path $UserFontsPath $FontFile.Name) -Force
+    }
+
+    $Shell = New-Object -ComObject Shell.Application
+    $FontsFolder = $Shell.Namespace(0x14)
+    foreach ($FontFile in $FontFiles) {
+      try { $FontsFolder.CopyHere($FontFile.FullName, 0x10) } catch {}
+    }
+
+    Write-LogSuccess "Monaspace Nerd Font installed."
+  } catch {
+    Write-LogWarning "Failed to install Monaspace Nerd Font: $($_.Exception.Message)"
+  } finally {
+    if (Test-Path $TempDir) { Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue }
+  }
+}
+
 function Deploy-Dotfiles {
   Write-LogInfo "Deploying dotfiles..."
 
@@ -392,6 +429,7 @@ function Main {
   Set-WindowsOptionalFeatures
   Install-Applications
   Install-PowerShellModules
+  Install-NerdFonts
   Disable-AIFeatures
   Deploy-Dotfiles
 
