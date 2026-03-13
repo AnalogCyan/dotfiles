@@ -121,6 +121,8 @@ check_system_compatibility() {
 install_updates() {
   log_info "Updating system..."
   sudo rm -f /usr/share/keyrings/microsoft.gpg
+  sudo grep -rl 'packages.microsoft.com/repos/code' /etc/apt/sources.list.d/ 2>/dev/null \
+    | xargs -r sudo rm -f
   sudo apt update || log_warning "apt update failed"
   sudo apt -y full-upgrade || log_warning "apt full-upgrade had issues"
   sudo apt -y autoremove || true
