@@ -150,8 +150,9 @@ install_antidote() {
 
 install_vscode() {
   log_info "Installing VS Code Insiders..."
+  sudo rm -f /usr/share/keyrings/microsoft.gpg
   curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
-    sudo gpg --dearmor -o /usr/share/keyrings/packages-microsoft-com.gpg
+    sudo gpg --yes --dearmor -o /usr/share/keyrings/packages-microsoft-com.gpg
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/packages-microsoft-com.gpg] \
     https://packages.microsoft.com/repos/code stable main" | \
     sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
