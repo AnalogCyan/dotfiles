@@ -33,6 +33,7 @@
   "editor.fontLigatures": true,
   "editor.tabSize": 2,
   "editor.inlineSuggest.enabled": true,
+  "editor.inlineSuggest.fontFamily": "'MonaspiceKr NF'",
   "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
   "editor.linkedEditing": true,
   "editor.smoothScrolling": true,

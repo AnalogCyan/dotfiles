@@ -28,7 +28,7 @@
   "editor.foldingImportsByDefault": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.stickyScroll.enabled": true,
-  "editor.fontFamily": "'MonaspiceAr NF', 'Droid Sans Mono', 'monospace'",
+  "editor.fontFamily": "'MonaspiceAr NF', Consolas, 'Courier New', monospace",
   "editor.fontSize": 13,
   "editor.fontLigatures": true,
   "editor.tabSize": 2,
@@ -80,21 +80,21 @@
   // ──────────────────────────────
   // Terminal
   // ──────────────────────────────
-  "terminal.integrated.fontFamily": "'MonaspiceAr NF', 'Droid Sans Mono', 'monospace'",
+  "terminal.integrated.fontFamily": "'MonaspiceAr NF', Consolas, 'Courier New', monospace",
   "terminal.integrated.fontLigatures": true,
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.cursorStyle": "line",
   "terminal.integrated.cursorStyleInactive": "line",
   "terminal.integrated.enableImages": true,
-  "terminal.integrated.defaultProfile.linux": "zsh",
-  "terminal.integrated.profiles.linux": {
-    "zsh": {
-      "path": "zsh",
-      "args": ["--no-rcs"],
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "args": ["-NoLogo"],
     },
   },
-  "terminal.external.linuxExec": "x-terminal-emulator",
+  "terminal.external.windowsExec": "wt.exe",
 
   // ──────────────────────────────
   // Languages / Extensions
