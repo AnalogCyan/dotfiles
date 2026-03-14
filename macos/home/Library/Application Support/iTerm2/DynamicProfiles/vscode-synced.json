@@ -1,0 +1,10 @@
+{
+  "Profiles" : [
+    {
+      "Rewritable" : true,
+      "Window Type" : 0,
+      "Name" : "Monokai Pro (Filter Ristretto) (synchronized with VSCode)",
+      "Guid" : "1bbe081f-c02f-497b-9ace-1f588dab1a7a"
+    }
+  ]
+}
