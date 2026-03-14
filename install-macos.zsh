@@ -59,7 +59,6 @@ BREW_FORMULAE=(
 BREW_CASKS=(
   "1password"
   "tailscale-app"
-  "setapp"
   "balenaetcher"
   "crystalfetch"
   "iina"
