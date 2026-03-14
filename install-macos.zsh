@@ -70,6 +70,8 @@ BREW_CASKS=(
   "xiv-on-mac"
   "visual-studio-code@insiders"
   "iterm2"
+  "keka"
+  "kekaexternalhelper"
 )
 
 DOTFILES_DIR="${0:A:h}"
