@@ -61,6 +61,8 @@ $WINGET_APPS = @(
   "Microsoft.VisualStudioCode.Insiders"
   "Python.Python.3.13"
   "Python.Launcher"
+  "aristocratos.btop4win"
+  "JesseDuffield.lazygit"
   "Microsoft.DevHome"
   "Microsoft.Sysinternals"
   "Microsoft.WinDbg"
@@ -334,6 +336,17 @@ function Deploy-Dotfiles {
   $homeSource = Join-Path $DOTFILES_DIR "windows\home"
   if (Test-Path $homeSource) {
     Copy-Item -Path "$homeSource\*" -Destination $env:USERPROFILE -Recurse -Force
+  }
+
+  $roamingSource = Join-Path $DOTFILES_DIR "windows\roaming"
+  if (Test-Path $roamingSource) {
+    $vscodeSource = Join-Path $roamingSource "Code - Insiders\User\settings.json"
+    $vscodeDest   = "$env:APPDATA\Code - Insiders\User\settings.json"
+    if (Test-Path $vscodeSource) {
+      $vscodeDir = Split-Path -Parent $vscodeDest
+      if (-not (Test-Path $vscodeDir)) { New-Item -ItemType Directory -Path $vscodeDir -Force | Out-Null }
+      Copy-Item -Path $vscodeSource -Destination $vscodeDest -Force
+    }
   }
 
   $appdataSource = Join-Path $DOTFILES_DIR "windows\appdata"

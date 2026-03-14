@@ -37,6 +37,7 @@ BREW_FORMULAE=(
   "antidote"
   "bat"
   "btop"
+  "python@3.13"
   "fd"
   "fortune"
   "fzf"
