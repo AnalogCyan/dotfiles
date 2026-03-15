@@ -79,6 +79,7 @@ $WINGET_APPS = @(
 
   # --- Essential Utilities ---
   "Microsoft.PowerToys"
+  "Seelen.SeelenUI"
   "M2Team.NanaZip"
   "Microsoft.PCManager"
   "Microsoft.OneDrive"
