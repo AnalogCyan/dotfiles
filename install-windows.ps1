@@ -42,7 +42,7 @@ if ($PSVersionTable.PSEdition -ne "Core") {
   }
 
   Write-Host "Relaunching in PowerShell 7..."
-  Start-Process pwsh -ArgumentList @("-NoLogo", "-ExecutionPolicy", "Bypass", "-File", "`"$($MyInvocation.MyCommand.Path)`"") -Wait
+  Start-Process pwsh -ArgumentList @("-NoLogo", "-ExecutionPolicy", "Bypass", "-File", "`"$PSCommandPath`"") -Wait
   exit $LASTEXITCODE
 }
 
