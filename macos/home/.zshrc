@@ -29,6 +29,9 @@ fi
 # Codeium
 export PATH="${XDG_DATA_HOME}/codeium/bin:$PATH"
 
+# opencode
+export PATH="$HOME/.opencode/bin:$PATH"
+
 # Session Editor
 if command -v code-insiders >/dev/null 2>&1; then
   export EDITOR='code-insiders --wait -n'
@@ -64,6 +67,9 @@ setopt incappendhistory
 setopt extendedhistory
 setopt correct
 setopt nobeep
+
+# Spell correction: don't correct dotfiles
+CORRECT_IGNORE_FILE='.*'
 
 # Ensure history/cache directories exist
 [[ -d "$XDG_STATE_HOME/zsh" ]] || mkdir -p "$XDG_STATE_HOME/zsh"
@@ -194,9 +200,59 @@ if command -v code-insiders >/dev/null 2>&1; then
   alias code='code-insiders'
 fi
 
-if command -v codex >/dev/null 2>&1; then
-  alias cc='codex --dangerously-bypass-approvals-and-sandbox'
-fi
+# yolo: Interactive agent selector for dangerous mode
+yolo() {
+  local agents=()
+  local descriptions=()
+
+  if command -v codex >/dev/null 2>&1; then
+    agents+=("codex")
+    descriptions+=("OpenAI Codex")
+  fi
+  if command -v claude >/dev/null 2>&1; then
+    agents+=("claude")
+    descriptions+=("Claude Code")
+  fi
+  if command -v opencode >/dev/null 2>&1; then
+    agents+=("opencode")
+    descriptions+=("OpenCode")
+  fi
+
+  if [[ ${#agents[@]} -eq 0 ]]; then
+    echo "No coding agents found. Install codex, claude, or opencode." >&2
+    return 1
+  fi
+
+  if [[ ${#agents[@]} -eq 1 ]]; then
+    echo "Launching ${descriptions[1]} in yolo mode..."
+    case "${agents[1]}" in
+      codex) codex --dangerously-bypass-approvals-and-sandbox ;;
+      claude) claude --dangerously-skip-permissions ;;
+      opencode) opencode --bypass-approvals ;;
+    esac
+    return $?
+  fi
+
+  echo "Select coding agent for yolo mode:"
+  local i
+  for ((i=1; i<=${#agents[@]}; i++)); do
+    echo "  [$i] ${descriptions[$i]}"
+  done
+  echo -n "Choice [1-${#agents[@]}]: "
+  read choice
+
+  if [[ ! "$choice" =~ ^[0-9]+$ ]] || (( choice < 1 || choice > ${#agents[@]} )); then
+    echo "Invalid selection" >&2
+    return 1
+  fi
+
+  echo "Launching ${descriptions[$choice]} in yolo mode..."
+  case "${agents[$choice]}" in
+    codex) codex --dangerously-bypass-approvals-and-sandbox ;;
+    claude) claude --dangerously-skip-permissions ;;
+    opencode) opencode --bypass-approvals ;;
+  esac
+}
 
 # =============================================================================
 #  Custom Functions
@@ -206,3 +262,12 @@ fi
 for func in "$HOME/.config/zsh/functions/"*.zsh(N); do
   source "$func"
 done
+
+# Alias transparency: remind what an alias actually calls
+autoload -Uz add-zsh-hook
+function _alias_reminder() {
+  local cmd="${1%% *}"
+  local alias_val="${aliases[$cmd]}"
+  [[ -n "$alias_val" ]] && print -P "%F{243}alias: $cmd → $alias_val%f"
+}
+add-zsh-hook preexec _alias_reminder
