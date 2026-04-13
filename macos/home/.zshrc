@@ -194,6 +194,10 @@ if command -v code-insiders >/dev/null 2>&1; then
   alias code='code-insiders'
 fi
 
+if command -v codex >/dev/null 2>&1; then
+  alias cc='codex --dangerously-bypass-approvals-and-sandbox'
+fi
+
 # =============================================================================
 #  Custom Functions
 # =============================================================================
