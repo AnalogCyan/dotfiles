@@ -206,6 +206,11 @@ if command -v code-insiders >/dev/null 2>&1; then
   alias code='code-insiders'
 fi
 
+# brew: update + upgrade all (including casks)
+if command -v brew >/dev/null 2>&1; then
+  alias brewup='brew update && brew upgrade --greedy'
+fi
+
 # yolo: Interactive agent selector for dangerous mode
 yolo() {
   local agents=()
