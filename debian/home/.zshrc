@@ -200,6 +200,11 @@ if command -v code-insiders >/dev/null 2>&1; then
   alias code='code-insiders'
 fi
 
+# apt: update + upgrade
+if command -v apt >/dev/null 2>&1; then
+  alias aptup='sudo apt update && sudo apt full-upgrade'
+fi
+
 # Custom Functions
 for func in "$HOME/.config/zsh/functions/"*.zsh(N); do
   source "$func"
