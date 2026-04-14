@@ -138,17 +138,38 @@ install_apt_packages() {
   log_success "Packages installed."
 }
 
-install_antidote() {
-  local target="${HOME}/.antidote"
-  if [[ -d "${target}/.git" ]]; then
-    log_info "Updating Antidote..."
-    git -C "${target}" pull --ff-only || log_warning "Failed to update Antidote."
-  else
-    log_info "Installing Antidote..."
-    git clone --depth=1 https://github.com/mattmc3/antidote.git "${target}" || {
-      log_warning "Failed to clone Antidote."
-    }
-  fi
+install_zsh_plugins() {
+  local plugins_dir="${HOME}/.local/share/zsh/plugins"
+  log_info "Installing zsh plugins..."
+  mkdir -p "${plugins_dir}"
+
+  local plugins=(
+    "https://github.com/unixorn/fzf-zsh-plugin"
+    "https://github.com/Aloxaf/fzf-tab"
+    "https://github.com/joshskidmore/zsh-fzf-history-search"
+    "https://github.com/zsh-users/zsh-history-substring-search"
+    "https://github.com/zsh-users/zsh-autosuggestions"
+    "https://github.com/ajeetdsouza/zoxide"
+    "https://github.com/mollifier/cd-gitroot"
+    "https://github.com/zdharma-continuum/fast-syntax-highlighting"
+    "https://github.com/hlissner/zsh-autopair"
+    "https://github.com/MichaelAquilina/zsh-you-should-use"
+    "https://github.com/z-shell/zsh-eza"
+  )
+
+  for url in "${plugins[@]}"; do
+    local name
+    name=$(basename "${url}")
+    if [[ -d "${plugins_dir}/${name}/.git" ]]; then
+      log_info "Updating ${name}..."
+      git -C "${plugins_dir}/${name}" pull --ff-only || log_warning "Failed to update ${name}."
+    else
+      log_info "Cloning ${name}..."
+      git clone --depth=1 "${url}" "${plugins_dir}/${name}" || log_warning "Failed to clone ${name}."
+    fi
+  done
+
+  log_success "Zsh plugins installed."
 }
 
 install_vscode() {
@@ -260,7 +281,7 @@ main() {
   check_system_compatibility
   install_updates
   install_apt_packages
-  install_antidote
+  install_zsh_plugins
   install_vscode
   install_ctop
   install_nerd_fonts
