@@ -16,4 +16,13 @@ function zsh_greeting() {
       echo "You have ${outdated_count} outdated Homebrew package(s)."
     fi
   fi
+
+  # Display outdated apt packages
+  if command -v apt >/dev/null 2>&1; then
+    local apt_outdated_count
+    apt_outdated_count=$(apt list --upgradable 2>/dev/null | grep -c upgradable)
+    if (( apt_outdated_count > 0 )); then
+      echo "You have ${apt_outdated_count} upgradable apt package(s)."
+    fi
+  fi
 }

@@ -10,8 +10,16 @@ mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
 # Environment Paths
 export PATH="$HOME/bin:/usr/local/bin:$PATH"
 
+# Homebrew (macOS)
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # VS Code Insiders
-[[ -d "/usr/share/code-insiders/bin" ]] && export PATH="/usr/share/code-insiders/bin:$PATH"
+[[ -d "/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin" ]] &&
+  export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"
+[[ -d "/usr/share/code-insiders/bin" ]] &&
+  export PATH="/usr/share/code-insiders/bin:$PATH"
 
 # Codeium
 export PATH="${XDG_DATA_HOME}/codeium/bin:$PATH"
@@ -68,7 +76,7 @@ command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 # Initialize Starship prompt
 command -v starship >/dev/null && eval "$(starship init zsh)"
 
-# iTerm2 Integration (works via SSH)
+# iTerm2 Integration
 [[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # VS Code Insiders shell integration
@@ -79,43 +87,72 @@ command -v starship >/dev/null && eval "$(starship init zsh)"
 # Plugin Management (Manual)
 ZSH_PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
 
+# Only source plugins that are actually present; install may have had partial failures.
+source_zsh_plugin() {
+  local plugin_dir="$1"
+  local plugin_file="$2"
+
+  fpath+=( "$plugin_dir" )
+  if [[ -f "$plugin_file" ]]; then
+    source "$plugin_file"
+  fi
+}
+
 # FZF plugins (highest priority)
-fpath+=( "$ZSH_PLUGINS_DIR/fzf-zsh-plugin" )
-source "$ZSH_PLUGINS_DIR/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh"
+# Always force the plugin to use ~/.fzf.zsh as its config entrypoint; our
+# config file resolves the real package-managed install root separately.
+unset FZF_PATH
 
-fpath+=( "$ZSH_PLUGINS_DIR/fzf-tab" )
-source "$ZSH_PLUGINS_DIR/fzf-tab/fzf-tab.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/fzf-zsh-plugin" \
+  "$ZSH_PLUGINS_DIR/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh"
 
-fpath+=( "$ZSH_PLUGINS_DIR/zsh-fzf-history-search" )
-source "$ZSH_PLUGINS_DIR/zsh-fzf-history-search/zsh-fzf-history-search.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/fzf-tab" \
+  "$ZSH_PLUGINS_DIR/fzf-tab/fzf-tab.plugin.zsh"
+
+# fzf Ctrl-R: preview-on-toggle for long/multi-line commands
+export FZF_CTRL_R_OPTS="
+  --preview 'echo {}'
+  --preview-window 'down:5:hidden:wrap'
+  --bind 'ctrl-/:toggle-preview'
+"
 
 # Fish-like plugins
-fpath+=( "$ZSH_PLUGINS_DIR/zsh-history-substring-search" )
-source "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zsh-history-substring-search" \
+  "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh"
 
-fpath+=( "$ZSH_PLUGINS_DIR/zsh-autosuggestions" )
-source "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zsh-autosuggestions" \
+  "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
 
 # Navigation plugins
-fpath+=( "$ZSH_PLUGINS_DIR/zoxide" )
-source "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zoxide" \
+  "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh"
 
-fpath+=( "$ZSH_PLUGINS_DIR/cd-gitroot" )
-source "$ZSH_PLUGINS_DIR/cd-gitroot/cd-gitroot.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/cd-gitroot" \
+  "$ZSH_PLUGINS_DIR/cd-gitroot/cd-gitroot.plugin.zsh"
 
 # Syntax and text editing plugins
-fpath+=( "$ZSH_PLUGINS_DIR/fast-syntax-highlighting" )
-source "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting" \
+  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
-fpath+=( "$ZSH_PLUGINS_DIR/zsh-autopair" )
-source "$ZSH_PLUGINS_DIR/zsh-autopair/zsh-autopair.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zsh-autopair" \
+  "$ZSH_PLUGINS_DIR/zsh-autopair/zsh-autopair.plugin.zsh"
 
 # Utility plugins
-fpath+=( "$ZSH_PLUGINS_DIR/zsh-you-should-use" )
-source "$ZSH_PLUGINS_DIR/zsh-you-should-use/zsh-you-should-use.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zsh-you-should-use" \
+  "$ZSH_PLUGINS_DIR/zsh-you-should-use/zsh-you-should-use.plugin.zsh"
 
-fpath+=( "$ZSH_PLUGINS_DIR/zsh-eza" )
-source "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zsh-eza" \
+  "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
 
 # Plugin configuration
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
@@ -204,6 +241,11 @@ fi
 # code-insiders -> code
 if command -v code-insiders >/dev/null 2>&1; then
   alias code='code-insiders'
+fi
+
+# brew: update + upgrade all (including casks)
+if command -v brew >/dev/null 2>&1; then
+  alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize'
 fi
 
 # apt: update + upgrade

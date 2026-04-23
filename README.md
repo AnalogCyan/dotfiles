@@ -1,77 +1,71 @@
 # Dotfiles
 
-Dotfiles and setup scripts for macOS and Debian (workstation).
+Dotfiles and setup script for macOS and Debian (workstation). Single
+cross-platform installer; shared configs with per-platform overlay where
+needed.
 
 ## Repository Structure
 
 ```
 dotfiles/
+├── shared/
+│   ├── home/                          # rsync'd to ~/ on all platforms
+│   │   ├── .zshrc
+│   │   ├── .zlogin
+│   │   ├── .zsh_plugins.txt
+│   │   ├── .gitconfig
+│   │   ├── .fzf.zsh
+│   │   ├── .tmux.conf
+│   │   └── .config/
+│   │       ├── starship.toml
+│   │       └── zsh/functions/
+│   │           └── zsh_greeting.zsh
+│   └── vscode/
+│       └── settings.json              # copied to platform-specific path
 ├── macos/
-│   └── home/                          # rsync'd to ~/
-│       ├── .zshrc
-│       ├── .zlogin
-│       ├── .zsh_plugins.txt
-│       ├── .gitconfig
-│       ├── .fzf.zsh
-│       ├── .tmux.conf
-│       └── .config/
-│           ├── starship.toml
-│           ├── Code - Insiders/User/settings.json
-│           └── zsh/functions/
-│               └── zsh_greeting.zsh
-├── debian/
-│   └── home/                          # rsync'd to ~/
-│       ├── .zshrc
-│       ├── .zlogin
-│       ├── .zsh_plugins.txt
-│       ├── .gitconfig
-│       ├── .fzf.zsh
-│       ├── .tmux.conf
-│       └── .config/
-│           ├── starship.toml
-│           ├── Code - Insiders/User/settings.json
-│           └── zsh/functions/
-│               └── zsh_greeting.zsh
-├── install-macos.zsh
-└── install-debian.sh
+│   └── home/                          # macOS-only overlay, rsync'd after shared/
+│       └── Library/
+│           ├── Application Support/iTerm2/DynamicProfiles/vscode-synced.json
+│           └── Preferences/com.googlecode.iterm2.plist
+└── install.sh
 ```
 
-Each platform directory mirrors the filesystem layout of a live system.
-Install scripts use `rsync` to deploy dotfiles onto the system in one operation.
+Shared shell configs use command-existence guards (`command -v`) rather than
+OS detection, so the same `.zshrc` works on both platforms without branching.
+VS Code settings use platform-specific keys (`*.osx`, `*.linux`) in a single
+file; VS Code reads only the relevant keys at runtime.
 
-## macOS
+## Installation
 
 ```bash
 git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-chmod +x install-macos.zsh
-./install-macos.zsh
+./install.sh
 ```
 
-The installer handles: system updates, Homebrew setup, package/cask installation,
-zsh plugin cloning, Monaspace Nerd Font, zsh configuration, dotfile deployment via
-rsync, iCloud symlinks, and pfetch installed to `/usr/local/bin`.
+The installer detects the OS via `uname -s` and runs the appropriate steps.
 
-## Debian
+### macOS
 
-```bash
-git clone https://github.com/AnalogCyan/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-chmod +x install-debian.sh
-./install-debian.sh
-```
+Handles: system updates, Homebrew setup, formula/cask installation, zsh plugin
+cloning, Monaspace Nerd Font, zsh configuration, dotfile deployment via rsync
+(shared + macOS overlay), VS Code settings to `~/Library/Application Support/`,
+iCloud symlinks, and pfetch installed to `/usr/local/bin`.
 
-The installer handles: apt updates, package installation (ripgrep, fd, hx, bat,
-eza, btop, fzf, zoxide, yt-dlp and more), VS Code Insiders via Microsoft apt repo,
-zsh plugin cloning, ctop, Monaspace Nerd Font, dotfile deployment via rsync, pfetch
-installed to `/usr/local/bin`, and zsh as default shell.
+### Debian
+
+Handles: apt updates, package installation (ripgrep, fd, hx, bat, eza, btop,
+fzf, zoxide, yt-dlp and more), VS Code Insiders via Microsoft apt repo, zsh
+plugin cloning, ctop, Monaspace Nerd Font, dotfile deployment via rsync, VS Code
+settings to `~/.config/`, pfetch installed to `/usr/local/bin`, and zsh as
+default shell.
 
 ## Key Components
 
-- **Starship** cross-platform prompt (macOS and Debian)
+- **Starship** cross-platform prompt
 - **zsh plugins** cloned directly to `~/.local/share/zsh/plugins` (no plugin manager)
-- **VS Code Insiders** installed on all platforms; `code` aliased to `code-insiders`
+- **VS Code Insiders** installed on both platforms; `code` aliased to `code-insiders`
 - **Editor fallback chain** resolved at shell startup: `code-insiders → code → hx → vim`; exported as `EDITOR`, `VISUAL`, `GIT_EDITOR`
-- **Modern tool aliases** eza, bat, ripgrep, fd, btop, helix
-- **zsh_greeting** available as a command on macOS and Debian; auto-runs on interactive login shells via `.zlogin`
-- **pfetch** installed to `/usr/local/bin` on macOS and Debian
+- **Modern tool aliases** eza, bat (or batcat on Debian), ripgrep, fd (or fdfind on Debian), btop, helix
+- **zsh_greeting** available as a command; auto-runs on interactive login shells via `.zlogin`; shows outdated brew or apt packages depending on platform
+- **pfetch** installed to `/usr/local/bin`

@@ -1,7 +1,6 @@
 # FZF plugins (highest priority)
 unixorn/fzf-zsh-plugin                    # Collection of fzf-powered functions
 Aloxaf/fzf-tab                            # Replace completion menu with fzf
-joshskidmore/zsh-fzf-history-search       # Fuzzy search through command history
 
 # Fish-like plugins
 zsh-users/zsh-history-substring-search    # Fish-like history search with up/down arrows
