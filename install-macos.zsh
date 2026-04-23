@@ -191,6 +191,40 @@ deploy_dotfiles() {
   log_success "Dotfiles deployed."
 }
 
+install_zsh_plugins() {
+  local plugins_dir="${HOME}/.local/share/zsh/plugins"
+  log_info "Installing zsh plugins..."
+  mkdir -p "${plugins_dir}"
+
+  local plugins=(
+    "https://github.com/unixorn/fzf-zsh-plugin"
+    "https://github.com/Aloxaf/fzf-tab"
+    "https://github.com/joshskidmore/zsh-fzf-history-search"
+    "https://github.com/zsh-users/zsh-history-substring-search"
+    "https://github.com/zsh-users/zsh-autosuggestions"
+    "https://github.com/ajeetdsouza/zoxide"
+    "https://github.com/mollifier/cd-gitroot"
+    "https://github.com/zdharma-continuum/fast-syntax-highlighting"
+    "https://github.com/hlissner/zsh-autopair"
+    "https://github.com/MichaelAquilina/zsh-you-should-use"
+    "https://github.com/z-shell/zsh-eza"
+  )
+
+  for url in "${plugins[@]}"; do
+    local name
+    name=$(basename "${url}")
+    if [[ -d "${plugins_dir}/${name}/.git" ]]; then
+      log_info "Updating ${name}..."
+      git -C "${plugins_dir}/${name}" pull --ff-only || log_warning "Failed to update ${name}."
+    else
+      log_info "Cloning ${name}..."
+      git clone --depth=1 "${url}" "${plugins_dir}/${name}" || log_warning "Failed to clone ${name}."
+    fi
+  done
+
+  log_success "Zsh plugins installed."
+}
+
 install_nerd_fonts() {
   log_info "Installing Monaspace Nerd Font..."
   local font_dir="${HOME}/Library/Fonts/Monaspace"
@@ -270,6 +304,7 @@ main() {
   install_updates
   install_homebrew
   install_homebrew_packages
+  install_zsh_plugins
   install_nerd_fonts
   configure_zsh
   deploy_dotfiles
