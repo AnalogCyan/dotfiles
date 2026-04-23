@@ -208,7 +208,7 @@ fi
 
 # brew: update + upgrade all (including casks)
 if command -v brew >/dev/null 2>&1; then
-  alias brewup='brew update && brew upgrade --greedy'
+  alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize'
 fi
 
 # yolo: Interactive agent selector for dangerous mode
