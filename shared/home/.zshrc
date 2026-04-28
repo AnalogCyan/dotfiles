@@ -56,7 +56,6 @@ setopt histignorespace
 setopt sharehistory
 setopt incappendhistory
 setopt extendedhistory
-setopt correct
 setopt nobeep
 
 # Spell correction: don't correct dotfiles
@@ -244,8 +243,9 @@ if command -v code-insiders >/dev/null 2>&1; then
 fi
 
 # brew: update + upgrade all (including casks)
+# opens zsh to force refresh to avoid broken styling on next iTerm2 launch
 if command -v brew >/dev/null 2>&1; then
-  alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize'
+  alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
 fi
 
 # apt: update + upgrade
@@ -254,58 +254,9 @@ if command -v apt >/dev/null 2>&1; then
 fi
 
 # yolo: Interactive agent selector for dangerous mode
-yolo() {
-  local agents=()
-  local descriptions=()
-
-  if command -v codex >/dev/null 2>&1; then
-    agents+=("codex")
-    descriptions+=("OpenAI Codex")
-  fi
-  if command -v claude >/dev/null 2>&1; then
-    agents+=("claude")
-    descriptions+=("Claude Code")
-  fi
-  if command -v opencode >/dev/null 2>&1; then
-    agents+=("opencode")
-    descriptions+=("OpenCode")
-  fi
-
-  if [[ ${#agents[@]} -eq 0 ]]; then
-    echo "No coding agents found. Install codex, claude, or opencode." >&2
-    return 1
-  fi
-
-  if [[ ${#agents[@]} -eq 1 ]]; then
-    echo "Launching ${descriptions[1]} in yolo mode..."
-    case "${agents[1]}" in
-      codex) codex --dangerously-bypass-approvals-and-sandbox ;;
-      claude) claude --dangerously-skip-permissions ;;
-      opencode) opencode --bypass-approvals ;;
-    esac
-    return $?
-  fi
-
-  echo "Select coding agent for yolo mode:"
-  local i
-  for ((i=1; i<=${#agents[@]}; i++)); do
-    echo "  [$i] ${descriptions[$i]}"
-  done
-  echo -n "Choice [1-${#agents[@]}]: "
-  read choice
-
-  if [[ ! "$choice" =~ ^[0-9]+$ ]] || (( choice < 1 || choice > ${#agents[@]} )); then
-    echo "Invalid selection" >&2
-    return 1
-  fi
-
-  echo "Launching ${descriptions[$choice]} in yolo mode..."
-  case "${agents[$choice]}" in
-    codex) codex --dangerously-bypass-approvals-and-sandbox ;;
-    claude) claude --dangerously-skip-permissions ;;
-    opencode) opencode --bypass-approvals ;;
-  esac
-}
+if command -v kimi >/dev/null 2>&1; then
+  alias yolo='kimi --yolo'
+fi
 
 # Custom Functions
 for func in "$HOME/.config/zsh/functions/"*.zsh(N); do
