@@ -15,23 +15,11 @@ if [[ -f /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# VS Code Insiders
-[[ -d "/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin" ]] &&
-  export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"
-[[ -d "/usr/share/code-insiders/bin" ]] &&
-  export PATH="/usr/share/code-insiders/bin:$PATH"
-
-# Codeium
-export PATH="${XDG_DATA_HOME}/codeium/bin:$PATH"
-
-# opencode
-export PATH="$HOME/.opencode/bin:$PATH"
-
 # Session Editor
-if command -v code-insiders >/dev/null 2>&1; then
-  export EDITOR='code-insiders --wait -n'
-elif command -v code >/dev/null 2>&1; then
-  export EDITOR='code --wait -n'
+if command -v zed-insiders >/dev/null 2>&1; then
+  export EDITOR='zed-insiders --wait -n'
+elif command -v zed >/dev/null 2>&1; then
+  export EDITOR='zed --wait -n'
 elif command -v hx >/dev/null 2>&1; then
   export EDITOR='hx'
 else
@@ -77,9 +65,6 @@ command -v starship >/dev/null && eval "$(starship init zsh)"
 
 # iTerm2 Integration
 [[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
-
-# VS Code Insiders shell integration
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code-insiders --locate-shell-integration-path zsh)"
 
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
@@ -235,11 +220,6 @@ if command -v hx >/dev/null 2>&1; then
   alias nano='hx'
   alias vi='hx'
   alias vim='hx'
-fi
-
-# code-insiders -> code
-if command -v code-insiders >/dev/null 2>&1; then
-  alias code='code-insiders'
 fi
 
 # brew: update + upgrade all (including casks)

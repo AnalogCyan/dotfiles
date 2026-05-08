@@ -1,0 +1,158 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "on_last_window_closed": "quit_app",
+  "when_closing_with_no_tabs": "keep_window_open",
+  "edit_predictions": {
+    "ollama": {},
+  },
+  "outline_panel": {
+    "dock": "right",
+  },
+  "collaboration_panel": {
+    "dock": "right",
+  },
+  "agent": {
+    "tool_permissions": {
+      "tools": {
+        "edit_file": {
+          "default": "allow",
+        },
+        "create_directory": {
+          "default": "allow",
+        },
+        "save_file": {
+          "default": "allow",
+        },
+        "fetch": {
+          "default": "allow",
+        },
+        "search_web": {
+          "default": "allow",
+        },
+      },
+    },
+    "profiles": {},
+    "default_profile": "write",
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-6",
+      "enable_thinking": true,
+      "effort": "high",
+    },
+    "flexible": false,
+    "dock": "left",
+    "favorite_models": [
+      {
+        "provider": "zed.dev",
+        "model": "claude-sonnet-4-6",
+        "enable_thinking": true,
+        "effort": "high",
+      },
+    ],
+    "model_parameters": [],
+  },
+  "proxy": "",
+  "git_panel": {
+    "dock": "right",
+    "show_count_badge": true,
+    "tree_view": true,
+    "file_icons": true,
+  },
+  "terminal": {
+    "show_count_badge": true,
+    "font_family": "MonaspiceAr Nerd Font Mono",
+    "font_features": {
+      "calt": true,
+    },
+    "copy_on_select": true,
+    "blinking": "on",
+    "cursor_shape": "bar",
+  },
+  "project_panel": {
+    "dock": "right",
+    "git_status_indicator": true,
+    "diagnostic_badges": true,
+  },
+  "use_system_window_tabs": true,
+  "bottom_dock_layout": "contained",
+  "tabs": {
+    "close_position": "left",
+    "file_icons": true,
+    "git_status": true,
+  },
+  "title_bar": {
+    "show_branch_status_icon": true,
+  },
+  "status_bar": {
+    "show_active_file": true,
+  },
+  "search": {
+    "center_on_match": true,
+  },
+  "diagnostics": {
+    "inline": {
+      "enabled": true,
+    },
+  },
+  "prettier": {
+    "allowed": true,
+  },
+  "document_symbols": "on",
+  "document_folding_ranges": "on",
+  "semantic_tokens": "combined",
+  "colorize_brackets": true,
+  "code_lens": "off",
+  "inlay_hints": {},
+  "line_ending": "enforce_lf",
+  "indent_guides": {
+    "coloring": "indent_aware",
+    "background_coloring": "indent_aware",
+  },
+  "minimap": {
+    "show": "auto",
+  },
+  "diff_view_style": "unified",
+  "which_key": {
+    "enabled": true,
+  },
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000,
+    },
+  },
+  "ui_font_family": "MonaspiceAr Nerd Font",
+  "buffer_font_family": "MonaspiceAr Nerd Font Mono",
+  "buffer_font_features": {
+    "calt": true,
+  },
+  "icon_theme": {
+    "mode": "system",
+    "light": "Zed (Default)",
+    "dark": "Colored Zed Icons Theme Dark",
+  },
+  "restore_on_startup": "launchpad",
+  "redact_private_values": true,
+  "agent_servers": {
+    "kimi": {
+      "type": "registry",
+    },
+  },
+  "session": {
+    "trust_all_worktrees": true,
+  },
+  "base_keymap": "VSCode",
+  "ui_font_size": 16.0,
+  "buffer_font_size": 15,
+  "theme": {
+    "mode": "system",
+    "light": "Gruvbox Light",
+    "dark": "Zedokai Darker (Filter Ristretto)",
+  },
+}

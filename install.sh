@@ -74,7 +74,7 @@ BREW_CASKS=(
   "utm"
   "xcodes-app"
   "xiv-on-mac"
-  "visual-studio-code@insiders"
+  "zed"
   "iterm2"
   "keka"
   "kekaexternalhelper"
@@ -398,23 +398,17 @@ install_apt_packages() {
   return "${status}"
 }
 
-install_vscode() {
+install_zed() {
   local status=0
-  log_info "Installing VS Code Insiders..."
-  curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
-    sudo gpg --yes --dearmor -o /usr/share/keyrings/packages-microsoft-com.gpg || status=1
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/packages-microsoft-com.gpg] \
-    https://packages.microsoft.com/repos/code stable main" | \
-    sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null || status=1
-  sudo apt update || status=1
-  sudo apt install -y code-insiders || {
-    log_warning "Failed to install VS Code Insiders."
+  log_info "Installing Zed..."
+  curl -fsSL https://zed.rs/install.sh | sh || {
+    log_warning "Failed to install Zed."
     status=1
   }
   if (( status == 0 )); then
-    log_success "VS Code Insiders installed."
+    log_success "Zed installed."
   else
-    log_warning "VS Code Insiders setup finished with warnings."
+    log_warning "Zed installation finished with warnings."
   fi
 
   return "${status}"
@@ -529,7 +523,6 @@ deploy_dotfiles() {
     return 2
   }
 
-  local vscode_dir
   case "${OS}" in
     Darwin)
       if [[ -d "${DOTFILES_DIR}/macos/home" ]]; then
@@ -538,18 +531,8 @@ deploy_dotfiles() {
           return 2
         }
       fi
-      vscode_dir="${HOME}/Library/Application Support/Code - Insiders/User"
-      ;;
-    Linux)
-      vscode_dir="${HOME}/.config/Code - Insiders/User"
       ;;
   esac
-
-  mkdir -p "${vscode_dir}"
-  cp "${DOTFILES_DIR}/shared/vscode/settings.json" "${vscode_dir}/settings.json" || {
-    log_warning "Failed to copy VS Code settings."
-    status=1
-  }
 
   log_info "Installing pfetch..."
   curl -fsSL https://raw.githubusercontent.com/dylanaraps/pfetch/master/pfetch -o /tmp/pfetch && \
@@ -641,7 +624,7 @@ main() {
         run_step "Debian updates" install_updates_debian && \
         run_step "APT packages" install_apt_packages && \
         run_step "zsh plugins" install_zsh_plugins && \
-        run_step "VS Code Insiders" install_vscode && \
+        run_step "Zed" install_zed && \
         run_step "ctop" install_ctop && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
