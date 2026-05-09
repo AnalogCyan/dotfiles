@@ -24,6 +24,7 @@
       "default": "allow",
     },
     "thinking_display": "always_collapsed",
+    "expand_terminal_card": false,
     "profiles": {},
     "default_profile": "write",
     "default_model": {
