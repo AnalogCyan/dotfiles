@@ -472,8 +472,8 @@ install_zmx_linux() {
       ;;
   esac
 
-  latest=$(curl -fsSL "https://api.github.com/repos/neurosnap/zmx/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
+  latest=$(curl -fsSL "https://api.github.com/repos/neurosnap/zmx/tags" \
+    | grep '"name"' | head -1 | sed 's/.*"name": *"\([^"]*\)".*/\1/')
   if [[ -z "${latest}" ]]; then
     log_warning "Could not determine zmx version; skipping."
     return 1
