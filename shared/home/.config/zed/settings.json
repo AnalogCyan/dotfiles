@@ -97,7 +97,7 @@
   "document_folding_ranges": "on",
   "semantic_tokens": "combined",
   "colorize_brackets": true,
-  "code_lens": "off",
+  "code_lens": "on"
   "inlay_hints": {},
   "line_ending": "enforce_lf",
   "indent_guides": {
