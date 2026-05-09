@@ -18,8 +18,7 @@ search_mode = "fuzzy"
 # Search all history by default; toggle host/session/dir/workspace with ctrl-r
 filter_mode = "global"
 
-# When ctrl-r is pressed: start filtered to the current git workspace if in one,
-# then fall back to global. (up-arrow is handled by zsh-history-substring-search)
+# (up-arrow is handled by zsh-history-substring-search, not atuin)
 filter_mode_shell_up_key_binding = "session"
 
 # Automatically activates workspace filter inside git repos
