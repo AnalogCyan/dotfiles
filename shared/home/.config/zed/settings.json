@@ -20,24 +20,9 @@
   },
   "agent": {
     "tool_permissions": {
-      "tools": {
-        "edit_file": {
-          "default": "allow",
-        },
-        "create_directory": {
-          "default": "allow",
-        },
-        "save_file": {
-          "default": "allow",
-        },
-        "fetch": {
-          "default": "allow",
-        },
-        "search_web": {
-          "default": "allow",
-        },
-      },
+      "default": "allow",
     },
+    "thinking_display": "always_collapsed",
     "profiles": {},
     "default_profile": "write",
     "default_model": {
@@ -67,7 +52,7 @@
   },
   "terminal": {
     "show_count_badge": true,
-    "font_family": "MonaspiceAr Nerd Font Mono",
+    "font_family": "MonaspiceKr Nerd Font Mono",
     "font_features": {
       "calt": true,
     },
