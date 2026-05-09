@@ -126,6 +126,15 @@
   },
   "restore_on_startup": "last_session",
   "redact_private_values": true,
+  "context_servers": {
+    "mcp-server-context7": {
+      "enabled": true,
+      "remote": false,
+      "settings": {
+        "context7_api_key": "YOUR_CONTEXT7_API_KEY",
+      },
+    },
+  },
   "agent_servers": {
     "kimi": {
       "type": "registry",
