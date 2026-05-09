@@ -76,7 +76,6 @@ BREW_CASKS=(
   "xcodes-app"
   "xiv-on-mac"
   "zed"
-  "iterm2"
   "keka"
   "kekaexternalhelper"
 )

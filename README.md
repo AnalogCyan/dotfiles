@@ -25,8 +25,7 @@ dotfiles/
 ├── macos/
 │   └── home/                          # macOS-only overlay, rsync'd after shared/
 │       └── Library/
-│           ├── Application Support/iTerm2/DynamicProfiles/vscode-synced.json
-│           └── Preferences/com.googlecode.iterm2.plist
+│           └── Application Support/com.mitchellh.ghostty/
 └── install.sh
 ```
 
