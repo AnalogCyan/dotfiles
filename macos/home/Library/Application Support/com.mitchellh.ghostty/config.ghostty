@@ -62,6 +62,6 @@ unfocused-split-opacity = 0.7
 quit-after-last-window-closed = true
 focus-follows-mouse = true
 scrollback-limit = 100000
-working-directory = $HOME
+working-directory = home
 macos-option-as-alt = left
 shell-integration-features = cursor,title,sudo,ssh-env,ssh-terminfo
