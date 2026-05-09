@@ -133,8 +133,9 @@
   },
   "line_ending": "enforce_lf",
   "indent_guides": {
-    "coloring": "indent_aware",
     "background_coloring": "indent_aware",
+    "enabled": false,
+    "coloring": "indent_aware",
   },
   "minimap": {
     "show": "auto",
