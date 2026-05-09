@@ -227,6 +227,12 @@ if command -v hx >/dev/null 2>&1; then
   alias vim='hx'
 fi
 
+# tmux/screen -> zmx
+if command -v zmx >/dev/null 2>&1; then
+  alias tmux='zmx'
+  alias screen='zmx'
+fi
+
 # brew: update + upgrade all (including casks)
 # opens zsh to force refresh to avoid broken styling on next iTerm2 launch
 if command -v brew >/dev/null 2>&1; then
