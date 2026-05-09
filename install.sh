@@ -58,6 +58,7 @@ BREW_FORMULAE=(
   "zoxide"
   "zsh"
   "eza"
+  "atuin"
   "ctop"
   "git"
   "tmux"
@@ -97,6 +98,7 @@ declare -a APT_PACKAGES=(
   zoxide
   zsh
   eza
+  atuin
   tmux
   git
   curl
@@ -487,6 +489,21 @@ install_ctop() {
 # SHARED FUNCTIONS
 # =============================================================================
 
+setup_atuin() {
+  if ! command -v atuin >/dev/null 2>&1; then
+    log_warning "atuin not found; skipping history import."
+    return 1
+  fi
+
+  log_info "Importing existing shell history into atuin..."
+  atuin import auto 2>/dev/null || {
+    log_warning "atuin history import had issues (may already be imported)."
+    return 1
+  }
+
+  log_success "atuin history import complete."
+}
+
 install_zsh_plugins() {
   local plugins_dir="${HOME}/.local/share/zsh/plugins"
   local failures=0
@@ -662,6 +679,7 @@ main() {
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Default zsh shell" configure_zsh && \
         run_step "Dotfile deployment" deploy_dotfiles && \
+        run_step "Atuin history import" setup_atuin && \
         run_step "iCloud links" setup_icloud_links || failed=1
         ;;
       Linux)
@@ -673,7 +691,8 @@ main() {
         run_step "zmx" install_zmx_linux && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
-        run_step "Default zsh shell" configure_zsh || failed=1
+        run_step "Default zsh shell" configure_zsh && \
+        run_step "Atuin history import" setup_atuin || failed=1
         ;;
     esac
   else

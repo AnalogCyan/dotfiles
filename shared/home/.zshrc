@@ -59,6 +59,8 @@ CORRECT_IGNORE_FILE='.*'
 # Tool Initializations
 command -v thefuck >/dev/null && eval "$(thefuck --alias 2>/dev/null)"
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+# Atuin: magic shell history (ctrl-r). Up-arrow left to zsh-history-substring-search.
+command -v atuin >/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 
 # Load fzf
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
