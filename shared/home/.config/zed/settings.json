@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "cli_default_open_behavior": "existing_window",
   "on_last_window_closed": "quit_app",
   "when_closing_with_no_tabs": "keep_window_open",
   "edit_predictions": {
@@ -122,7 +123,7 @@
     "light": "Zed (Default)",
     "dark": "Colored Zed Icons Theme Dark",
   },
-  "restore_on_startup": "launchpad",
+  "restore_on_startup": "last_session",
   "redact_private_values": true,
   "agent_servers": {
     "kimi": {
