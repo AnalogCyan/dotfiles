@@ -7,13 +7,12 @@ zsh-users/zsh-history-substring-search    # Fish-like history search with up/dow
 zsh-users/zsh-autosuggestions             # Fish-like autosuggestions for zsh
 
 # Navigation plugins
-ajeetdsouza/zoxide                     # Faster, smarter directory jumping
+ajeetdsouza/zoxide                        # Faster, smarter directory jumping
 mollifier/cd-gitroot                      # Command to change to git repository root
 
-# Syntax and text editing plugins
-zdharma-continuum/fast-syntax-highlighting # Real-time command syntax highlighting
-hlissner/zsh-autopair                      # Auto-close and delete matching quotes, brackets
-
 # Utility plugins
-MichaelAquilina/zsh-you-should-use        # Reminds you of aliases you've defined
 z-shell/zsh-eza                            # Full-featured EZA plugin for Zsh
+
+# Syntax and text editing plugins
+hlissner/zsh-autopair                      # Auto-close and delete matching quotes, brackets
+zdharma-continuum/fast-syntax-highlighting # Real-time command syntax highlighting

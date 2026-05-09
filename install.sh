@@ -11,6 +11,12 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Cleanup temp files on exit or interrupt
+cleanup() {
+  rm -f /tmp/pfetch /tmp/zmx.tar.gz /tmp/ctop
+}
+trap cleanup EXIT INT TERM
+
 usage() {
   cat <<'EOF'
 Usage: ./install.sh [options]
@@ -112,9 +118,8 @@ ZSH_PLUGIN_URLS=(
   "https://github.com/zsh-users/zsh-autosuggestions"
   "https://github.com/ajeetdsouza/zoxide"
   "https://github.com/mollifier/cd-gitroot"
-  "https://github.com/zdharma-continuum/fast-syntax-highlighting"
   "https://github.com/hlissner/zsh-autopair"
-  "https://github.com/MichaelAquilina/zsh-you-should-use"
+  "https://github.com/zdharma-continuum/fast-syntax-highlighting"
   "https://github.com/z-shell/zsh-eza"
 )
 
@@ -287,8 +292,20 @@ install_homebrew() {
     return 2
   }
 
-  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"${HOME}/.zprofile"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  local brew_path
+  if [[ -f /opt/homebrew/bin/brew ]]; then
+    brew_path="/opt/homebrew/bin/brew"
+  elif [[ -f /usr/local/bin/brew ]]; then
+    brew_path="/usr/local/bin/brew"
+  fi
+
+  if [[ -n "${brew_path:-}" ]]; then
+    if [[ ! -f "${HOME}/.zprofile" ]] || ! grep -qF "eval \"\$(${brew_path} shellenv)\"" "${HOME}/.zprofile"; then
+      echo "eval \"\$(${brew_path} shellenv)\"" >>"${HOME}/.zprofile"
+    fi
+    eval "$("${brew_path}" shellenv)"
+  fi
+
   log_success "Homebrew installed."
 }
 
@@ -360,9 +377,6 @@ setup_icloud_links() {
 install_updates_debian() {
   local status=0
   log_info "Updating system..."
-  sudo rm -f /usr/share/keyrings/microsoft.gpg
-  sudo grep -rl 'packages.microsoft.com/repos/code' /etc/apt/sources.list.d/ 2>/dev/null \
-    | xargs -r sudo rm -f || true
   sudo apt update || {
     log_warning "apt update failed"
     status=1
@@ -427,6 +441,8 @@ install_zmx_linux() {
       ;;
   esac
 
+  # TODO: This JSON parsing is brittle. Consider installing jq and using it
+  # for reliable extraction of tag names and release versions.
   latest=$(curl -fsSL "https://api.github.com/repos/neurosnap/zmx/tags" \
     | grep '"name"' | head -1 | sed 's/.*"name": *"\([^"]*\)".*/\1/')
   if [[ -z "${latest}" ]]; then
@@ -462,6 +478,8 @@ install_ctop() {
   log_info "Installing ctop..."
   local arch latest
   arch=$(dpkg --print-architecture)
+  # TODO: This JSON parsing is brittle. Consider installing jq and using it
+  # for reliable extraction of tag names and release versions.
   latest=$(curl -fsSL "https://api.github.com/repos/bcicen/ctop/releases/latest" | grep '"tag_name"' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
   if [[ -z "${latest}" ]]; then
     log_warning "Could not determine ctop version; skipping."
@@ -549,14 +567,42 @@ install_nerd_fonts() {
   log_success "Monaspace Nerd Font installed."
 }
 
+backup_existing_dotfiles() {
+  local backup_dir="${HOME}/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+  local found_any=0
+
+  while IFS= read -r -d '' file; do
+    local rel_path="${file#${DOTFILES_DIR}/shared/home/}"
+    local target="${HOME}/${rel_path}"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+      [[ "$found_any" -eq 0 ]] && { mkdir -p "$backup_dir"; found_any=1; }
+      mkdir -p "$(dirname "${backup_dir}/${rel_path}")"
+      cp -a "$target" "${backup_dir}/${rel_path}"
+    fi
+  done < <(find "${DOTFILES_DIR}/shared/home" -type f -print0)
+
+  if [[ "${OS}" == "Darwin" && -d "${DOTFILES_DIR}/macos/home" ]]; then
+    while IFS= read -r -d '' file; do
+      local rel_path="${file#${DOTFILES_DIR}/macos/home/}"
+      local target="${HOME}/${rel_path}"
+      if [[ -f "$target" && ! -L "$target" ]]; then
+        [[ "$found_any" -eq 0 ]] && { mkdir -p "$backup_dir"; found_any=1; }
+        mkdir -p "$(dirname "${backup_dir}/${rel_path}")"
+        cp -a "$target" "${backup_dir}/${rel_path}"
+      fi
+    done < <(find "${DOTFILES_DIR}/macos/home" -type f -print0)
+  fi
+
+  if (( found_any )); then
+    log_info "Existing dotfiles backed up to ${backup_dir}"
+  fi
+}
+
 deploy_dotfiles() {
   log_info "Deploying dotfiles..."
   local status=0
 
-  if [[ -f "${HOME}/.zshrc" && ! -L "${HOME}/.zshrc" ]]; then
-    log_info "Backing up existing .zshrc to .zshrc.dotbak"
-    mv -f "${HOME}/.zshrc" "${HOME}/.zshrc.dotbak"
-  fi
+  backup_existing_dotfiles
 
   mkdir -p \
     "${HOME}/.config/zsh/functions" \

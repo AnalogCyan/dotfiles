@@ -4,7 +4,7 @@ add_newline = false
 format = """
 $directory$character"""
 
-right_format = """${env_var.ZMX_SESSION}$python$git_branch $git_status"""
+right_format = """$python$git_branch $git_status${env_var.ZMX_SESSION}$hostname"""
 
 [username]
 style_user = "bold yellow"

@@ -8,11 +8,13 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
 
 # Environment Paths
-export PATH="$HOME/bin:/usr/local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
 
 # Homebrew (macOS)
 if [[ -f /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
 fi
 
 # Session Editor
@@ -58,7 +60,6 @@ CORRECT_IGNORE_FILE='.*'
 
 # Tool Initializations
 command -v thefuck >/dev/null && eval "$(thefuck --alias 2>/dev/null)"
-command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 # Load fzf
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
@@ -83,7 +84,7 @@ source_zsh_plugin() {
   local plugin_dir="$1"
   local plugin_file="$2"
 
-  fpath+=( "$plugin_dir" )
+  [[ -d "$plugin_dir" ]] && fpath+=( "$plugin_dir" )
   if [[ -f "$plugin_file" ]]; then
     source "$plugin_file"
   fi
@@ -120,43 +121,35 @@ source_zsh_plugin \
 
 # Navigation plugins
 source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zoxide" \
-  "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh"
-
-source_zsh_plugin \
   "$ZSH_PLUGINS_DIR/cd-gitroot" \
   "$ZSH_PLUGINS_DIR/cd-gitroot/cd-gitroot.plugin.zsh"
 
-# Syntax and text editing plugins
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting" \
-  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+# Initialize zoxide: try plugin file first, fall back to manual eval
+if [[ -f "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh" ]]; then
+  source "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh"
+elif command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
+# Utility plugins
+source_zsh_plugin \
+  "$ZSH_PLUGINS_DIR/zsh-eza" \
+  "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
+
+# Text editing plugins (zsh-autopair before fast-syntax-highlighting)
 source_zsh_plugin \
   "$ZSH_PLUGINS_DIR/zsh-autopair" \
   "$ZSH_PLUGINS_DIR/zsh-autopair/zsh-autopair.plugin.zsh"
 
-# Utility plugins
+# Fast syntax highlighting should be loaded last among widget-modifying plugins
 source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zsh-you-should-use" \
-  "$ZSH_PLUGINS_DIR/zsh-you-should-use/zsh-you-should-use.plugin.zsh"
-
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zsh-eza" \
-  "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting" \
+  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
 
 # Plugin configuration
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
-
-# EZA parameters
-typeset -A EZA_PARAMS
-EZA_PARAMS=(
-  all   '--icons --git --group-directories-first'
-  long  '--icons --git'
-  tree  '--tree --icons'
-)
 
 # Completion options
 zstyle ':completion:*' menu select
