@@ -63,3 +63,4 @@ focus-follows-mouse = true
 scrollback-limit = 1073741824
 working-directory = /Users/cyan
 macos-option-as-alt = false
+shell-integration-features = cursor,title,sudo,ssh-env,ssh-terminfo
