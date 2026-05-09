@@ -63,6 +63,11 @@ command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 # Initialize Starship prompt
 command -v starship >/dev/null && eval "$(starship init zsh)"
 
+# zmx shell completions
+if command -v zmx >/dev/null 2>&1; then
+  eval "$(zmx completions zsh)"
+fi
+
 # iTerm2 Integration
 [[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
 

@@ -61,6 +61,7 @@ BREW_FORMULAE=(
   "ctop"
   "git"
   "tmux"
+  "neurosnap/tap/zmx"
 )
 
 BREW_CASKS=(
@@ -414,6 +415,50 @@ install_zed() {
   return "${status}"
 }
 
+install_zmx_linux() {
+  log_info "Installing zmx..."
+  local arch zmx_arch latest zip_path
+  arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
+  case "${arch}" in
+    amd64|x86_64) zmx_arch="x86_64" ;;
+    arm64|aarch64) zmx_arch="aarch64" ;;
+    *)
+      log_warning "Unsupported architecture for zmx: ${arch}; skipping."
+      return 1
+      ;;
+  esac
+
+  latest=$(curl -fsSL "https://api.github.com/repos/neurosnap/zmx/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
+  if [[ -z "${latest}" ]]; then
+    log_warning "Could not determine zmx version; skipping."
+    return 1
+  fi
+
+  zip_path="/tmp/zmx.tar.gz"
+  curl -fsSL "https://zmx.sh/a/zmx-${latest#v}-linux-${zmx_arch}.tar.gz" -o "${zip_path}" || {
+    log_warning "Failed to download zmx."
+    return 1
+  }
+
+  local tmp_dir
+  tmp_dir=$(mktemp -d)
+  tar -xzf "${zip_path}" -C "${tmp_dir}" || {
+    log_warning "Failed to extract zmx."
+    rm -rf "${zip_path}" "${tmp_dir}"
+    return 1
+  }
+
+  sudo install -m 755 "${tmp_dir}/zmx" /usr/local/bin/zmx || {
+    log_warning "Failed to install zmx binary."
+    rm -rf "${zip_path}" "${tmp_dir}"
+    return 1
+  }
+
+  rm -rf "${zip_path}" "${tmp_dir}"
+  log_success "zmx installed."
+}
+
 install_ctop() {
   log_info "Installing ctop..."
   local arch latest
@@ -626,6 +671,7 @@ main() {
         run_step "zsh plugins" install_zsh_plugins && \
         run_step "Zed" install_zed && \
         run_step "ctop" install_ctop && \
+        run_step "zmx" install_zmx_linux && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
         run_step "Default zsh shell" configure_zsh || failed=1
