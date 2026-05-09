@@ -7,12 +7,25 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "context_servers": {
+    "mcp-server-github": {
+      "enabled": true,
+      "remote": false,
+      "settings": {
+        "github_personal_access_token": "YOUR_GITHUB_PAT",
+      },
+    },
+    "mcp-server-context7": {
+      "enabled": true,
+      "remote": false,
+      "settings": {
+        "context7_api_key": "YOUR_CONTEXT7_API_KEY",
+      },
+    },
+  },
   "cli_default_open_behavior": "existing_window",
   "on_last_window_closed": "quit_app",
   "when_closing_with_no_tabs": "keep_window_open",
-  "edit_predictions": {
-    "ollama": {},
-  },
   "outline_panel": {
     "dock": "right",
   },
@@ -33,7 +46,7 @@
       "enable_thinking": true,
       "effort": "high",
     },
-    "flexible": false,
+    "flexible": true,
     "dock": "left",
     "favorite_models": [
       {
@@ -93,12 +106,31 @@
   },
   "formatter": "prettier",
   "format_on_save": "on",
+  "languages": {
+    "Python": {
+      "formatter": "language_server",
+    },
+    "Zig": {
+      "formatter": "language_server",
+    },
+    "TOML": {
+      "formatter": "language_server",
+    },
+    "Rust": {
+      "formatter": "language_server",
+    },
+    "Go": {
+      "formatter": "language_server",
+    },
+  },
   "document_symbols": "on",
   "document_folding_ranges": "on",
   "semantic_tokens": "combined",
   "colorize_brackets": true,
   "code_lens": "on",
-  "inlay_hints": {},
+  "inlay_hints": {
+    "enabled": true,
+  },
   "line_ending": "enforce_lf",
   "indent_guides": {
     "coloring": "indent_aware",
@@ -128,22 +160,6 @@
   },
   "restore_on_startup": "last_session",
   "redact_private_values": true,
-  "context_servers": {
-    "mcp-server-github": {
-      "enabled": true,
-      "remote": false,
-      "settings": {
-        "github_personal_access_token": "YOUR_GITHUB_PAT",
-      },
-    },
-    "mcp-server-context7": {
-      "enabled": true,
-      "remote": false,
-      "settings": {
-        "context7_api_key": "YOUR_CONTEXT7_API_KEY",
-      },
-    },
-  },
   "auto_install_extensions": {
     "caddyfile": true,
     "color-highlight": true,
@@ -151,6 +167,7 @@
     "comment": true,
     "discord-presence": true,
     "dockerfile": true,
+    "env": true,
     "ghostty": true,
     "git-firefly": true,
     "github-actions": true,
@@ -179,7 +196,7 @@
   "buffer_font_size": 15,
   "theme": {
     "mode": "system",
-    "light": "Gruvbox Light",
+    "light": "Zedokai Light (Filter Sun)",
     "dark": "Zedokai Darker (Filter Ristretto)",
   },
 }

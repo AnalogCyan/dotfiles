@@ -30,6 +30,9 @@ export GIT_EDITOR="${EDITOR}"
 export PAGER='less'
 export LESS='-R --use-color -M'
 
+# Custom completion paths (must precede compinit)
+fpath=(~/.zsh.d/ $fpath)
+
 # Initialize completion system
 autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
@@ -156,9 +159,6 @@ EZA_PARAMS=(
   tree  '--tree --icons'
 )
 
-# Custom completion paths
-fpath=(~/.zsh.d/ $fpath)
-
 # Completion options
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
@@ -218,6 +218,11 @@ fi
 if command -v btop >/dev/null 2>&1; then
   alias top='btop'
   alias htop='btop'
+fi
+
+# lazygit
+if command -v lazygit >/dev/null 2>&1; then
+  alias lg='lazygit'
 fi
 
 # helix -> nano/vi/vim
