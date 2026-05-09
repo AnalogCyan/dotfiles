@@ -53,7 +53,7 @@
     "file_icons": true,
   },
   "terminal": {
-    "show_count_badge": true,
+    "show_count_badge": false,
     "font_family": "MonaspiceKr Nerd Font Mono",
     "font_features": {
       "calt": true,
