@@ -97,7 +97,7 @@
   "document_folding_ranges": "on",
   "semantic_tokens": "combined",
   "colorize_brackets": true,
-  "code_lens": "on"
+  "code_lens": "on",
   "inlay_hints": {},
   "line_ending": "enforce_lf",
   "indent_guides": {
@@ -129,6 +129,13 @@
   "restore_on_startup": "last_session",
   "redact_private_values": true,
   "context_servers": {
+    "mcp-server-github": {
+      "enabled": true,
+      "remote": false,
+      "settings": {
+        "github_personal_access_token": "YOUR_GITHUB_PAT",
+      },
+    },
     "mcp-server-context7": {
       "enabled": true,
       "remote": false,
