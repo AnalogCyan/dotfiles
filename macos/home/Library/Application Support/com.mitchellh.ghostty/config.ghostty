@@ -1,0 +1,65 @@
+# ==============================================================================
+# Ghostty Configuration
+# Theme:  Zedokai Darker (Filter Ristretto)
+# Font:   MonaspiceKr Nerd Font Mono
+# ==============================================================================
+
+# --- Font ---------------------------------------------------------------------
+
+font-family = MonaspiceKr Nerd Font Mono
+font-feature = calt
+
+# --- Colors: Zedokai Darker (Filter Ristretto) --------------------------------
+
+background = #2c2525
+foreground = #fff1f3
+
+# ANSI palette (0–7 normal, 8–15 bright)
+palette = 0=#403838
+palette = 1=#fd6883
+palette = 2=#adda78
+palette = 3=#f9cc6c
+palette = 4=#f38d70
+palette = 5=#a8a9eb
+palette = 6=#85dacc
+palette = 7=#fff1f3
+palette = 8=#72696a
+palette = 9=#fd6883
+palette = 10=#adda78
+palette = 11=#f9cc6c
+palette = 12=#f38d70
+palette = 13=#a8a9eb
+palette = 14=#85dacc
+palette = 15=#fff1f3
+
+# Cursor
+cursor-color = #fff1f3
+cursor-style = block
+cursor-style-blink = true
+
+# Selection (approximated from Zedokai's #fff1f3 @ 10% alpha over #2c2525)
+selection-background = #423a3a
+selection-foreground = #fff1f3
+
+# Bold text uses bright palette variants (matches Monokai convention)
+bold-color = bright
+
+# --- Tabs --------------------------------------------------------------------
+
+macos-titlebar-style = tabs
+
+# --- Window & Transparency ----------------------------------------------------
+
+background-opacity = 0.95
+background-blur = 32
+window-width = 140
+window-height = 35
+scrollbar = never
+unfocused-split-opacity = 0.7
+
+# --- Behavior -----------------------------------------------------------------
+
+focus-follows-mouse = true
+scrollback-limit = 1073741824
+working-directory = /Users/cyan
+macos-option-as-alt = false
