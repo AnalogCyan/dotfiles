@@ -58,7 +58,6 @@ BREW_FORMULAE=(
   "zoxide"
   "zsh"
   "eza"
-  "atuin"
   "ctop"
   "git"
   "tmux"
@@ -415,50 +414,6 @@ install_zed() {
   return "${status}"
 }
 
-install_atuin_linux() {
-  log_info "Installing atuin..."
-  local arch atuin_arch latest tmp_dir tar_path
-  arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
-  case "${arch}" in
-    amd64|x86_64)   atuin_arch="x86_64" ;;
-    arm64|aarch64)  atuin_arch="aarch64" ;;
-    *)
-      log_warning "Unsupported architecture for atuin: ${arch}; skipping."
-      return 1
-      ;;
-  esac
-
-  latest=$(curl -fsSL "https://api.github.com/repos/atuinsh/atuin/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
-  if [[ -z "${latest}" ]]; then
-    log_warning "Could not determine atuin version; skipping."
-    return 1
-  fi
-
-  tar_path="/tmp/atuin.tar.gz"
-  curl -fsSL "https://github.com/atuinsh/atuin/releases/download/${latest}/atuin-${atuin_arch}-unknown-linux-gnu.tar.gz" \
-    -o "${tar_path}" || {
-      log_warning "Failed to download atuin."
-      return 1
-    }
-
-  tmp_dir=$(mktemp -d)
-  tar -xzf "${tar_path}" -C "${tmp_dir}" || {
-    log_warning "Failed to extract atuin."
-    rm -rf "${tar_path}" "${tmp_dir}"
-    return 1
-  }
-
-  sudo install -m 755 "${tmp_dir}/atuin-${atuin_arch}-unknown-linux-gnu/atuin" /usr/local/bin/atuin || {
-    log_warning "Failed to install atuin binary."
-    rm -rf "${tar_path}" "${tmp_dir}"
-    return 1
-  }
-
-  rm -rf "${tar_path}" "${tmp_dir}"
-  log_success "atuin ${latest} installed."
-}
-
 install_zmx_linux() {
   log_info "Installing zmx..."
   local arch zmx_arch latest zip_path
@@ -531,21 +486,6 @@ install_ctop() {
 # =============================================================================
 # SHARED FUNCTIONS
 # =============================================================================
-
-setup_atuin() {
-  if ! command -v atuin >/dev/null 2>&1; then
-    log_warning "atuin not found; skipping history import."
-    return 1
-  fi
-
-  log_info "Importing existing shell history into atuin..."
-  atuin import auto 2>/dev/null || {
-    log_warning "atuin history import had issues (may already be imported)."
-    return 1
-  }
-
-  log_success "atuin history import complete."
-}
 
 install_zsh_plugins() {
   local plugins_dir="${HOME}/.local/share/zsh/plugins"
@@ -722,7 +662,6 @@ main() {
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Default zsh shell" configure_zsh && \
         run_step "Dotfile deployment" deploy_dotfiles && \
-        run_step "Atuin history import" setup_atuin && \
         run_step "iCloud links" setup_icloud_links || failed=1
         ;;
       Linux)
@@ -731,12 +670,10 @@ main() {
         run_step "zsh plugins" install_zsh_plugins && \
         run_step "Zed" install_zed && \
         run_step "ctop" install_ctop && \
-        run_step "atuin" install_atuin_linux && \
         run_step "zmx" install_zmx_linux && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
-        run_step "Default zsh shell" configure_zsh && \
-        run_step "Atuin history import" setup_atuin || failed=1
+        run_step "Default zsh shell" configure_zsh || failed=1
         ;;
     esac
   else
