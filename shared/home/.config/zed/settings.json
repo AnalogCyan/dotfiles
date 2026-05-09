@@ -91,6 +91,8 @@
   "prettier": {
     "allowed": true,
   },
+  "formatter": "prettier",
+  "format_on_save": "on",
   "document_symbols": "on",
   "document_folding_ranges": "on",
   "semantic_tokens": "combined",
