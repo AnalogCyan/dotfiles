@@ -34,7 +34,7 @@ palette = 15=#fff1f3
 
 # Cursor
 cursor-color = #fff1f3
-cursor-style = block
+cursor-style = bar
 cursor-style-blink = true
 
 # Selection (approximated from Zedokai's #fff1f3 @ 10% alpha over #2c2525)
