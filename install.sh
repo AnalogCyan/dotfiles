@@ -538,6 +538,15 @@ install_zsh_plugins() {
   (( failures == 0 ))
 }
 
+install_iterm2_shell_integration() {
+  log_info "Installing iTerm2 shell integration..."
+  curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash || {
+    log_warning "Failed to install iTerm2 shell integration."
+    return 1
+  }
+  log_success "iTerm2 shell integration installed."
+}
+
 install_nerd_fonts() {
   log_info "Installing Monaspace Nerd Font..."
   local font_dir zip_path
@@ -708,6 +717,7 @@ main() {
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Default zsh shell" configure_zsh && \
         run_step "Dotfile deployment" deploy_dotfiles && \
+        run_step "iTerm2 shell integration" install_iterm2_shell_integration && \
         run_step "iCloud links" setup_icloud_links || failed=1
         ;;
       Linux)
@@ -719,6 +729,7 @@ main() {
         run_step "zmx" install_zmx_linux && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
+        run_step "iTerm2 shell integration" install_iterm2_shell_integration && \
         run_step "Default zsh shell" configure_zsh || failed=1
         ;;
     esac
