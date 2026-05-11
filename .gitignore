@@ -1,9 +1,10 @@
-# AI agent files
+# AI files
 AGENTS.md
-CLAUDE.md
-CODEX.md
 
-# macOS system files
+# Editor config
+.zed/
+
+# macOS files
 .DS_Store
 .AppleDouble
 .LSOverride
