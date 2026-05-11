@@ -2,6 +2,7 @@
 AGENTS.md
 
 # Editor config
+.vscode/
 .zed/
 
 # macOS files
