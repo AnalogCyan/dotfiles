@@ -3,3 +3,5 @@
 	email = git@thayn.me
 [init]
 	defaultBranch = main
+[credential]
+	helper = !gh auth git-credential
