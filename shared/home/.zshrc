@@ -8,7 +8,7 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
 
 # Environment Paths
-export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
+export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
 
 # Homebrew (macOS)
 if [[ -f /opt/homebrew/bin/brew ]]; then
