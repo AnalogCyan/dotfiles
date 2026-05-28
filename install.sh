@@ -108,6 +108,7 @@ declare -a APT_PACKAGES=(
   ca-certificates
   rsync
   unzip
+  fontconfig
 )
 
 
@@ -434,7 +435,7 @@ install_ghostty() {
   local status=0
   log_info "Installing Ghostty..."
 
-  local arch deb_arch codename latest deb_url tmp_deb
+  local arch deb_arch codename asset_url tmp_deb
   arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
   case "${arch}" in
     amd64|x86_64) deb_arch="amd64" ;;
@@ -447,26 +448,20 @@ install_ghostty() {
 
   codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
 
-  # dariogriffo only publishes amd64; use mkasberg for arm64
-  if [[ "${deb_arch}" == "amd64" ]]; then
-    latest=$(curl -fsSL "https://api.github.com/repos/dariogriffo/ghostty-debian/releases/latest" | jq -r '.tag_name // empty')
-    if [[ -z "${latest}" || "${latest}" == "null" ]]; then
-      log_warning "Could not determine Ghostty version."
-      return 1
-    fi
-    deb_url="https://github.com/dariogriffo/ghostty-debian/releases/download/${latest}/ghostty_${latest}+${codename}_${deb_arch}.deb"
-  else
-    latest=$(curl -fsSL "https://api.github.com/repos/mkasberg/ghostty-ubuntu/releases/latest" | jq -r '.tag_name // empty')
-    if [[ -z "${latest}" || "${latest}" == "null" ]]; then
-      log_warning "Could not determine Ghostty version."
-      return 1
-    fi
-    deb_url="https://github.com/mkasberg/ghostty-ubuntu/releases/download/${latest}/ghostty_${latest//+/%2B}~ppa1_${codename}_${deb_arch}.deb"
+  # mkasberg is the only repo with arm64 + Forky builds
+  asset_url=$(curl -fsSL "https://api.github.com/repos/mkasberg/ghostty-ubuntu/releases/latest" \
+    | jq -r --arg arch "${deb_arch}" --arg codename "${codename}" \
+      '.assets[] | select(.name | test("_" + $arch + "_" + $codename + "\\.deb$")) | .browser_download_url' \
+    | head -n1)
+
+  if [[ -z "${asset_url}" || "${asset_url}" == "null" ]]; then
+    log_warning "No Ghostty .deb found for ${deb_arch}/${codename}"
+    return 1
   fi
 
-  log_info "Downloading Ghostty from ${deb_url}..."
+  log_info "Downloading Ghostty from ${asset_url}..."
   tmp_deb=$(mktemp)
-  curl -fsSL "${deb_url}" -o "${tmp_deb}" || {
+  curl -fsSL "${asset_url}" -o "${tmp_deb}" || {
     log_warning "Failed to download Ghostty."
     rm -f "${tmp_deb}"
     return 1
@@ -491,7 +486,7 @@ install_ghostty() {
 install_zed() {
   local status=0
   log_info "Installing Zed..."
-  curl -fsSL https://zed.rs/install.sh | sh || {
+  curl -fsSL https://zed.dev/install.sh | sh || {
     log_warning "Failed to install Zed."
     status=1
   }
@@ -500,7 +495,6 @@ install_zed() {
   else
     log_warning "Zed installation finished with warnings."
   fi
-
   return "${status}"
 }
 
