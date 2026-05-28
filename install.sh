@@ -522,10 +522,10 @@ install_ghostty() {
     return 1
   }
 
-  sudo apt install -y "${tmp_deb}" || {
-    log_warning "Failed to install Ghostty."
-    status=1
-  }
+sudo dpkg -i "${tmp_deb}" || {
+    log_warning "dpkg failed, attempting dependency fix..."
+    sudo apt-get install -f -y
+}
 
   rm -f "${tmp_deb}"
 
