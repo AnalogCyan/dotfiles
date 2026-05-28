@@ -193,6 +193,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias mkdir='mkdir -pv'
 
+(( $+commands[pfetch-rs] )) && alias pfetch='pfetch-rs'
 (( $+commands[bat] )) && alias cat='bat --paging=never' less='bat --paging=always'
 (( $+commands[batcat] )) && alias cat='batcat --paging=never' less='batcat --paging=always'
 (( $+commands[rg] )) && alias grep='rg'

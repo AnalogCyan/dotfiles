@@ -67,6 +67,7 @@ BREW_FORMULAE=(
   "git"
   "tmux"
   "neurosnap/tap/zmx"
+  pfetch-rs
 )
 
 BREW_CASKS=(
@@ -431,6 +432,60 @@ install_apt_packages() {
   return "${status}"
 }
 
+install_pfetch_rs() {
+  local status=0
+  log_info "Installing pfetch-rs..."
+
+  local arch pfetch_arch asset_url tmp_dir
+  arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
+  case "${arch}" in
+    x86_64|amd64)  pfetch_arch="x86_64" ;;
+    aarch64|arm64) pfetch_arch="aarch64" ;;
+    *)
+      log_warning "Unsupported architecture for pfetch-rs: ${arch}; skipping."
+      return 1
+      ;;
+  esac
+
+  asset_url=$(curl -fsSL "https://api.github.com/repos/Gobidev/pfetch-rs/releases/latest" \
+    | jq -r --arg arch "${pfetch_arch}" \
+      '.assets[] | select(.name | test("pfetch-linux-musl-" + $arch + "\\.tar\\.gz$")) | .browser_download_url')
+
+  if [[ -z "${asset_url}" || "${asset_url}" == "null" ]]; then
+    log_warning "No pfetch-rs binary found for ${pfetch_arch}; skipping."
+    return 1
+  fi
+
+  log_info "Downloading pfetch-rs from ${asset_url}..."
+  tmp_dir=$(mktemp -d)
+  curl -fsSL "${asset_url}" -o "${tmp_dir}/pfetch.tar.gz" || {
+    log_warning "Failed to download pfetch-rs."
+    rm -rf "${tmp_dir}"
+    return 1
+  }
+
+  tar -xzf "${tmp_dir}/pfetch.tar.gz" -C "${tmp_dir}" || {
+    log_warning "Failed to extract pfetch-rs."
+    rm -rf "${tmp_dir}"
+    return 1
+  }
+
+  sudo install -m 755 "${tmp_dir}/pfetch" /usr/local/bin/pfetch || {
+    log_warning "Failed to install pfetch-rs."
+    status=1
+  }
+
+  rm -rf "${tmp_dir}"
+
+  if (( status == 0 )); then
+    log_success "pfetch-rs installed."
+  else
+    log_warning "pfetch-rs installation finished with warnings."
+  fi
+
+  return "${status}"
+}
+
 install_ghostty() {
   local status=0
   log_info "Installing Ghostty..."
@@ -744,15 +799,6 @@ deploy_dotfiles() {
       ;;
   esac
 
-  log_info "Installing pfetch..."
-  local pfetch_dir="${HOME}/.local/bin"
-  mkdir -p "${pfetch_dir}"
-  curl -fsSL https://raw.githubusercontent.com/dylanaraps/pfetch/master/pfetch -o "${pfetch_dir}/pfetch" && \
-    chmod 755 "${pfetch_dir}/pfetch" || {
-      log_warning "Failed to install pfetch."
-      status=1
-    }
-
   if (( status == 0 )); then
     log_success "Dotfiles deployed."
   else
@@ -835,6 +881,7 @@ main() {
       Linux)
         run_step "Debian updates" install_updates_debian && \
         run_step "APT packages" install_apt_packages && \
+        run_step "pfetch-rs" install_pfetch_rs && \
         run_step "zsh plugins" install_zsh_plugins && \
         run_step "Ghostty" install_ghostty && \
         run_step "Zed" install_zed && \
