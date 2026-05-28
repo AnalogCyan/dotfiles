@@ -100,10 +100,10 @@ if [[ -f "$p_file" ]]; then
     local target="$ZSH_PLUGINS_DIR/$name"
     if [[ -d "$target" ]]; then
       fpath+=("$target")
-      local pf
-      for pf ("$target/$name.plugin.zsh" "$target/$name.zsh" "$target/$name.sh" "$target"/*.plugin.zsh(N)) {
-        if [[ -f "$pf" ]]; then
-          [[ "$name" != "zoxide" ]] && plugin_files+=("$pf")
+      local plugin_file
+      for plugin_file ("$target/$name.plugin.zsh" "$target/$name.zsh" "$target/$name.sh" "$target"/*.plugin.zsh(N)) {
+        if [[ -f "$plugin_file" ]]; then
+          [[ "$name" != "zoxide" ]] && plugin_files+=("$plugin_file")
           break
         fi
       }
