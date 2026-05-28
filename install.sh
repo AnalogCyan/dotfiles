@@ -460,7 +460,7 @@ install_ghostty() {
   fi
 
   log_info "Downloading Ghostty from ${asset_url}..."
-  tmp_deb=$(mktemp)
+  tmp_deb=$(mktemp /tmp/ghostty-XXXXXX.deb)
   curl -fsSL "${asset_url}" -o "${tmp_deb}" || {
     log_warning "Failed to download Ghostty."
     rm -f "${tmp_deb}"
