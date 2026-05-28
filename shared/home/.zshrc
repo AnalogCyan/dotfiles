@@ -1,157 +1,159 @@
-# XDG Base Directory Specification
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+# XDG Base Directory
+: ${XDG_CONFIG_HOME:=${HOME}/.config}
+: ${XDG_DATA_HOME:=${HOME}/.local/share}
+: ${XDG_CACHE_HOME:=${HOME}/.cache}
+: ${XDG_STATE_HOME:=${HOME}/.local/state}
 
-# Ensure directories exist
+# PATH
+path=(
+  /Users/cyan/.usagi/bin
+  ${HOME}/.npm-global/bin
+  ${HOME}/.local/bin
+  ${HOME}/bin
+  /usr/local/bin
+  $path
+)
+typeset -U path fpath
+
 mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
 
-# Environment Paths
-export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
-
-# Homebrew (macOS)
-if [[ -f /opt/homebrew/bin/brew ]]; then
+# Homebrew
+if [[ -x /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -f /usr/local/bin/brew ]]; then
+elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# Session Editor
-if command -v zed-insiders >/dev/null 2>&1; then
+# Ghostty terminfo: bootstrap on SSH remotes, fall back to xterm-256color
+if [[ "$TERM" == "xterm-ghostty" ]]; then
+  if ! infocmp "$TERM" &>/dev/null; then
+    local ghostty_ti
+    for ghostty_ti (
+      "/Applications/Ghostty.app/Contents/Resources/terminfo/78/xterm-ghostty"
+      "/Applications/Ghostty.app/Contents/Resources/terminfo/x/xterm-ghostty"
+      "/usr/share/terminfo/x/xterm-ghostty"
+      "/lib/terminfo/x/xterm-ghostty"
+      "/etc/terminfo/x/xterm-ghostty"
+    ) {
+      if [[ -f "$ghostty_ti" ]]; then
+        mkdir -p "$HOME/.terminfo/x"
+        cp "$ghostty_ti" "$HOME/.terminfo/x/xterm-ghostty"
+        export TERMINFO="$HOME/.terminfo"
+        export TERMINFO_DIRS="$HOME/.terminfo:${TERMINFO_DIRS:-/etc/terminfo:/lib/terminfo:/usr/share/terminfo}"
+        break
+      fi
+    }
+  fi
+  if ! infocmp "$TERM" &>/dev/null; then
+    export TERM="xterm-256color"
+  fi
+fi
+
+# Editor
+if (( $+commands[zed-insiders] )); then
   export EDITOR='zed-insiders --wait -n'
-elif command -v zed >/dev/null 2>&1; then
+elif (( $+commands[zed] )); then
   export EDITOR='zed --wait -n'
-elif command -v hx >/dev/null 2>&1; then
+elif (( $+commands[hx] )); then
   export EDITOR='hx'
 else
   export EDITOR='vim'
 fi
-export VISUAL="${EDITOR}"
-export GIT_EDITOR="${EDITOR}"
-export PAGER='less'
-export LESS='-R --use-color -M'
+export VISUAL="${EDITOR}" GIT_EDITOR="${EDITOR}"
+export PAGER='less' LESS='-R --use-color -M'
 
-# Custom completion paths (must precede compinit)
+# Completion paths
 fpath=(~/.zsh.d/ $fpath)
 
-# Initialize completion system
-autoload -Uz compinit
-compinit -d "$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
+ZSH_PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
 
-# History configuration
+# Plugins: fpath (must precede compinit)
+local -a plugin_fpaths=(
+  "$ZSH_PLUGINS_DIR/fzf-zsh-plugin"
+  "$ZSH_PLUGINS_DIR/fzf-tab"
+  "$ZSH_PLUGINS_DIR/zsh-history-substring-search"
+  "$ZSH_PLUGINS_DIR/zsh-autosuggestions"
+  "$ZSH_PLUGINS_DIR/cd-gitroot"
+  "$ZSH_PLUGINS_DIR/zoxide"
+  "$ZSH_PLUGINS_DIR/zsh-eza"
+  "$ZSH_PLUGINS_DIR/zsh-autopair"
+  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting"
+)
+for p ("$plugin_fpaths[@]") { [[ -d "$p" ]] && fpath+=( "$p" ) }
+
+# Completion system
+autoload -Uz compinit
+local zcompdump="$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
+mkdir -p "$XDG_CACHE_HOME/zsh"
+
+if [[ ! -f "$zcompdump" ]]; then
+  compinit -d "$zcompdump"
+else
+  compinit -C -d "$zcompdump"
+fi
+
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+mkdir -p "$XDG_CACHE_HOME/zsh/zcompcache"
+
+# History
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=50000
 SAVEHIST=50000
-setopt appendhistory
-setopt histignorealldups
-setopt histignorespace
-setopt sharehistory
-setopt incappendhistory
-setopt extendedhistory
-setopt nobeep
+setopt appendhistory histignorealldups histignorespace sharehistory incappendhistory extendedhistory nobeep
 
-# Spell correction: don't correct dotfiles
+mkdir -p "$XDG_STATE_HOME/zsh"
 CORRECT_IGNORE_FILE='.*'
+setopt globdots
+WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
-# Ensure history/cache directories exist
-[[ -d "$XDG_STATE_HOME/zsh" ]] || mkdir -p "$XDG_STATE_HOME/zsh"
-[[ -d "$XDG_CACHE_HOME/zsh" ]] || mkdir -p "$XDG_CACHE_HOME/zsh"
-
-# Tool Initializations
-command -v thefuck >/dev/null && eval "$(thefuck --alias 2>/dev/null)"
-# Load fzf
+# fzf: always source our config first (sets DOTFILES_FZF_ROOT, PATH, completions, key-bindings)
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
-# Initialize Starship prompt
-command -v starship >/dev/null && eval "$(starship init zsh)"
+# Tools
+(( $+commands[thefuck] )) && eval "$(thefuck --alias 2>/dev/null)"
 
-# zmx shell completions
-if command -v zmx >/dev/null 2>&1; then
+(( $+commands[starship] )) && eval "$(starship init zsh)"
+
+if (( $+commands[zmx] )); then
   eval "$(zmx completions zsh)"
 fi
 
-# iTerm2 Integration
 [[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
-
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
-# Plugin Management (Manual)
-ZSH_PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
-
-# Only source plugins that are actually present; install may have had partial failures.
-source_zsh_plugin() {
-  local plugin_dir="$1"
-  local plugin_file="$2"
-
-  [[ -d "$plugin_dir" ]] && fpath+=( "$plugin_dir" )
-  if [[ -f "$plugin_file" ]]; then
-    source "$plugin_file"
-  fi
-}
-
-# FZF plugins (highest priority)
-# Always force the plugin to use ~/.fzf.zsh as its config entrypoint; our
-# config file resolves the real package-managed install root separately.
-unset FZF_PATH
-
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/fzf-zsh-plugin" \
+# Plugins: source (after compinit)
+local -a plugin_files=(
   "$ZSH_PLUGINS_DIR/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh"
-
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/fzf-tab" \
   "$ZSH_PLUGINS_DIR/fzf-tab/fzf-tab.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/cd-gitroot/cd-gitroot.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/zsh-autopair/zsh-autopair.plugin.zsh"
+  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+)
+for f ("$plugin_files[@]") { [[ -f "$f" ]] && source "$f" }
 
-# fzf Ctrl-R: preview-on-toggle for long/multi-line commands
+# zoxide: init default (creates 'z'), then alias cd->z below
+if [[ -f "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh" ]]; then
+  source "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh"
+elif (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi
+(( $+functions[z] )) && alias cd='z'
+
 export FZF_CTRL_R_OPTS="
   --preview 'echo {}'
   --preview-window 'down:5:hidden:wrap'
   --bind 'ctrl-/:toggle-preview'
 "
 
-# Fish-like plugins
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zsh-history-substring-search" \
-  "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh"
-
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zsh-autosuggestions" \
-  "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-
-# Navigation plugins
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/cd-gitroot" \
-  "$ZSH_PLUGINS_DIR/cd-gitroot/cd-gitroot.plugin.zsh"
-
-# Initialize zoxide: try plugin file first, fall back to manual eval
-if [[ -f "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh" ]]; then
-  source "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh"
-elif command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
-
-# Utility plugins
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zsh-eza" \
-  "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
-
-# Text editing plugins (zsh-autopair before fast-syntax-highlighting)
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/zsh-autopair" \
-  "$ZSH_PLUGINS_DIR/zsh-autopair/zsh-autopair.plugin.zsh"
-
-# Fast syntax highlighting should be loaded last among widget-modifying plugins
-source_zsh_plugin \
-  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting" \
-  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-
-# Plugin configuration
+# Plugin config
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=243,underline"
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-# Completion options
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
@@ -159,99 +161,41 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*' format '%B%F{blue}-- %d --%f%b'
 zstyle ':completion:*:warnings' format '%F{yellow}No matches for: %d%f'
 
-# Key Bindings
-bindkey '^[[H'    beginning-of-line
-bindkey '^[[F'    end-of-line
-bindkey '^[[3~'   delete-char
+# Key bindings
+bindkey '^[[H'  beginning-of-line
+bindkey '^[[F'  end-of-line
+bindkey '^[[3~' delete-char
 
-# Use terminfo for word navigation (modern best practice)
-[[ -n "${terminfo[kLFT5]}" ]] && bindkey "${terminfo[kLFT5]}" backward-word
-[[ -n "${terminfo[kRIT5]}" ]] && bindkey "${terminfo[kRIT5]}" forward-word
-
-# Fallbacks for terminals without proper terminfo
+(( $+terminfo[kLFT5] )) && bindkey "${terminfo[kLFT5]}" backward-word
+(( $+terminfo[kRIT5] )) && bindkey "${terminfo[kRIT5]}" forward-word
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
-# Modern Tool Aliases
+# Aliases
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-
-# zoxide: cd replacement
-if command -v z >/dev/null 2>&1; then
-  alias cd='z'
-fi
-
 alias mkdir='mkdir -pv'
 
-# bat -> cat/less (Debian uses batcat)
-if command -v bat >/dev/null 2>&1; then
-  alias cat='bat --paging=never'
-  alias less='bat --paging=always'
-elif command -v batcat >/dev/null 2>&1; then
-  alias cat='batcat --paging=never'
-  alias less='batcat --paging=always'
-fi
-
-# ripgrep -> grep
-if command -v rg >/dev/null 2>&1; then
-  alias grep='rg'
-fi
-
-# fd -> find (Debian uses fdfind)
-if command -v fdfind >/dev/null 2>&1; then
-  alias find='fdfind'
-  alias fd='fdfind'
-elif command -v fd >/dev/null 2>&1; then
+(( $+commands[bat] )) && alias cat='bat --paging=never' less='bat --paging=always'
+(( $+commands[batcat] )) && alias cat='batcat --paging=never' less='batcat --paging=always'
+(( $+commands[rg] )) && alias grep='rg'
+if (( $+commands[fdfind] )); then
+  alias find='fdfind' fd='fdfind'
+elif (( $+commands[fd] )); then
   alias find='fd'
 fi
+(( $+commands[btop] )) && alias top='btop' htop='btop'
+(( $+commands[lazygit] )) && alias lg='lazygit'
+(( $+commands[hx] )) && alias nano='hx' vi='hx' vim='hx'
+(( $+commands[zmx] )) && alias tmux='zmx' screen='zmx'
+(( $+commands[brew] )) && alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
+(( $+commands[apt] )) && alias aptup='sudo apt update && sudo apt full-upgrade'
 
-# btop -> top/htop
-if command -v btop >/dev/null 2>&1; then
-  alias top='btop'
-  alias htop='btop'
-fi
+# Custom functions
+for f ("$HOME/.config/zsh/functions/"*.zsh(N)) source "$f"
 
-# lazygit
-if command -v lazygit >/dev/null 2>&1; then
-  alias lg='lazygit'
-fi
-
-# helix -> nano/vi/vim
-if command -v hx >/dev/null 2>&1; then
-  alias nano='hx'
-  alias vi='hx'
-  alias vim='hx'
-fi
-
-# tmux/screen -> zmx
-if command -v zmx >/dev/null 2>&1; then
-  alias tmux='zmx'
-  alias screen='zmx'
-fi
-
-# brew: update + upgrade all (including casks)
-# opens zsh to force refresh to avoid broken styling on next iTerm2 launch
-if command -v brew >/dev/null 2>&1; then
-  alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
-fi
-
-# apt: update + upgrade
-if command -v apt >/dev/null 2>&1; then
-  alias aptup='sudo apt update && sudo apt full-upgrade'
-fi
-
-# yolo: Interactive agent selector for dangerous mode
-if command -v kimi >/dev/null 2>&1; then
-  alias yolo='kimi --yolo'
-fi
-
-# Custom Functions
-for func in "$HOME/.config/zsh/functions/"*.zsh(N); do
-  source "$func"
-done
-
-# Alias transparency: remind what an alias actually calls
+# Alias transparency
 autoload -Uz add-zsh-hook
 function _alias_reminder() {
   local cmd="${1%% *}"
