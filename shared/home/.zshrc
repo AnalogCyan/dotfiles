@@ -27,7 +27,6 @@ fi
 # Ghostty terminfo: bootstrap on SSH remotes, fall back to xterm-256color
 if [[ "$TERM" == "xterm-ghostty" ]]; then
   if ! infocmp "$TERM" &>/dev/null; then
-    local ghostty_ti
     for ghostty_ti (
       "/Applications/Ghostty.app/Contents/Resources/terminfo/78/xterm-ghostty"
       "/Applications/Ghostty.app/Contents/Resources/terminfo/x/xterm-ghostty"
@@ -100,7 +99,6 @@ if [[ -f "$p_file" ]]; then
     local target="$ZSH_PLUGINS_DIR/$name"
     if [[ -d "$target" ]]; then
       fpath+=("$target")
-      local plugin_file
       for plugin_file ("$target/$name.plugin.zsh" "$target/$name.zsh" "$target/$name.sh" "$target"/*.plugin.zsh(N)) {
         if [[ -f "$plugin_file" ]]; then
           [[ "$name" != "zoxide" ]] && plugin_files+=("$plugin_file")
@@ -151,7 +149,6 @@ fi
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
 # Plugins: source (after compinit)
-local f
 for f ("$plugin_files[@]") { [[ -f "$f" ]] && source "$f" }
 
 # zoxide: init default (creates 'z'), then alias cd->z below
