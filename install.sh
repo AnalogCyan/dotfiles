@@ -13,7 +13,7 @@ IFS=$'\n\t'
 
 # Cleanup temp files on exit or interrupt
 cleanup() {
-  rm -f /tmp/pfetch /tmp/zmx.tar.gz /tmp/ctop
+  rm -f /tmp/pfetch /tmp/zmx.tar.gz /tmp/ctop /tmp/Monaspace.zip
 }
 trap cleanup EXIT INT TERM
 
@@ -94,6 +94,7 @@ declare -a APT_PACKAGES=(
   fzf
   gnupg
   hx
+  jq
   lazygit
   ripgrep
   starship
@@ -234,13 +235,21 @@ check_system_compatibility() {
         . /etc/os-release
         log_info "Detected OS: ${NAME:-Unknown} (${ID:-unknown}) codename=${VERSION_CODENAME:-}"
         if [[ "${ID:-}" != "debian" ]]; then
-          log_warning "This script targets Debian. Proceeding anyway."
+          log_warning "This script targets Debian. Many parts may not work on ${NAME:-this distro}."
+          if ! confirm "Continue as generic Linux install?"; then
+            log_info "Aborted by user."
+            return 2
+          fi
         fi
         if [[ -n "${VERSION_CODENAME:-}" && "${VERSION_CODENAME}" != "trixie" ]]; then
           log_warning "Tuned for Debian 'trixie', but you are on '${VERSION_CODENAME}'. Continuing."
         fi
       else
         log_warning "/etc/os-release not found; proceeding blindly."
+        if ! confirm "Continue as generic Linux install?"; then
+          log_info "Aborted by user."
+          return 2
+        fi
       fi
       ;;
     *)
@@ -441,10 +450,7 @@ install_zmx_linux() {
       ;;
   esac
 
-  # TODO: This JSON parsing is brittle. Consider installing jq and using it
-  # for reliable extraction of tag names and release versions.
-  latest=$(curl -fsSL "https://api.github.com/repos/neurosnap/zmx/tags" \
-    | grep '"name"' | head -1 | sed 's/.*"name": *"\([^"]*\)".*/\1/')
+  latest=$(curl -fsSL "https://api.github.com/repos/neurosnap/zmx/tags" | jq -r '.[0].name // empty')
   if [[ -z "${latest}" ]]; then
     log_warning "Could not determine zmx version; skipping."
     return 1
@@ -477,10 +483,17 @@ install_zmx_linux() {
 install_ctop() {
   log_info "Installing ctop..."
   local arch latest
-  arch=$(dpkg --print-architecture)
-  # TODO: This JSON parsing is brittle. Consider installing jq and using it
-  # for reliable extraction of tag names and release versions.
-  latest=$(curl -fsSL "https://api.github.com/repos/bcicen/ctop/releases/latest" | grep '"tag_name"' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
+  arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
+  case "${arch}" in
+    amd64|x86_64) arch="amd64" ;;
+    arm64|aarch64) arch="arm64" ;;
+    *)
+      log_warning "Unsupported architecture for ctop: ${arch}; skipping."
+      return 1
+      ;;
+  esac
+
+  latest=$(curl -fsSL "https://api.github.com/repos/bcicen/ctop/releases/latest" | jq -r '.tag_name // empty')
   if [[ -z "${latest}" ]]; then
     log_warning "Could not determine ctop version; skipping."
     return 1
