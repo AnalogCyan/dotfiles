@@ -367,6 +367,23 @@ setup_icloud_links() {
   return "${status}"
 }
 
+setup_ghostty_config() {
+  local status=0
+  log_info "Setting up Ghostty config..."
+  mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
+  ln -sf "$HOME/.config/ghostty/config.ghostty" \
+    "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" || {
+    log_warning "Failed to set up Ghostty config."
+    status=1
+  }
+  if (( status == 0 )); then
+    log_success "Ghostty config set up."
+  else
+    log_warning "Ghostty config setup finished with warnings."
+  fi
+  return "${status}"
+}
+
 # =============================================================================
 # DEBIAN FUNCTIONS
 # =============================================================================
@@ -374,6 +391,10 @@ setup_icloud_links() {
 install_updates_debian() {
   local status=0
   log_info "Updating system..."
+  sudo apt modernize-sources || {
+    log_warning "Failed to modernize sources."
+    status=1
+  }
   sudo apt update || {
     log_warning "apt update failed"
     status=1
@@ -404,6 +425,64 @@ install_apt_packages() {
     log_success "Packages installed."
   else
     log_warning "Package installation finished with warnings."
+  fi
+
+  return "${status}"
+}
+
+install_ghostty() {
+  local status=0
+  log_info "Installing Ghostty..."
+
+  local arch deb_arch codename latest deb_url tmp_deb
+  arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
+  case "${arch}" in
+    amd64|x86_64) deb_arch="amd64" ;;
+    arm64|aarch64) deb_arch="arm64" ;;
+    *)
+      log_warning "Unsupported architecture: ${arch}"
+      return 1
+      ;;
+  esac
+
+  codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
+
+  # dariogriffo only publishes amd64; use mkasberg for arm64
+  if [[ "${deb_arch}" == "amd64" ]]; then
+    latest=$(curl -fsSL "https://api.github.com/repos/dariogriffo/ghostty-debian/releases/latest" | jq -r '.tag_name // empty')
+    if [[ -z "${latest}" || "${latest}" == "null" ]]; then
+      log_warning "Could not determine Ghostty version."
+      return 1
+    fi
+    deb_url="https://github.com/dariogriffo/ghostty-debian/releases/download/${latest}/ghostty_${latest}+${codename}_${deb_arch}.deb"
+  else
+    latest=$(curl -fsSL "https://api.github.com/repos/mkasberg/ghostty-ubuntu/releases/latest" | jq -r '.tag_name // empty')
+    if [[ -z "${latest}" || "${latest}" == "null" ]]; then
+      log_warning "Could not determine Ghostty version."
+      return 1
+    fi
+    deb_url="https://github.com/mkasberg/ghostty-ubuntu/releases/download/${latest}/ghostty_${latest//+/%2B}~ppa1_${codename}_${deb_arch}.deb"
+  fi
+
+  log_info "Downloading Ghostty from ${deb_url}..."
+  tmp_deb=$(mktemp)
+  curl -fsSL "${deb_url}" -o "${tmp_deb}" || {
+    log_warning "Failed to download Ghostty."
+    rm -f "${tmp_deb}"
+    return 1
+  }
+
+  sudo apt install -y "${tmp_deb}" || {
+    log_warning "Failed to install Ghostty."
+    status=1
+  }
+
+  rm -f "${tmp_deb}"
+
+  if (( status == 0 )); then
+    log_success "Ghostty installed."
+  else
+    log_warning "Ghostty installation finished with warnings."
   fi
 
   return "${status}"
@@ -756,12 +835,14 @@ main() {
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Default zsh shell" configure_zsh && \
         run_step "Dotfile deployment" deploy_dotfiles && \
-        run_step "iCloud links" setup_icloud_links || failed=1
+        run_step "iCloud links" setup_icloud_links && \
+        run_step "Ghostty config" setup_ghostty_config || failed=1
         ;;
       Linux)
         run_step "Debian updates" install_updates_debian && \
         run_step "APT packages" install_apt_packages && \
         run_step "zsh plugins" install_zsh_plugins && \
+        run_step "Ghostty" install_ghostty && \
         run_step "Zed" install_zed && \
         run_step "ctop" install_ctop && \
         run_step "zmx" install_zmx_linux && \
