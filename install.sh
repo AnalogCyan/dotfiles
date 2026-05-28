@@ -902,12 +902,6 @@ main() {
     echo "Restart your terminal to see the changes."
   fi
 
-  if (( failed == 0 )) && [[ "${OS}" == "Linux" ]]; then
-    if confirm "Open a new zsh login shell now?"; then
-      exec "$(command -v zsh)" -l
-    fi
-  fi
-
   return "${failed}"
 }
 
