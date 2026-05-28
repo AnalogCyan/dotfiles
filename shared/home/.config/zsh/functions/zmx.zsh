@@ -25,6 +25,10 @@ zmx-select() {
   )
   rc=$?
 
+  if [[ $rc -eq 130 ]]; then
+    return 130
+  fi
+
   local -a lines=("${(f)output}")
   query="${lines[1]}"
   key="${lines[2]}"

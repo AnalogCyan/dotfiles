@@ -60,6 +60,7 @@ ssh_only = true
 format = "[󰒋 $hostname](bold cyan) "
 
 [env_var.ZMX_SESSION]
+variable = "ZMX_SESSION"
 symbol = " "
 format = "[$symbol$env_value]($style) "
 description = "zmx session name"

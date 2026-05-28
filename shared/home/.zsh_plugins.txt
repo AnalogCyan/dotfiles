@@ -1,18 +1,10 @@
-# FZF plugins (highest priority)
-unixorn/fzf-zsh-plugin                    # Collection of fzf-powered functions
-Aloxaf/fzf-tab                            # Replace completion menu with fzf
-
-# Fish-like plugins
-zsh-users/zsh-history-substring-search    # Fish-like history search with up/down arrows
-zsh-users/zsh-autosuggestions             # Fish-like autosuggestions for zsh
-
-# Navigation plugins
-ajeetdsouza/zoxide                        # Faster, smarter directory jumping
-mollifier/cd-gitroot                      # Command to change to git repository root
-
-# Utility plugins
-z-shell/zsh-eza                            # Full-featured EZA plugin for Zsh
-
-# Syntax and text editing plugins
-hlissner/zsh-autopair                      # Auto-close and delete matching quotes, brackets
-zdharma-continuum/fast-syntax-highlighting # Real-time command syntax highlighting
+unixorn/fzf-zsh-plugin
+Aloxaf/fzf-tab
+zsh-users/zsh-history-substring-search
+zsh-users/zsh-autosuggestions
+ajeetdsouza/zoxide
+mollifier/cd-gitroot
+z-shell/zsh-eza
+https://iterm2.com/shell_integration/zsh
+hlissner/zsh-autopair
+zdharma-continuum/fast-syntax-highlighting

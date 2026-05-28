@@ -58,7 +58,6 @@ BREW_FORMULAE=(
   "lazygit"
   "ripgrep"
   "starship"
-  "thefuck"
   "xz"
   "yt-dlp"
   "zoxide"
@@ -98,7 +97,6 @@ declare -a APT_PACKAGES=(
   lazygit
   ripgrep
   starship
-  thefuck
   xz-utils
   yt-dlp
   zoxide
@@ -112,17 +110,7 @@ declare -a APT_PACKAGES=(
   unzip
 )
 
-ZSH_PLUGIN_URLS=(
-  "https://github.com/unixorn/fzf-zsh-plugin"
-  "https://github.com/Aloxaf/fzf-tab"
-  "https://github.com/zsh-users/zsh-history-substring-search"
-  "https://github.com/zsh-users/zsh-autosuggestions"
-  "https://github.com/ajeetdsouza/zoxide"
-  "https://github.com/mollifier/cd-gitroot"
-  "https://github.com/hlissner/zsh-autopair"
-  "https://github.com/zdharma-continuum/fast-syntax-highlighting"
-  "https://github.com/z-shell/zsh-eza"
-)
+
 
 # =============================================================================
 # UTILITY FUNCTIONS
@@ -353,10 +341,10 @@ setup_icloud_links() {
   if [[ -d "${downloads_target}" ]]; then
     if [[ -e "${HOME}/Downloads" && ! -L "${HOME}/Downloads" ]]; then
       if [[ -z "$(ls -A "${HOME}/Downloads" 2>/dev/null)" ]]; then
-        sudo rm -rf "${HOME}/Downloads"
+        rm -rf "${HOME}/Downloads"
       else
         if confirm "Downloads is not empty. Replace with iCloud symlink?"; then
-          sudo rm -rf "${HOME}/Downloads"
+          rm -rf "${HOME}/Downloads"
         else
           log_warning "Skipped replacing Downloads directory."
           status=1
@@ -456,33 +444,33 @@ install_zmx_linux() {
     return 1
   fi
 
-  zip_path="/tmp/zmx.tar.gz"
+  tmp_dir=$(mktemp -d)
+  zip_path="${tmp_dir}/zmx.tar.gz"
   curl -fsSL "https://zmx.sh/a/zmx-${latest#v}-linux-${zmx_arch}.tar.gz" -o "${zip_path}" || {
     log_warning "Failed to download zmx."
+    rm -rf "${tmp_dir}"
     return 1
   }
 
-  local tmp_dir
-  tmp_dir=$(mktemp -d)
   tar -xzf "${zip_path}" -C "${tmp_dir}" || {
     log_warning "Failed to extract zmx."
-    rm -rf "${zip_path}" "${tmp_dir}"
+    rm -rf "${tmp_dir}"
     return 1
   }
 
   sudo install -m 755 "${tmp_dir}/zmx" /usr/local/bin/zmx || {
     log_warning "Failed to install zmx binary."
-    rm -rf "${zip_path}" "${tmp_dir}"
+    rm -rf "${tmp_dir}"
     return 1
   }
 
-  rm -rf "${zip_path}" "${tmp_dir}"
+  rm -rf "${tmp_dir}"
   log_success "zmx installed."
 }
 
 install_ctop() {
   log_info "Installing ctop..."
-  local arch latest
+  local arch latest tmp_dir binary_path
   arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
   case "${arch}" in
     amd64|x86_64) arch="amd64" ;;
@@ -498,13 +486,16 @@ install_ctop() {
     log_warning "Could not determine ctop version; skipping."
     return 1
   fi
-  curl -fsSL "https://github.com/bcicen/ctop/releases/download/${latest}/ctop-${latest#v}-linux-${arch}" \
-    -o /tmp/ctop && \
-    sudo install -m 755 /tmp/ctop /usr/local/bin/ctop && \
-    rm /tmp/ctop || {
+  tmp_dir=$(mktemp -d)
+  binary_path="${tmp_dir}/ctop"
+  curl -fsSL "https://github.com/bcicen/ctop/releases/download/${latest}/ctop-${latest#v}-linux-${arch}" -o "${binary_path}" && \
+    sudo install -m 755 "${binary_path}" /usr/local/bin/ctop || {
       log_warning "ctop installation finished with warnings."
+      rm -rf "${tmp_dir}"
       return 1
     }
+
+  rm -rf "${tmp_dir}"
 
   if [[ -x /usr/local/bin/ctop ]]; then
     log_success "ctop installed."
@@ -519,28 +510,69 @@ install_ctop() {
 # =============================================================================
 
 install_zsh_plugins() {
+  local plugins_file="${DOTFILES_DIR}/shared/home/.zsh_plugins.txt"
   local plugins_dir="${HOME}/.local/share/zsh/plugins"
   local failures=0
   log_info "Installing zsh plugins..."
   mkdir -p "${plugins_dir}"
 
-  for url in "${ZSH_PLUGIN_URLS[@]}"; do
-    local name
-    name=$(basename "${url}")
-    if [[ -d "${plugins_dir}/${name}/.git" ]]; then
-      log_info "Updating ${name}..."
-      git -C "${plugins_dir}/${name}" pull --ff-only || {
-        log_warning "Failed to update ${name}."
-        failures=$((failures + 1))
-      }
+  if [[ ! -f "${plugins_file}" ]]; then
+    log_error "Plugin manifest file not found: ${plugins_file}"
+    return 2
+  fi
+
+  while read -r line || [[ -n "$line" ]]; do
+    # Remove leading/trailing whitespace and comments
+    line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+    local name url is_git=true
+    if [[ "$line" =~ ^http ]]; then
+      url="$line"
+      local temp="${line#*://}"
+      local domain="${temp%%/*}"
+      local path_part="${temp#*/}"
+      local domain_clean="${domain%.*}"
+      local domain_hyphen="${domain_clean//./-}"
+      local path_hyphen="${path_part//\//-}"
+      if [[ "$path_part" != "$temp" ]]; then
+        name="${domain_hyphen}-${path_hyphen}"
+      else
+        name="${domain_hyphen}"
+      fi
+      name="${name%.git}"
+      if [[ "$url" != *".git"* && "$url" == *"iterm2.com"* ]]; then
+        is_git=false
+      fi
     else
-      log_info "Cloning ${name}..."
-      git clone --depth=1 "${url}" "${plugins_dir}/${name}" || {
-        log_warning "Failed to clone ${name}."
+      name=$(basename "$line")
+      url="https://github.com/${line}"
+    fi
+
+    local target_dir="${plugins_dir}/${name}"
+    if $is_git; then
+      if [[ -d "${target_dir}/.git" ]]; then
+        log_info "Updating ${name}..."
+        git -C "${target_dir}" pull --ff-only || {
+          log_warning "Failed to update ${name}."
+          failures=$((failures + 1))
+        }
+      else
+        log_info "Cloning ${name}..."
+        git clone --depth=1 "${url}" "${target_dir}" || {
+          log_warning "Failed to clone ${name}."
+          failures=$((failures + 1))
+        }
+      fi
+    else
+      log_info "Downloading ${name}..."
+      mkdir -p "${target_dir}"
+      curl -fsSL "${url}" -o "${target_dir}/${name}.plugin.zsh" || {
+        log_warning "Failed to download ${name}."
         failures=$((failures + 1))
       }
     fi
-  done
+  done < "${plugins_file}"
 
   if (( failures == 0 )); then
     log_success "Zsh plugins installed."
@@ -551,33 +583,26 @@ install_zsh_plugins() {
   (( failures == 0 ))
 }
 
-install_iterm2_shell_integration() {
-  log_info "Installing iTerm2 shell integration..."
-  curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash || {
-    log_warning "Failed to install iTerm2 shell integration."
-    return 1
-  }
-  log_success "iTerm2 shell integration installed."
-}
-
 install_nerd_fonts() {
   log_info "Installing Monaspace Nerd Font..."
-  local font_dir zip_path
+  local font_dir tmp_dir zip_path
   case "${OS}" in
     Darwin) font_dir="${HOME}/Library/Fonts/Monaspace" ;;
     Linux)  font_dir="${HOME}/.fonts/Monaspace" ;;
   esac
-  zip_path="/tmp/Monaspace.zip"
 
   mkdir -p "${font_dir}"
+  tmp_dir=$(mktemp -d)
+  zip_path="${tmp_dir}/Monaspace.zip"
+
   curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Monaspace.zip" \
-    -o "${zip_path}" || { log_warning "Failed to download Monaspace Nerd Font."; return 1; }
+    -o "${zip_path}" || { log_warning "Failed to download Monaspace Nerd Font."; rm -rf "${tmp_dir}"; return 1; }
   unzip -o "${zip_path}" -d "${font_dir}" || {
     log_warning "Failed to extract Monaspace Nerd Font."
-    rm -f "${zip_path}"
+    rm -rf "${tmp_dir}"
     return 1
   }
-  rm -f "${zip_path}"
+  rm -rf "${tmp_dir}"
 
   if [[ "${OS}" == "Linux" ]]; then
     fc-cache -fv || {
@@ -647,9 +672,10 @@ deploy_dotfiles() {
   esac
 
   log_info "Installing pfetch..."
-  curl -fsSL https://raw.githubusercontent.com/dylanaraps/pfetch/master/pfetch -o /tmp/pfetch && \
-    sudo install -m 755 /tmp/pfetch /usr/local/bin/pfetch && \
-    rm /tmp/pfetch || {
+  local pfetch_dir="${HOME}/.local/bin"
+  mkdir -p "${pfetch_dir}"
+  curl -fsSL https://raw.githubusercontent.com/dylanaraps/pfetch/master/pfetch -o "${pfetch_dir}/pfetch" && \
+    chmod 755 "${pfetch_dir}/pfetch" || {
       log_warning "Failed to install pfetch."
       status=1
     }
@@ -730,7 +756,6 @@ main() {
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Default zsh shell" configure_zsh && \
         run_step "Dotfile deployment" deploy_dotfiles && \
-        run_step "iTerm2 shell integration" install_iterm2_shell_integration && \
         run_step "iCloud links" setup_icloud_links || failed=1
         ;;
       Linux)
@@ -742,7 +767,6 @@ main() {
         run_step "zmx" install_zmx_linux && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
-        run_step "iTerm2 shell integration" install_iterm2_shell_integration && \
         run_step "Default zsh shell" configure_zsh || failed=1
         ;;
     esac

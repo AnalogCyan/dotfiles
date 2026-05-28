@@ -6,7 +6,7 @@
 
 # PATH
 path=(
-  /Users/cyan/.usagi/bin
+  ${HOME}/.usagi/bin
   ${HOME}/.npm-global/bin
   ${HOME}/.local/bin
   ${HOME}/bin
@@ -67,19 +67,49 @@ fpath=(~/.zsh.d/ $fpath)
 
 ZSH_PLUGINS_DIR="$HOME/.local/share/zsh/plugins"
 
-# Plugins: fpath (must precede compinit)
-local -a plugin_fpaths=(
-  "$ZSH_PLUGINS_DIR/fzf-zsh-plugin"
-  "$ZSH_PLUGINS_DIR/fzf-tab"
-  "$ZSH_PLUGINS_DIR/zsh-history-substring-search"
-  "$ZSH_PLUGINS_DIR/zsh-autosuggestions"
-  "$ZSH_PLUGINS_DIR/cd-gitroot"
-  "$ZSH_PLUGINS_DIR/zoxide"
-  "$ZSH_PLUGINS_DIR/zsh-eza"
-  "$ZSH_PLUGINS_DIR/zsh-autopair"
-  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting"
-)
-for p ("$plugin_fpaths[@]") { [[ -d "$p" ]] && fpath+=( "$p" ) }
+# Plugins: parse manifest to build fpath and populate plugin_files (must precede compinit)
+local p_file="${HOME}/.zsh_plugins.txt"
+local -a plugin_files=()
+
+if [[ -f "$p_file" ]]; then
+  local line name
+  while read -r line; do
+    # Remove trailing comments and whitespace
+    line="${line%%#*}"
+    line="${line#${line%%[![:space:]]*}}"
+    line="${line%${line##*[![:space:]]}}"
+    [[ -z "$line" ]] && continue
+
+    if [[ "$line" == http* ]]; then
+      local temp="${line#*://}"
+      local domain="${temp%%/*}"
+      local path_part="${temp#*/}"
+      local domain_clean="${domain%.*}"
+      local domain_hyphen="${domain_clean//./-}"
+      local path_hyphen="${path_part//\//-}"
+      if [[ "$path_part" != "$temp" ]]; then
+        name="${domain_hyphen}-${path_hyphen}"
+      else
+        name="${domain_hyphen}"
+      fi
+      name="${name%.git}"
+    else
+      name="${line##*/}"
+    fi
+
+    local target="$ZSH_PLUGINS_DIR/$name"
+    if [[ -d "$target" ]]; then
+      fpath+=("$target")
+      local pf
+      for pf ("$target/$name.plugin.zsh" "$target/$name.zsh" "$target/$name.sh" "$target"/*.plugin.zsh(N)) {
+        if [[ -f "$pf" ]]; then
+          [[ "$name" != "zoxide" ]] && plugin_files+=("$pf")
+          break
+        fi
+      }
+    fi
+  done < "$p_file"
+fi
 
 # Completion system
 autoload -Uz compinit
@@ -111,7 +141,6 @@ WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
 # Tools
-(( $+commands[thefuck] )) && eval "$(thefuck --alias 2>/dev/null)"
 
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 
@@ -119,20 +148,10 @@ if (( $+commands[zmx] )); then
   eval "$(zmx completions zsh)"
 fi
 
-[[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
 # Plugins: source (after compinit)
-local -a plugin_files=(
-  "$ZSH_PLUGINS_DIR/fzf-zsh-plugin/fzf-zsh-plugin.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/fzf-tab/fzf-tab.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/cd-gitroot/cd-gitroot.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/zsh-eza/zsh-eza.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/zsh-autopair/zsh-autopair.plugin.zsh"
-  "$ZSH_PLUGINS_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
-)
+local f
 for f ("$plugin_files[@]") { [[ -f "$f" ]] && source "$f" }
 
 # zoxide: init default (creates 'z'), then alias cd->z below
