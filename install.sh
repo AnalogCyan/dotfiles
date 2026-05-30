@@ -81,7 +81,7 @@ BREW_CASKS=(
   "utm"
   "xcodes-app"
   "xiv-on-mac"
-  "zed"
+  "zed@preview"
   "keka"
   "kekaexternalhelper"
 )
@@ -541,7 +541,7 @@ sudo dpkg -i "${tmp_deb}" || {
 install_zed() {
   local status=0
   log_info "Installing Zed..."
-  curl -fsSL https://zed.dev/install.sh | sh || {
+  curl -f https://zed.dev/install.sh | ZED_CHANNEL=preview sh || {
     log_warning "Failed to install Zed."
     status=1
   }
