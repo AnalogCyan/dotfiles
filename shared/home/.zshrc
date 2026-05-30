@@ -51,6 +51,7 @@ fi
 # Editor
 if (( $+commands[zed-insiders] )); then
   export EDITOR='zed-insiders --wait -n'
+  alias zed='zed-insiders'
 elif (( $+commands[zed] )); then
   export EDITOR='zed --wait -n'
 elif (( $+commands[hx] )); then
@@ -206,7 +207,7 @@ fi
 (( $+commands[lazygit] )) && alias lg='lazygit'
 (( $+commands[hx] )) && alias nano='hx' vi='hx' vim='hx'
 (( $+commands[zmx] )) && alias tmux='zmx' screen='zmx'
-(( $+commands[brew] )) && alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
+(( $+commands[brew] )) && (( $+commands[mo] )) && alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
 (( $+commands[apt] )) && alias aptup='sudo apt update && sudo apt full-upgrade'
 
 # Custom functions

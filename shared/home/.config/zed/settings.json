@@ -7,6 +7,11 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "language_models": {
+    "opencode": {
+      "show_zen_models": false,
+    },
+  },
   "context_servers": {
     "mcp-server-github": {
       "enabled": true,
@@ -22,6 +27,21 @@
         "context7_api_key": "YOUR_CONTEXT7_API_KEY",
       },
     },
+    "fff": {
+      "enabled": true,
+      "remote": false,
+      "settings": {
+        "fff_binary_path": "/Users/cyan/.local/bin/fff-mcp",
+        "base_path": null,
+        "frecency_db": null,
+        "history_db": null,
+        "log_file": null,
+        "log_level": "info",
+        "no_update_check": false,
+        "no_warmup": false,
+        "max_cached_files": null,
+      },
+    },
   },
   "cli_default_open_behavior": "existing_window",
   "on_last_window_closed": "quit_app",
@@ -34,24 +54,41 @@
   },
   "agent": {
     "tool_permissions": {
+      "tools": {
+        "create_directory": {
+          "default": "allow",
+        },
+        "copy_path": {
+          "default": "allow",
+        },
+        "edit_file": {
+          "default": "allow",
+        },
+        "write_file": {
+          "default": "allow",
+        },
+      },
       "default": "allow",
     },
     "thinking_display": "always_collapsed",
     "expand_terminal_card": false,
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-6",
-      "enable_thinking": true,
-      "effort": "high",
+      "provider": "opencode",
+      "model": "go/kimi-k2.5",
+      "enable_thinking": false,
     },
     "flexible": true,
     "dock": "left",
     "favorite_models": [
       {
-        "provider": "zed.dev",
-        "model": "claude-sonnet-4-6",
-        "enable_thinking": true,
-        "effort": "high",
+        "provider": "opencode",
+        "model": "go/kimi-k2.6",
+        "enable_thinking": false,
+      },
+      {
+        "provider": "opencode",
+        "model": "go/kimi-k2.5",
+        "enable_thinking": false,
       },
     ],
     "model_parameters": [],
@@ -155,7 +192,7 @@
   "icon_theme": {
     "mode": "system",
     "light": "Zed (Default)",
-    "dark": "Colored Zed Icons Theme Dark",
+    "dark": "Colored Zed Icons Theme Light",
   },
   "restore_on_startup": "last_session",
   "redact_private_values": true,
@@ -182,11 +219,7 @@
     "zedokai": true,
     "zig": true,
   },
-  "agent_servers": {
-    "kimi": {
-      "type": "registry",
-    },
-  },
+  "agent_servers": {},
   "session": {
     "trust_all_worktrees": true,
   },
