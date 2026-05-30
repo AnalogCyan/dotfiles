@@ -49,9 +49,9 @@ if [[ "$TERM" == "xterm-ghostty" ]]; then
 fi
 
 # Editor
-if (( $+commands[zed-insiders] )); then
-  export EDITOR='zed-insiders --wait -n'
-  alias zed='zed-insiders'
+if (( $+commands[zed-preview] )); then
+  export EDITOR='zed-preview --wait -n'
+  alias zed='zed-preview'
 elif (( $+commands[zed] )); then
   export EDITOR='zed --wait -n'
 elif (( $+commands[hx] )); then
