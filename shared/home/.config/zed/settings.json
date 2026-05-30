@@ -7,6 +7,31 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "git": {
+    "inline_blame": {
+      "show_commit_summary": false,
+    },
+  },
+  "seed_search_query_from_cursor": "selection",
+  "toolbar": {
+    "code_actions": true,
+  },
+  "scrollbar": {
+    "axes": {
+      "horizontal": true,
+      "vertical": true,
+    },
+    "show": "auto",
+  },
+  "sticky_scroll": {
+    "enabled": true,
+  },
+  "autoscroll_on_clicks": false,
+  "scroll_beyond_last_line": "one_page",
+  "helix_mode": false,
+  "buffer_line_height": "comfortable",
+  "use_system_prompts": false,
+  "use_system_path_prompts": false,
   "language_models": {
     "opencode": {
       "show_zen_models": false,
@@ -43,7 +68,7 @@
       },
     },
   },
-  "cli_default_open_behavior": "existing_window",
+  "cli_default_open_behavior": "new_window",
   "on_last_window_closed": "quit_app",
   "when_closing_with_no_tabs": "keep_window_open",
   "outline_panel": {
@@ -53,6 +78,8 @@
     "dock": "right",
   },
   "agent": {
+    "expand_edit_card": false,
+    "enable_feedback": false,
     "tool_permissions": {
       "tools": {
         "create_directory": {
@@ -70,7 +97,7 @@
       },
       "default": "allow",
     },
-    "thinking_display": "always_collapsed",
+    "thinking_display": "preview",
     "expand_terminal_card": false,
     "default_model": {
       "provider": "opencode",
@@ -101,6 +128,9 @@
     "file_icons": true,
   },
   "terminal": {
+    "toolbar": {
+      "breadcrumbs": false,
+    },
     "show_count_badge": false,
     "font_family": "MonaspiceKr Nerd Font Mono",
     "font_features": {
@@ -111,6 +141,9 @@
     "cursor_shape": "bar",
   },
   "project_panel": {
+    "hide_root": false,
+    "bold_folder_labels": false,
+    "button": true,
     "dock": "right",
     "git_status_indicator": true,
     "diagnostic_badges": true,
@@ -118,20 +151,24 @@
   "use_system_window_tabs": true,
   "bottom_dock_layout": "contained",
   "tabs": {
+    "show_diagnostics": "off",
     "close_position": "left",
     "file_icons": true,
     "git_status": true,
   },
   "title_bar": {
+    "show_menus": false,
     "show_branch_status_icon": true,
   },
   "status_bar": {
+    "cursor_position_button": true,
     "show_active_file": true,
   },
   "search": {
     "center_on_match": true,
   },
   "diagnostics": {
+    "button": true,
     "inline": {
       "enabled": true,
     },
@@ -174,6 +211,7 @@
   },
   "minimap": {
     "show": "auto",
+    "thumb": "always",
   },
   "diff_view_style": "unified",
   "which_key": {
@@ -189,11 +227,7 @@
   "buffer_font_features": {
     "calt": true,
   },
-  "icon_theme": {
-    "mode": "system",
-    "light": "Zed (Default)",
-    "dark": "Colored Zed Icons Theme Light",
-  },
+  "icon_theme": "Colored Zed Icons Theme Light",
   "restore_on_startup": "last_session",
   "redact_private_values": true,
   "auto_install_extensions": {
@@ -226,9 +260,5 @@
   "base_keymap": "VSCode",
   "ui_font_size": 16.0,
   "buffer_font_size": 15,
-  "theme": {
-    "mode": "system",
-    "light": "Zedokai Light (Filter Sun)",
-    "dark": "Zedokai Darker (Filter Ristretto)",
-  },
+  "theme": "Zedokai Darker (Filter Ristretto)",
 }
