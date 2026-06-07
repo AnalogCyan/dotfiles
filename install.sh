@@ -66,7 +66,11 @@ BREW_FORMULAE=(
   "ctop"
   "git"
   "tmux"
+  "anomalyco/tap/opencode"
   "neurosnap/tap/zmx"
+  "chojs23/tap/concord"
+  "gromgit/brewtils/taproom"
+  "philocalyst/tap/caligula"
   pfetch-rs
 )
 
@@ -80,7 +84,6 @@ BREW_CASKS=(
   "raspberry-pi-imager"
   "utm"
   "xcodes-app"
-  "xiv-on-mac"
   "zed@preview"
   "keka"
   "kekaexternalhelper"
