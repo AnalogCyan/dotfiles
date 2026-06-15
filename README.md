@@ -1,31 +1,25 @@
 # Dotfiles
 
 Dotfiles and setup script for macOS and Debian (workstation). Single
-cross-platform installer; shared configs with per-platform overlay where
-needed.
+cross-platform installer; shared configs.
 
 ## Repository Structure
 
 ```
 dotfiles/
-├── shared/
-│   ├── home/                          # rsync'd to ~/ on all platforms
-│   │   ├── .zshrc
-│   │   ├── .zlogin
-│   │   ├── .zsh_plugins.txt
-│   │   ├── .gitconfig
-│   │   ├── .fzf.zsh
-│   │   ├── .tmux.conf
-│   │   └── .config/
-│   │       ├── starship.toml
-│   │       ├── zed/
-│   │       │   └── settings.json      # Zed editor config
-│   │       └── zsh/functions/
-│   │           └── zsh_greeting.zsh
-├── macos/
-│   └── home/                          # macOS-only overlay, rsync'd after shared/
-│       └── Library/
-│           └── Application Support/com.mitchellh.ghostty/
+├── home/                              # rsync'd to ~/ on all platforms
+│   ├── .zshrc
+│   ├── .zlogin
+│   ├── .zsh_plugins.txt
+│   ├── .gitconfig
+│   ├── .fzf.zsh
+│   ├── .tmux.conf
+│   └── .config/
+│       ├── starship.toml
+│       ├── zed/
+│       │   └── settings.json          # Zed editor config
+│       └── zsh/functions/
+│           └── zsh_greeting.zsh
 └── install.sh
 ```
 
@@ -45,8 +39,7 @@ The installer detects the OS via `uname -s` and runs the appropriate steps.
 ### macOS
 
 Handles: system updates, Homebrew setup, formula/cask installation, zsh plugin
-cloning, Monaspace Nerd Font, zsh configuration, dotfile deployment via rsync
-(shared + macOS overlay), iCloud symlinks, and pfetch installed to `/usr/local/bin`.
+cloning, Monaspace Nerd Font, zsh configuration, dotfile deployment via rsync, iCloud symlinks, and pfetch installed to `/usr/local/bin`.
 
 ### Debian
 

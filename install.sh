@@ -641,7 +641,7 @@ install_ctop() {
 # =============================================================================
 
 install_zsh_plugins() {
-  local plugins_file="${DOTFILES_DIR}/shared/home/.zsh_plugins.txt"
+  local plugins_file="${DOTFILES_DIR}/home/.zsh_plugins.txt"
   local plugins_dir="${HOME}/.local/share/zsh/plugins"
   local failures=0
   log_info "Installing zsh plugins..."
@@ -750,26 +750,14 @@ backup_existing_dotfiles() {
   local found_any=0
 
   while IFS= read -r -d '' file; do
-    local rel_path="${file#${DOTFILES_DIR}/shared/home/}"
+    local rel_path="${file#${DOTFILES_DIR}/home/}"
     local target="${HOME}/${rel_path}"
     if [[ -f "$target" && ! -L "$target" ]]; then
       [[ "$found_any" -eq 0 ]] && { mkdir -p "$backup_dir"; found_any=1; }
       mkdir -p "$(dirname "${backup_dir}/${rel_path}")"
       cp -a "$target" "${backup_dir}/${rel_path}"
     fi
-  done < <(find "${DOTFILES_DIR}/shared/home" -type f -print0)
-
-  if [[ "${OS}" == "Darwin" && -d "${DOTFILES_DIR}/macos/home" ]]; then
-    while IFS= read -r -d '' file; do
-      local rel_path="${file#${DOTFILES_DIR}/macos/home/}"
-      local target="${HOME}/${rel_path}"
-      if [[ -f "$target" && ! -L "$target" ]]; then
-        [[ "$found_any" -eq 0 ]] && { mkdir -p "$backup_dir"; found_any=1; }
-        mkdir -p "$(dirname "${backup_dir}/${rel_path}")"
-        cp -a "$target" "${backup_dir}/${rel_path}"
-      fi
-    done < <(find "${DOTFILES_DIR}/macos/home" -type f -print0)
-  fi
+  done < <(find "${DOTFILES_DIR}/home" -type f -print0)
 
   if (( found_any )); then
     log_info "Existing dotfiles backed up to ${backup_dir}"
@@ -786,21 +774,10 @@ deploy_dotfiles() {
     "${HOME}/.config/zsh/functions" \
     "${HOME}/.zsh.d"
 
-  rsync -av --no-perms "${DOTFILES_DIR}/shared/home/" "${HOME}/" || {
+  rsync -av --no-perms "${DOTFILES_DIR}/home/" "${HOME}/" || {
     log_error "Failed to rsync shared dotfiles."
     return 2
   }
-
-  case "${OS}" in
-    Darwin)
-      if [[ -d "${DOTFILES_DIR}/macos/home" ]]; then
-        rsync -av --no-perms "${DOTFILES_DIR}/macos/home/" "${HOME}/" || {
-          log_error "Failed to rsync macOS overlay."
-          return 2
-        }
-      fi
-      ;;
-  esac
 
   if (( status == 0 )); then
     log_success "Dotfiles deployed."
