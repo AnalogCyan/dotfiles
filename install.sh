@@ -644,11 +644,41 @@ install_croc() {
 }
 
 install_yazi() {
-    log_info "Installing yazi..."
-    curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
-    echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
-    sudo apt update
-    sudo apt install yazi
+  log_info "Installing yazi..."
+  local arch latest_tag deb_arch deb_url deb_file
+  arch=$(dpkg --print-architecture 2>/dev/null || uname -m)
+  case "${arch}" in
+    amd64|x86_64) deb_arch="x86_64-unknown-linux-gnu" ;;
+    arm64|aarch64) deb_arch="aarch64-unknown-linux-gnu" ;;
+    *)
+      log_warning "Unsupported architecture for yazi: ${arch}; skipping."
+      return 1
+      ;;
+  esac
+
+  latest_tag=$(curl -fsSL "https://api.github.com/repos/sxyazi/yazi/releases/latest" | jq -r '.tag_name // empty')
+  if [[ -z "${latest_tag}" ]]; then
+    log_warning "Could not determine yazi version; skipping."
+    return 1
+  fi
+
+  deb_url="https://github.com/sxyazi/yazi/releases/download/${latest_tag}/yazi-${deb_arch}.deb"
+  deb_file="/tmp/yazi-${deb_arch}.deb"
+
+  curl -fsSL "${deb_url}" -o "${deb_file}" && \
+    sudo dpkg -i "${deb_file}" && \
+    rm -f "${deb_file}" || {
+      log_warning "yazi installation finished with warnings."
+      rm -f "${deb_file}"
+      return 1
+    }
+
+  if command -v yazi &>/dev/null; then
+    log_success "yazi installed."
+  else
+    log_warning "yazi installation finished with warnings."
+    return 1
+  fi
 }
 
 # =============================================================================
