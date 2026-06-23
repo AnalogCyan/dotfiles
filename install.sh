@@ -639,8 +639,17 @@ install_ctop() {
 }
 
 install_croc() {
-    log_info "Installing croc..."
-    curl https://getcroc.schollz.com | bash
+  log_info "Installing croc..."
+  curl -fsSL https://getcroc.schollz.com | bash || {
+    log_warning "croc installation finished with warnings."
+    return 1
+  }
+  if command -v croc &>/dev/null; then
+    log_success "croc installed."
+  else
+    log_warning "croc installation finished with warnings."
+    return 1
+  fi
 }
 
 install_yazi() {
