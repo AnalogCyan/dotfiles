@@ -48,71 +48,73 @@ DOTFILES_DIR="${SCRIPT_DIR}"
 # =============================================================================
 
 BREW_FORMULAE=(
+  "anomalyco/tap/opencode"
   "bat"
   "btop"
-  "python@3.13"
+  "chojs23/tap/concord"
+  "ctop"
+  "eza"
   "fd"
   "fortune"
   "fzf"
+  "git"
+  "gromgit/brewtils/taproom"
   "helix"
   "lazygit"
+  "neurosnap/tap/zmx"
+  "philocalyst/tap/caligula"
+  "python@3.13"
   "ripgrep"
   "starship"
+  "tmux"
   "xz"
   "yt-dlp"
   "zoxide"
   "zsh"
-  "eza"
-  "ctop"
-  "git"
-  "tmux"
-  "anomalyco/tap/opencode"
-  "neurosnap/tap/zmx"
-  "chojs23/tap/concord"
-  "gromgit/brewtils/taproom"
-  "philocalyst/tap/caligula"
+  croc
   pfetch-rs
+  yazi
 )
 
 BREW_CASKS=(
   "1password"
-  "tailscale-app"
   "balenaetcher"
   "crystalfetch"
   "iina"
+  "keka"
+  "kekaexternalhelper"
   "mactracker"
   "raspberry-pi-imager"
+  "tailscale-app"
   "utm"
   "xcodes-app"
   "zed@preview"
-  "keka"
-  "kekaexternalhelper"
 )
 
 declare -a APT_PACKAGES=(
   bat
   btop
+  ca-certificates
+  curl
+  eza
   fd-find
+  fontconfig
   fortune-mod
   fzf
+  git
   gnupg
   hx
   jq
   lazygit
   ripgrep
+  rsync
   starship
+  tmux
+  unzip
   xz-utils
   yt-dlp
   zoxide
   zsh
-  eza
-  tmux
-  git
-  curl
-  ca-certificates
-  rsync
-  unzip
-  fontconfig
 )
 
 
@@ -636,6 +638,19 @@ install_ctop() {
   fi
 }
 
+install_croc() {
+    log_info "Installing croc..."
+    curl https://getcroc.schollz.com | bash
+}
+
+install_yazi() {
+    log_info "Installing yazi..."
+    curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
+    echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
+    sudo apt update
+    sudo apt install yazi
+}
+
 # =============================================================================
 # SHARED FUNCTIONS
 # =============================================================================
@@ -867,6 +882,8 @@ main() {
         run_step "Zed" install_zed && \
         run_step "ctop" install_ctop && \
         run_step "zmx" install_zmx_linux && \
+        run_step "croc" install_croc && \
+        run_step "yazi" install_yazi && \
         run_step "Monaspace Nerd Font" install_nerd_fonts && \
         run_step "Dotfile deployment" deploy_dotfiles && \
         run_step "Default zsh shell" configure_zsh || failed=1
