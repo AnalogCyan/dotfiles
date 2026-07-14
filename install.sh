@@ -106,6 +106,7 @@ declare -a APT_PACKAGES=(
   hx
   jq
   lazygit
+  nvme-cli
   ripgrep
   rsync
   starship
