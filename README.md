@@ -14,7 +14,11 @@ dotfiles/
 │   ├── .gitconfig
 │   ├── .fzf.zsh
 │   ├── .tmux.conf
+│   ├── .ssh/
+│   │   ├── config                     # shared; machine hosts go in ~/.ssh/config.local
+│   │   └── keys/*.pub                 # public keys the 1Password agent serves
 │   └── .config/
+│       ├── 1Password/ssh/agent.toml   # key order for the 1Password SSH agent
 │       ├── starship.toml
 │       ├── zed/
 │       │   └── settings.json          # Zed editor config
@@ -25,6 +29,11 @@ dotfiles/
 
 Shared shell configs use command-existence guards (`command -v`) rather than
 OS detection, so the same `.zshrc` works on both platforms without branching.
+
+`home/.ssh/config` is shared the same way: it pins one public key per host and
+finds the 1Password agent socket wherever the OS keeps it. Hosts that exist on
+one machine only belong in `~/.ssh/config.local`, which the shared file
+includes and the installer never touches.
 
 ## Installation
 
