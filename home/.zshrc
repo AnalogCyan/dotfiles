@@ -151,6 +151,8 @@ fi
 
 # Plugins: source (after compinit)
 for f ("$plugin_files[@]") { [[ -f "$f" ]] && source "$f" }
+# zsh-eza aliases have hung Claude Code's shells
+[[ -n $CLAUDECODE ]] && unalias ls l ll llm la lx lt tree 2>/dev/null
 
 # zoxide: init default (creates 'z'), then alias cd->z below
 if [[ -f "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh" ]]; then
