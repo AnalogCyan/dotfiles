@@ -1,0 +1,32 @@
+# 1Password SSH agent config. Every key in Private stays enabled; the order is
+# the order they are offered, busiest hosts first, so unmatched hosts stay
+# inside sshd's six-try limit. Per-host matching lives in ~/.ssh/config.
+# Docs: https://www.1password.dev/ssh/agent/config/
+
+[[ssh-keys]]
+item = "Valkyrie"
+vault = "Private"
+
+[[ssh-keys]]
+item = "Forgejo SSH"
+vault = "Private"
+
+[[ssh-keys]]
+item = "zero"
+vault = "Private"
+
+[[ssh-keys]]
+item = "linkbridge-pi (zero)"
+vault = "Private"
+
+[[ssh-keys]]
+item = "camelia"
+vault = "Private"
+
+[[ssh-keys]]
+item = "friction"
+vault = "Private"
+
+[[ssh-keys]]
+item = "Quasar"
+vault = "Private"
