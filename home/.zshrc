@@ -10,6 +10,7 @@ path=(
   ${HOME}/.npm-global/bin
   ${HOME}/.local/bin
   ${HOME}/bin
+  ${HOME}/go/bin
   /usr/local/bin
   $path
 )
@@ -223,3 +224,9 @@ function _alias_reminder() {
   [[ -n "$alias_val" ]] && print -P "%F{243}alias: $cmd → $alias_val%f"
 }
 add-zsh-hook preexec _alias_reminder
+
+# Android SDK
+if [[ -d $HOME/Library/Android/sdk ]]; then
+  export ANDROID_HOME="$HOME/Library/Android/sdk"
+  path=($ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/platform-tools $path)
+fi
