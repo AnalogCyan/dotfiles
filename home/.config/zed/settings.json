@@ -34,6 +34,8 @@
   "use_system_path_prompts": false,
   "language_models": {
     "opencode": {
+      "show_free_models": false,
+      "show_go_models": false,
       "show_zen_models": false,
     },
   },
@@ -78,6 +80,7 @@
     "dock": "right",
   },
   "agent": {
+    "default_profile": "write",
     "expand_edit_card": false,
     "enable_feedback": false,
     "tool_permissions": {
@@ -97,26 +100,27 @@
       },
       "default": "allow",
     },
-    "thinking_display": "preview",
+    "thinking_display": "always_collapsed",
     "expand_terminal_card": false,
     "default_model": {
-      "provider": "opencode",
-      "model": "go/kimi-k2.5",
-      "enable_thinking": false,
+      "provider": "openrouter",
+      "model": "~moonshotai/kimi-latest",
+      "enable_thinking": true,
     },
     "flexible": true,
     "dock": "left",
     "favorite_models": [
       {
-        "provider": "opencode",
-        "model": "go/kimi-k2.6",
-        "enable_thinking": false,
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "enable_thinking": true,
+        "effort": "high"
       },
       {
-        "provider": "opencode",
-        "model": "go/kimi-k2.5",
-        "enable_thinking": false,
-      },
+        "provider": "openrouter",
+        "model": "~moonshotai/kimi-latest",
+        "enable_thinking": true
+      }
     ],
     "model_parameters": [],
   },
@@ -227,7 +231,11 @@
   "buffer_font_features": {
     "calt": true,
   },
-  "icon_theme": "Colored Zed Icons Theme Light",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Colored Zed Icons Theme Light",
+    "dark": "Colored Zed Icons Theme Light",
+  },
   "restore_on_startup": "last_session",
   "redact_private_values": true,
   "auto_install_extensions": {
@@ -253,12 +261,23 @@
     "zedokai": true,
     "zig": true,
   },
-  "agent_servers": {},
+  "agent_servers": {
+    "claude-acp": {
+      "default_config_options": {
+        "mode": "auto"
+      },
+      "type": "registry"
+    }
+  },
   "session": {
     "trust_all_worktrees": true,
   },
   "base_keymap": "VSCode",
   "ui_font_size": 16.0,
   "buffer_font_size": 15,
-  "theme": "Zedokai Darker (Filter Ristretto)",
+  "theme": {
+    "mode": "dark",
+    "light": "Gruvbox Light Soft",
+    "dark": "Zedokai Darker (Filter Ristretto)",
+  },
 }
