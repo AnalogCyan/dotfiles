@@ -19,11 +19,13 @@ dotfiles/
 │   │   └── keys/*.pub                 # public keys the 1Password agent serves
 │   └── .config/
 │       ├── 1Password/ssh/agent.toml   # key order for the 1Password SSH agent
+│       ├── ghostty/config.ghostty
+│       ├── git/ignore                 # global gitignore
 │       ├── starship.toml
 │       ├── zed/
-│       │   └── settings.json          # Zed editor config
+│       │   └── settings.json          # Zed editor config, synced from live by hand
 │       └── zsh/functions/
-│           └── zsh_greeting.zsh
+│           └── zmx.zsh
 └── install.sh
 ```
 
@@ -47,8 +49,10 @@ The installer detects the OS via `uname -s` and runs the appropriate steps.
 
 ### macOS
 
-Handles: system updates, Homebrew setup, formula/cask installation, zsh plugin
-cloning, Monaspace Nerd Font, zsh configuration, dotfile deployment via rsync, iCloud symlinks, and pfetch installed to `/usr/local/bin`.
+Handles: system updates, Homebrew setup, formula/cask installation (plus an
+optional set it asks about), zsh plugin cloning, Monaspace Nerd Font, zsh
+configuration, dotfile deployment via rsync, iCloud symlinks, and the Ghostty
+config symlink.
 
 ### Debian
 
@@ -64,5 +68,5 @@ zsh as default shell.
 - **Zed** installed on both platforms
 - **Editor fallback chain** resolved at shell startup: `zed-insiders → zed → hx → vim`; exported as `EDITOR`, `VISUAL`, `GIT_EDITOR`
 - **Modern tool aliases** eza, bat (or batcat on Debian), ripgrep, fd (or fdfind on Debian), btop, helix
-- **zsh_greeting** available as a command; auto-runs on interactive login shells via `.zlogin`; shows outdated brew or apt packages depending on platform
-- **pfetch** installed to `/usr/local/bin`
+- **Login greeting** in `.zlogin`: pfetch plus a cached count of outdated brew or apt packages
+- **pfetch-rs** from Homebrew on macOS, installed to `/usr/local/bin` on Debian
