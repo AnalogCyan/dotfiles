@@ -48,25 +48,39 @@ DOTFILES_DIR="${SCRIPT_DIR}"
 # =============================================================================
 
 BREW_FORMULAE=(
-  "anomalyco/tap/opencode"
+  "anomalyco/tap/opencode-v2"
   "bat"
   "btop"
   "chojs23/tap/concord"
   "ctop"
+  "dust"
   "eza"
   "fd"
+  "forgejo-cli"
   "fortune"
   "fzf"
+  "gh"
   "git"
+  "go"
   "gromgit/brewtils/taproom"
   "helix"
+  "imagemagick"
   "lazygit"
+  "mole"
+  "mpv"
   "neurosnap/tap/zmx"
+  "nmap"
+  "node"
+  "pandoc"
   "philocalyst/tap/caligula"
   "python@3.13"
   "ripgrep"
+  "rsync"
+  "sevenzip"
+  "shellcheck"
   "starship"
   "tmux"
+  "wget"
   "xz"
   "yt-dlp"
   "zoxide"
@@ -78,17 +92,54 @@ BREW_FORMULAE=(
 
 BREW_CASKS=(
   "1password"
+  "1password-cli"
   "balenaetcher"
+  "chatgpt"
+  "claude"
+  "cleanshot"
+  "codex"
   "crystalfetch"
+  "discord"
+  "firefox@beta"
+  "ghostty"
+  "google-chrome@canary"
   "iina"
   "keka"
   "kekaexternalhelper"
   "mactracker"
+  "mole-app"
+  "obsidian"
+  "orbstack"
   "raspberry-pi-imager"
+  "t3-code@nightly"
   "tailscale-app"
+  "transmission"
   "utm"
-  "xcodes-app"
   "zed@preview"
+)
+
+BREW_FORMULAE_OPTIONAL=(
+  "cdrtools:CD/DVD burning and ISO building (mkisofs)"
+  "cmake:C/C++ build system"
+  "colima:Docker runtime in a Lima VM"
+  "f3:Fake-capacity flash drive tester"
+  "gifsicle:GIF optimizer and editor"
+  "make:GNU make (as gmake)"
+  "powershell:PowerShell (pwsh)"
+  "qpdf:Inspect, repair and transform PDFs"
+  "scrcpy:Mirror and control Android over USB"
+  "sox:Audio conversion and effects"
+  "sshpass:Non-interactive SSH password auth"
+  "zig:Zig compiler"
+)
+
+BREW_CASKS_OPTIONAL=(
+  "android-platform-tools:adb and fastboot (needed by scrcpy)"
+  "gimp:Image editor"
+  "inkscape:Vector graphics editor"
+  "obs:Screen recording and streaming"
+  "steam:Game store"
+  "typeless:AI voice dictation"
 )
 
 declare -a APT_PACKAGES=(
@@ -101,6 +152,7 @@ declare -a APT_PACKAGES=(
   fontconfig
   fortune-mod
   fzf
+  gh
   git
   gnupg
   hx
@@ -327,6 +379,30 @@ install_homebrew_packages() {
     log_warning "Some casks failed."
     status=1
   }
+
+  local entry
+  echo "Optional formulae:"
+  for entry in "${BREW_FORMULAE_OPTIONAL[@]}"; do
+    printf '  %-24s %s\n' "${entry%%:*}" "${entry#*:}"
+  done
+  echo "Optional casks:"
+  for entry in "${BREW_CASKS_OPTIONAL[@]}"; do
+    printf '  %-24s %s\n' "${entry%%:*}" "${entry#*:}"
+  done
+
+  if confirm "Install optional packages?"; then
+    log_info "Installing optional formulae..."
+    brew install "${BREW_FORMULAE_OPTIONAL[@]%%:*}" || {
+      log_warning "Some optional formulae failed."
+      status=1
+    }
+
+    log_info "Installing optional casks..."
+    brew install --cask "${BREW_CASKS_OPTIONAL[@]%%:*}" || {
+      log_warning "Some optional casks failed."
+      status=1
+    }
+  fi
 
   if (( status == 0 )); then
     log_success "Packages installed."
@@ -825,9 +901,7 @@ deploy_dotfiles() {
 
   backup_existing_dotfiles
 
-  mkdir -p \
-    "${HOME}/.config/zsh/functions" \
-    "${HOME}/.zsh.d"
+  mkdir -p "${HOME}/.config/zsh/functions"
 
   rsync -av --no-perms "${DOTFILES_DIR}/home/" "${HOME}/" || {
     log_error "Failed to rsync shared dotfiles."
