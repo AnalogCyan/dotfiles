@@ -44,9 +44,16 @@ selection-foreground = #fff1f3
 # Bold text uses bright palette variants (matches Monokai convention)
 bold-color = bright
 
-# --- Tabs --------------------------------------------------------------------
+# --- Tabs ---------------------------------------------------------------------
 
 macos-titlebar-style = tabs
+
+# --- Quick Terminal -----------------------------------------------------------
+
+quick-terminal-position = center
+quick-terminal-size = 70%,25%
+quick-terminal-animation-duration = 0.12
+keybind = global:cmd+;=toggle_quick_terminal
 
 # --- Window & Transparency ----------------------------------------------------
 
@@ -60,6 +67,8 @@ unfocused-split-opacity = 0.7
 # --- Behavior -----------------------------------------------------------------
 
 quit-after-last-window-closed = true
+confirm-close-surface = true
+clipboard-trim-trailing-spaces = true
 focus-follows-mouse = true
 scrollback-limit = 100000
 working-directory = home
