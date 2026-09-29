@@ -63,6 +63,45 @@ fi
 export VISUAL="${EDITOR}" GIT_EDITOR="${EDITOR}"
 export PAGER='less' LESS='-R --use-color -M'
 
+# Android SDK
+if [[ -d $HOME/Library/Android/sdk ]]; then
+  export ANDROID_HOME="$HOME/Library/Android/sdk"
+  path=($ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/platform-tools $path)
+fi
+
+[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
+
+# Agent shells (Claude Code, Codex, Cursor, Copilot, ...) get everything above
+# plus aliases and functions that add commands, but none of the interactive
+# layer below: no prompt, plugins, or aliases that shadow standard commands.
+# Scripts never see aliases either way. DOTFILES_AGENT=1 or 0 overrides this,
+# e.g. `DOTFILES_AGENT=0 zsh -ic 'cmd'` to run something as a human shell would.
+if [[ -z ${DOTFILES_AGENT:-} ]]; then
+  DOTFILES_AGENT=0
+  [[ -n $CLAUDECODE$AI_AGENT$AGENT$CURSOR_AGENT$CODEX_CI$CODEX_SANDBOX$GEMINI_CLI$COPILOT_AGENT$OPENCODE ]] && DOTFILES_AGENT=1
+fi
+if (( DOTFILES_AGENT )); then
+  # A pager or editor would block a caller that can't interact
+  export PAGER=cat GIT_PAGER=cat GIT_EDITOR=:
+  # Keep agent commands out of shell history
+  unset HISTFILE
+fi
+
+# Aliases that add commands
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+(( $+commands[pfetch-rs] )) && alias pfetch='pfetch-rs'
+(( $+commands[fdfind] )) && alias fd='fdfind'
+(( $+commands[lazygit] )) && alias lg='lazygit'
+(( $+commands[brew] )) && (( $+commands[mo] )) && alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
+(( $+commands[apt] )) && alias aptup='sudo apt update && sudo apt full-upgrade'
+
+# Custom functions
+for f ("$HOME/.config/zsh/functions/"*.zsh(N)) source "$f"
+
+(( DOTFILES_AGENT )) && return
+
 # Completion paths
 fpath=(~/.zsh.d/ $fpath)
 
@@ -148,12 +187,8 @@ if (( $+commands[zmx] )); then
   eval "$(zmx completions zsh)"
 fi
 
-[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
-
 # Plugins: source (after compinit)
 for f ("$plugin_files[@]") { [[ -f "$f" ]] && source "$f" }
-# zsh-eza aliases have hung Claude Code's shells
-[[ -n $CLAUDECODE ]] && unalias ls l ll llm la lx lt tree 2>/dev/null
 
 # zoxide: init default (creates 'z'), then alias cd->z below
 if [[ -f "$ZSH_PLUGINS_DIR/zoxide/zoxide.plugin.zsh" ]]; then
@@ -191,30 +226,20 @@ bindkey '^[[3~' delete-char
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
-# Aliases
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+# Aliases that replace standard commands
 alias mkdir='mkdir -pv'
-
-(( $+commands[pfetch-rs] )) && alias pfetch='pfetch-rs'
 (( $+commands[bat] )) && alias cat='bat --paging=never' less='bat --paging=always'
 (( $+commands[batcat] )) && alias cat='batcat --paging=never' less='batcat --paging=always'
 (( $+commands[rg] )) && alias grep='rg'
 if (( $+commands[fdfind] )); then
-  alias find='fdfind' fd='fdfind'
+  alias find='fdfind'
 elif (( $+commands[fd] )); then
   alias find='fd'
 fi
 (( $+commands[btop] )) && alias top='btop' htop='btop'
-(( $+commands[lazygit] )) && alias lg='lazygit'
 (( $+commands[hx] )) && alias nano='hx' vi='hx' vim='hx'
 (( $+commands[zmx] )) && alias tmux='zmx' screen='zmx'
-(( $+commands[brew] )) && (( $+commands[mo] )) && alias brewup='brew update && brew upgrade --greedy && mo clean && mo optimize && zsh'
-(( $+commands[apt] )) && alias aptup='sudo apt update && sudo apt full-upgrade'
 
-# Custom functions
-for f ("$HOME/.config/zsh/functions/"*.zsh(N)) source "$f"
 
 # Alias transparency
 autoload -Uz add-zsh-hook
@@ -224,9 +249,3 @@ function _alias_reminder() {
   [[ -n "$alias_val" ]] && print -P "%F{243}alias: $cmd → $alias_val%f"
 }
 add-zsh-hook preexec _alias_reminder
-
-# Android SDK
-if [[ -d $HOME/Library/Android/sdk ]]; then
-  export ANDROID_HOME="$HOME/Library/Android/sdk"
-  path=($ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/platform-tools $path)
-fi

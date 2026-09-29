@@ -4,8 +4,8 @@
 # Wraps pfetch-rs with custom package update line
 # =============================================================================
 
-# Only run for interactive login shells
-[[ -o interactive ]] || return
+# Only run for interactive login shells a person is using
+[[ -o interactive ]] && (( ! ${DOTFILES_AGENT:-0} )) || return
 
 # Clear the terminal before printing
 clear
