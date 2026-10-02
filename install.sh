@@ -70,7 +70,6 @@ INTERACTIVE="${TTY}"
 # =============================================================================
 
 BREW_FORMULAE=(
-  "anomalyco/tap/opencode-v2"
   "bat"
   "btop"
   "chojs23/tap/concord"
